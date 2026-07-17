@@ -687,6 +687,8 @@ public class WorkoutPlanService {
                         .orderIndex(idx++)
                         .notes(note)
                         .recommendedWeightKg(recommendedWeightKg)
+                        // ── MỚI: Current Recommendation khởi tạo = giá trị gốc lúc tạo giáo án ──
+                        .currentRecommendedWeightKg(recommendedWeightKg)
                         .build());
             }
         }
@@ -952,6 +954,8 @@ public class WorkoutPlanService {
                 .currentWeightKg(pe.getCurrentWeightKg())
                 .weightJustRevealed(justRevealed)
                 .recommendedWeightKg(pe.getRecommendedWeightKg())
+                // ── MỚI ──
+                .currentRecommendedWeightKg(pe.getCurrentRecommendedWeightKg())
                 .build();
     }
 

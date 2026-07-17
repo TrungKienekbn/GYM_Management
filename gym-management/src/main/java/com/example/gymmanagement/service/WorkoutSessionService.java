@@ -450,6 +450,9 @@ public class WorkoutSessionService {
                         .baseWeightKg(pe.getBaseWeightKg())
                         .currentWeightKg(pe.getCurrentWeightKg())
                         .weightJustRevealed(justRevealed)
+                        .recommendedWeightKg(pe.getRecommendedWeightKg())
+                        // ── MỚI ──
+                        .currentRecommendedWeightKg(pe.getCurrentRecommendedWeightKg())
                         .build();
             }).collect(Collectors.toList());
         }
@@ -644,19 +647,19 @@ public class WorkoutSessionService {
 
         String note;
         if (avgRate > 150) {
-            note = "💪 Tuần này bạn hoàn thành " + Math.round(avgRate) + "%! Hiệu suất rất cao. Gợi ý tăng tạ khoảng 15%.";
+            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%! Hiệu suất rất cao. Gợi ý tăng tạ khoảng 15%.";
         } else if (avgRate >= 120) {
-            note = "📈 Tuần này bạn hoàn thành " + Math.round(avgRate) + "%. Hiệu suất tốt. Gợi ý tăng tạ khoảng 10%.";
+            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Hiệu suất tốt. Gợi ý tăng tạ khoảng 10%.";
         } else if (avgRate >= 90) {
-            note = "📈 Tuần này bạn hoàn thành " + Math.round(avgRate) + "%. Hiệu suất ổn định. Gợi ý tăng tạ khoảng 5%.";
+            note = "Tỉ lệ hoàn thành tuần này của bạn là " + Math.round(avgRate) + "%. Hiệu suất ổn định. Gợi ý tăng tạ khoảng 5%.";
         } else if (avgRate >= 80) {
-            note = "✅ Tuần này bạn hoàn thành " + Math.round(avgRate) + "%. Giữ nguyên mức tạ hiện tại.";
+            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Giữ nguyên mức tạ hiện tại.";
         } else if (avgRate >= 60) {
-            note = "📉 Tuần này bạn hoàn thành " + Math.round(avgRate) + "%. Có thể giảm khoảng 5% để đảm bảo kỹ thuật.";
+            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Có thể giảm khoảng 5% để đảm bảo kỹ thuật.";
         } else if (avgRate >= 30) {
-            note = "⚠️ Tuần này bạn hoàn thành " + Math.round(avgRate) + "%. Nên giảm khoảng 10%.";
+            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Nên giảm khoảng 10%.";
         } else {
-            note = "⚠️ Tuần này bạn hoàn thành " + Math.round(avgRate) + "%. Nên giảm khoảng 20%.";
+            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Nên giảm khoảng 20%.";
         }
 
         plan.setWeightAdjustmentNote(note);
@@ -669,6 +672,7 @@ public class WorkoutSessionService {
     // xét từ cao xuống thấp, đồng bộ với applyWeightAdjustmentNote() ở trên. Không đổi
     // kiến trúc (vẫn nhân dồn vào multiplier, vẫn áp lên baseWeightKg -> currentWeightKg,
     // không đụng recommendedWeightKg). ──
+// ── Điều chỉnh tạ THỰC theo nhóm cơ (tích lũy multiplier) ──
     private void adjustMuscleGroupWeights(WorkoutPlan plan, List<SessionExerciseLog> weekLogs) {
         Map<MuscleGroup, List<Integer>> byGroup = weekLogs.stream()
                 .filter(l -> l.getCompletionPercent() != null && l.getExercise().getMuscleGroup() != null)
@@ -701,8 +705,14 @@ public class WorkoutSessionService {
                     .findByPlanDay_WorkoutPlan_IdAndExercise_MuscleGroup(plan.getId(), mg);
             for (WorkoutPlanExercise pe : exs) {
                 if (pe.getBaseWeightKg() != null) {
+                    // ── Đã nhập tạ: giữ nguyên cơ chế cũ, currentWeightKg = baseWeightKg × multiplier ──
                     pe.setCurrentWeightKg(Math.round(pe.getBaseWeightKg() * mgw.getMultiplier() * 10.0) / 10.0);
                     pe.setWeightUpdatedWeek(nextWeek);
+                } else if (pe.getRecommendedWeightKg() != null) {
+                    // ── MỚI: Chưa nhập tạ — cập nhật currentRecommendedWeightKg, LUÔN tính lại
+                    // từ recommendedWeightKg GỐC (không tích luỹ chồng lên giá trị tuần trước) ──
+                    double raw = pe.getRecommendedWeightKg() * mgw.getMultiplier();
+                    pe.setCurrentRecommendedWeightKg(Math.round(raw * 2) / 2.0);
                 }
             }
             planExerciseRepo.saveAll(exs);

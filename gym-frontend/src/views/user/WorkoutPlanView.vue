@@ -92,13 +92,8 @@
             </div>
           </div>
 
-          <div v-if="weekProgress.canGoNextWeek" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-            <span style="color:#16a34a;font-size:0.9rem;font-weight:600">
-              ✅ Đã hoàn thành tuần này! Giáo án đã tự động căn chỉnh và chuyển sang tuần tiếp theo.
-            </span>
-            <el-button v-if="reviewEligible" type="warning" size="small" @click="openReviewDialog">
-              ⭐ Đánh giá tuần tập luyện
-            </el-button>
+          <div v-if="weekProgress.canGoNextWeek" style="color:#16a34a;font-size:0.9rem;font-weight:600">
+            ✅ Đã hoàn thành tuần này! Giáo án đã tự động căn chỉnh và chuyển sang tuần tiếp theo.
           </div>
           <div v-else-if="weekProgress.isWeekDone" style="color:var(--c-warning);font-size:0.9rem;font-weight:600">
             ⚠ Bạn cần hoàn thành Checkout buổi cuối tuần để nộp số liệu trước khi chuyển tuần!
@@ -255,17 +250,19 @@
                   <p style="font-size:0.82rem;color:var(--c-text2);margin-bottom:10px">
                     Vui lòng thực hiện đủ 3 bài test dưới đây trước khi đặt mục tiêu.
                   </p>
-                  <div class="grid-2">
+
                     <el-form-item label="Chống đẩy tối đa (reps)">
                       <el-input-number v-model="enduranceTestForm.pushupReps" :min="0" :max="500" style="width:100%"/>
                     </el-form-item>
                     <el-form-item label="Plank tối đa (giây)">
                       <el-input-number v-model="enduranceTestForm.plankSeconds" :min="0" :max="3600" style="width:100%"/>
                     </el-form-item>
-                  </div>
+
+
                   <el-form-item label="Squat tối đa (reps)">
                     <el-input-number v-model="enduranceTestForm.squatReps" :min="0" :max="500" style="width:100%"/>
                   </el-form-item>
+
                   <el-button type="primary" size="small" @click="submitEnduranceTest" :loading="submittingEnduranceTest">
                     Lưu kết quả test
                   </el-button>
@@ -407,9 +404,6 @@
           <el-form-item label="Cân nặng hiện tại (kg) *" required style="margin-bottom:0">
             <el-input-number v-model="coForm.checkoutWeight" :min="30" :max="300" :precision="1" style="width:100%" />
           </el-form-item>
-          <el-form-item label="Tỉ lệ mỡ (%) - Body Fat" style="margin-bottom:0">
-            <el-input-number v-model="coForm.checkoutBodyFat" :min="2" :max="60" :precision="1" style="width:100%" />
-          </el-form-item>
         </div>
       </div>
 
@@ -449,28 +443,57 @@
         </el-descriptions-item>
       </el-descriptions>
 
-      <div class="weight-guide-box">
-        📏 <strong>Cách xác định tạ:</strong> chọn 1 mức tạ mà bạn tập đến set thứ 12 thì không thể tập tiếp được nữa.
-        Với bài không dùng tạ, lấy cân nặng cơ thể làm chuẩn (có thể thêm dây kháng lực để tăng/giảm khối lượng).
-      </div>
 
-      <!-- MỚI (Patch 3): hiển thị mức tạ khuyến nghị (snapshot AI, không đổi) nếu có -->
-      <div v-if="selEx.recommendedWeightKg != null" class="recommended-weight-box">
-        🎯 Mức tạ khuyến nghị (AI đề xuất lúc tạo giáo án): <strong>{{ selEx.recommendedWeightKg }} kg</strong>
-      </div>
+<!-- Mức tạ khuyến nghị -->
+<div v-if="selEx.recommendedWeightKg != null" class="recommended-weight-box">
+  <div>
+    🎯 Mức tạ khuyến nghị:
+    <strong>{{ currentRecommendedDisplay(selEx) }} kg</strong>
+  </div>
+
+  <div
+    v-if="selEx.baseWeightKg == null"
+    style="font-size:0.78rem;color:var(--c-text3);margin-top:4px"
+  >
+    Hệ thống tự điều chỉnh theo tiến độ luyện tập của bạn.
+  </div>
+
+  <div
+    v-else
+    style="font-size:0.78rem;color:var(--c-text3);margin-top:4px"
+  >
+    Được tính từ mức tạ bạn đã nhập và tiến độ luyện tập.
+  </div>
+</div>
 
       <div v-if="!selEx.baseWeightKg" style="margin-top:14px">
-        <el-form-item label="Nhập mức tạ khởi điểm (kg)">
+        <el-form-item label="Nhập mức tạ mà bạn tập : ">
           <el-input-number v-model="baseWeightInput" :min="0" :max="500" :precision="1" style="width:100%"/>
         </el-form-item>
         <el-button type="primary" @click="saveBaseWeight" :loading="savingWeight">Lưu tạ khởi điểm</el-button>
       </div>
 
-      <div class="weight-reveal">
-        ⚖️ Tạ áp dụng tuần này: <strong>{{ selEx.currentWeightKg }} kg</strong>
-        <span v-if="selEx.weightJustRevealed && selEx.currentWeightKg > selEx.baseWeightKg" style="color:#16a34a"> (tăng so với tuần trước 📈)</span>
-        <span v-else-if="selEx.weightJustRevealed && selEx.currentWeightKg < selEx.baseWeightKg" style="color:#dc2626"> (giảm so với tuần trước 📉)</span>
-      </div>
+<div
+  v-if="selEx.baseWeightKg != null && selEx.currentWeightKg != null"
+  class="weight-reveal"
+>
+  ⚖️ Mức tạ áp dụng tuần này:
+  <strong>{{ selEx.currentWeightKg }} kg</strong>
+
+  <span
+    v-if="selEx.weightJustRevealed && selEx.currentWeightKg > selEx.baseWeightKg"
+    style="color:#16a34a"
+  >
+    (tăng so với tuần trước 📈)
+  </span>
+
+  <span
+    v-else-if="selEx.weightJustRevealed && selEx.currentWeightKg < selEx.baseWeightKg"
+    style="color:#dc2626"
+  >
+    (giảm so với tuần trước 📉)
+  </span>
+</div>
 
       <template #footer>
         <el-button @click="exDetailDialog=false">Đóng</el-button>
@@ -537,23 +560,6 @@
         </el-button>
       </template>
     </el-dialog>
-    <!-- ── Đánh giá tuần tập luyện ──────────────────────────── -->
-    <el-dialog v-model="reviewDialog" title="ĐÁNH GIÁ TUẦN TẬP LUYỆN" width="440px" align-center>
-      <el-form label-position="top">
-        <el-form-item label="Bạn cảm thấy tuần tập này thế nào?">
-          <el-rate v-model="reviewForm.rating" :max="5" size="large" show-text
-                   :texts="['Tệ','Chưa tốt','Bình thường','Tốt','Xuất sắc']"/>
-        </el-form-item>
-        <el-form-item label="Nhận xét (tùy chọn)">
-          <el-input v-model="reviewForm.comment" type="textarea" :rows="3"
-                    placeholder="Cảm nhận của bạn về cường độ, giáo án tuần này..."/>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="reviewDialog=false">Hủy</el-button>
-        <el-button type="primary" :loading="reviewSubmitting" @click="submitReview">GỬI ĐÁNH GIÁ</el-button>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
@@ -562,7 +568,6 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { planAPI, sessionAPI, enduranceTestAPI } from '@/api'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import dayjs from 'dayjs'
-import { weeklyReviewAPI } from '@/api'
 
 const plan = ref(null)
 const allPlans = ref([])
@@ -604,11 +609,6 @@ const loadingEnduranceTest = ref(false)
 const enduranceTestForm = reactive({ pushupReps: null, plankSeconds: null, squatReps: null })
 const submittingEnduranceTest = ref(false)
 const showEnduranceTestForm = ref(false)
-
-const reviewDialog  = ref(false)
-const reviewEligible = ref(false)
-const reviewSubmitting = ref(false)
-const reviewForm = reactive({ rating: 5, comment: '' })
 
 const enduranceMetricOptions = [
   { value: 'PUSHUP_REPS', label: 'Chống đẩy', unit: 'reps' },
@@ -685,6 +685,13 @@ function handleGoalSelect(goalValue) {
     })
   }
 }
+// MỚI: Current Recommendation — nếu đã nhập baseWeightKg thì dùng currentWeightKg,
+// nếu chưa thì dùng currentRecommendedWeightKg (fallback về recommendedWeightKg gốc
+// cho giáo án cũ tạo trước khi có field này — currentRecommendedWeightKg sẽ là null)
+function currentRecommendedDisplay(ex) {
+  if (ex.baseWeightKg != null) return ex.currentWeightKg
+  return ex.currentRecommendedWeightKg != null ? ex.currentRecommendedWeightKg : ex.recommendedWeightKg
+}
 
 // ====================== LOAD DATA ======================
 async function load() {
@@ -703,12 +710,6 @@ async function load() {
     if (plan.value) {
       const progressRes = await sessionAPI.getWeekProgress(plan.value.id, plan.value.currentWeek)
       weekProgress.value = progressRes.data
-      if (weekProgress.value?.canGoNextWeek) {
-        const eligRes = await weeklyReviewAPI.checkEligibility(plan.value.id, plan.value.currentWeek)
-        reviewEligible.value = eligRes.data?.eligible || false
-      } else {
-        reviewEligible.value = false
-      }
 
       plan.value.planDays.forEach(day => {
         const standardSession = activeSessions.value.find(s =>
@@ -972,26 +973,6 @@ async function submitCheckOut() {
   } finally {
     checkingOut.value = false
   }
-}
-function openReviewDialog() {
-  reviewForm.rating = 5
-  reviewForm.comment = ''
-  reviewDialog.value = true
-}
-
-async function submitReview() {
-  reviewSubmitting.value = true
-  try {
-    await weeklyReviewAPI.submit({
-      planId: plan.value.id,
-      weekNumber: plan.value.currentWeek,
-      rating: reviewForm.rating,
-      comment: reviewForm.comment
-    })
-    ElMessage.success('Cảm ơn bạn đã đánh giá! 🎉')
-    reviewDialog.value = false
-    reviewEligible.value = false
-  } catch {} finally { reviewSubmitting.value = false }
 }
 
 // ====================== UTILITY FUNCTIONS ======================
