@@ -37,6 +37,13 @@
             <span style="color:#f59e0b;font-weight:700">{{ row.staminaCost ?? 10 }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="🏋️ Dùng tạ" width="90" align="center">
+  <template #default="{row}">
+    <span class="badge" :class="row.usesWeight ? 'badge-success' : 'badge-info'">
+      {{ row.usesWeight ? 'Có' : 'Không' }}
+    </span>
+  </template>
+    </el-table-column>
         <el-table-column label="Trạng thái" width="95" align="center">
           <template #default="{row}">
             <span class="badge" :class="row.isActive?'badge-success':'badge-danger'">{{ row.isActive?'Active':'Ẩn' }}</span>
@@ -102,6 +109,12 @@
             <span style="font-weight:700;width:50px;text-align:right;color:#f59e0b">{{ form.staminaCost }}</span>
           </div>
         </div>
+        <!-- MỚI: Bài tập có dùng tạ/thiết bị tạ hay không -->
+<el-form-item label="Loại bài tập">
+  <div style="display:flex;align-items:center;gap:10px">
+    <el-switch v-model="form.usesWeight" active-text="Dùng tạ 🏋️" inactive-text="Không dùng tạ (bodyweight)"/>
+  </div>
+</el-form-item>
 
         <!-- Điểm hiệu quả theo mục tiêu -->
         <div class="score-section">
@@ -162,7 +175,8 @@ const defaultForm = () => ({
   name:'', description:'', muscleGroup:'CHEST', difficulty:'MEDIUM',
   defaultSets:3, defaultReps:10, caloriesBurned:8, videoUrl:'', restSeconds:60,
   muscleGainScore:5, weightLossScore:5, enduranceScore:5, flexibilityScore:5, maintenanceScore:5,
-  staminaCost: 10
+  staminaCost: 10,
+  usesWeight: false
 })
 const form = reactive(defaultForm())
 
@@ -192,6 +206,7 @@ function openEdit(row) {
     flexibilityScore: row.flexibilityScore ?? 5,
     maintenanceScore: row.maintenanceScore ?? 5,
     staminaCost: row.staminaCost ?? 10,
+    usesWeight: row.usesWeight ?? false,
   })
   formDialog.value = true
 }

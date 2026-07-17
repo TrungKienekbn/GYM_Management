@@ -47,7 +47,7 @@ public class FitnessCalculator {
     }
 
     /** W_chuan dùng chung cho cả FS và BodyType để 2 điểm số nhất quán với nhau. */
-     double wChuan(double heightCm, String gender) {
+    double wChuan(double heightCm, String gender) {
         double base = (heightCm - 100) * 0.9;
         return isFemale(gender) ? base * 0.9 : base;
     }
@@ -191,7 +191,6 @@ public class FitnessCalculator {
             };
         };
     }
-
     // ── MỚI: cộng dồn base + adjustment rồi CLAMP theo training zone ──
     // Đây là điểm WorkoutPlanService nên gọi thay vì tự cộng tay bằng
     // Math.max(1, baseSR[0]+adj[0]) / Math.max(4, baseSR[1]+adj[1]) như hiện tại,

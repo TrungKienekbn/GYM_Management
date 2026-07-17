@@ -76,6 +76,12 @@ export const sessionAPI = {
     delete:       (id)         => api.delete(`/sessions/${id}`),
     getWeekProgress: (planId, weekNumber) => api.get(`/sessions/week-progress?planId=${planId}&weekNumber=${weekNumber}`)
 }
+export const weeklyReviewAPI = {
+    checkEligibility: (planId, weekNumber) =>
+        api.get(`/weekly-reviews/eligibility?planId=${planId}&weekNumber=${weekNumber}`),
+    submit:   (data) => api.post('/weekly-reviews', data),
+    getMy:    ()     => api.get('/weekly-reviews/my')
+}
 
 export const petAPI = {
     get: () => api.get('/pet')

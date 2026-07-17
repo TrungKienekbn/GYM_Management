@@ -92,8 +92,13 @@
             </div>
           </div>
 
-          <div v-if="weekProgress.canGoNextWeek" style="color:#16a34a;font-size:0.9rem;font-weight:600">
-            ✅ Đã hoàn thành tuần này! Giáo án đã tự động căn chỉnh và chuyển sang tuần tiếp theo.
+          <div v-if="weekProgress.canGoNextWeek" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <span style="color:#16a34a;font-size:0.9rem;font-weight:600">
+              ✅ Đã hoàn thành tuần này! Giáo án đã tự động căn chỉnh và chuyển sang tuần tiếp theo.
+            </span>
+            <el-button v-if="reviewEligible" type="warning" size="small" @click="openReviewDialog">
+              ⭐ Đánh giá tuần tập luyện
+            </el-button>
           </div>
           <div v-else-if="weekProgress.isWeekDone" style="color:var(--c-warning);font-size:0.9rem;font-weight:600">
             ⚠ Bạn cần hoàn thành Checkout buổi cuối tuần để nộp số liệu trước khi chuyển tuần!
@@ -532,6 +537,23 @@
         </el-button>
       </template>
     </el-dialog>
+    <!-- ── Đánh giá tuần tập luyện ──────────────────────────── -->
+    <el-dialog v-model="reviewDialog" title="ĐÁNH GIÁ TUẦN TẬP LUYỆN" width="440px" align-center>
+      <el-form label-position="top">
+        <el-form-item label="Bạn cảm thấy tuần tập này thế nào?">
+          <el-rate v-model="reviewForm.rating" :max="5" size="large" show-text
+                   :texts="['Tệ','Chưa tốt','Bình thường','Tốt','Xuất sắc']"/>
+        </el-form-item>
+        <el-form-item label="Nhận xét (tùy chọn)">
+          <el-input v-model="reviewForm.comment" type="textarea" :rows="3"
+                    placeholder="Cảm nhận của bạn về cường độ, giáo án tuần này..."/>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="reviewDialog=false">Hủy</el-button>
+        <el-button type="primary" :loading="reviewSubmitting" @click="submitReview">GỬI ĐÁNH GIÁ</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -540,6 +562,7 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { planAPI, sessionAPI, enduranceTestAPI } from '@/api'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import dayjs from 'dayjs'
+import { weeklyReviewAPI } from '@/api'
 
 const plan = ref(null)
 const allPlans = ref([])
@@ -581,6 +604,11 @@ const loadingEnduranceTest = ref(false)
 const enduranceTestForm = reactive({ pushupReps: null, plankSeconds: null, squatReps: null })
 const submittingEnduranceTest = ref(false)
 const showEnduranceTestForm = ref(false)
+
+const reviewDialog  = ref(false)
+const reviewEligible = ref(false)
+const reviewSubmitting = ref(false)
+const reviewForm = reactive({ rating: 5, comment: '' })
 
 const enduranceMetricOptions = [
   { value: 'PUSHUP_REPS', label: 'Chống đẩy', unit: 'reps' },
@@ -675,6 +703,12 @@ async function load() {
     if (plan.value) {
       const progressRes = await sessionAPI.getWeekProgress(plan.value.id, plan.value.currentWeek)
       weekProgress.value = progressRes.data
+      if (weekProgress.value?.canGoNextWeek) {
+        const eligRes = await weeklyReviewAPI.checkEligibility(plan.value.id, plan.value.currentWeek)
+        reviewEligible.value = eligRes.data?.eligible || false
+      } else {
+        reviewEligible.value = false
+      }
 
       plan.value.planDays.forEach(day => {
         const standardSession = activeSessions.value.find(s =>
@@ -938,6 +972,26 @@ async function submitCheckOut() {
   } finally {
     checkingOut.value = false
   }
+}
+function openReviewDialog() {
+  reviewForm.rating = 5
+  reviewForm.comment = ''
+  reviewDialog.value = true
+}
+
+async function submitReview() {
+  reviewSubmitting.value = true
+  try {
+    await weeklyReviewAPI.submit({
+      planId: plan.value.id,
+      weekNumber: plan.value.currentWeek,
+      rating: reviewForm.rating,
+      comment: reviewForm.comment
+    })
+    ElMessage.success('Cảm ơn bạn đã đánh giá! 🎉')
+    reviewDialog.value = false
+    reviewEligible.value = false
+  } catch {} finally { reviewSubmitting.value = false }
 }
 
 // ====================== UTILITY FUNCTIONS ======================
