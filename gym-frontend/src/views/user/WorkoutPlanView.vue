@@ -639,19 +639,21 @@ const coForm = reactive({
 const goals = [
   { value: 'MUSCLE_GAIN', icon: '💪', label: 'Tăng cơ / Sức mạnh', desc: 'Yêu cầu 4-6 buổi/tuần', aiNote: 'ưu tiên bài tập compound nặng, tăng Sets, hạ Reps. Phân bổ cách ngày để phục hồi cơ.' },
   { value: 'WEIGHT_LOSS', icon: '🔥', label: 'Giảm cân / Đốt mỡ', desc: 'Yêu cầu 4-6 buổi/tuần', aiNote: 'ưu tiên Cardio/HIIT, tăng lượng Reps, giảm thời gian nghỉ. Sắp xếp chu kỳ tập liên tục.' },
-  { value: 'ENDURANCE', icon: '🏃', label: 'Tăng sức bền', desc: 'Yêu cầu 3-5 buổi/tuần', aiNote: 'chọn Cardio và Full Body thời gian dài, cường độ vừa, xen kẽ phục hồi tim mạch.' },
+  { value: 'ENDURANCE', icon: '🏃', label: 'Tăng sức bền', desc: 'Yêu cầu 2-4 buổi/tuần', aiNote: 'chọn Cardio và Full Body thời gian dài, cường độ vừa, xen kẽ phục hồi tim mạch.' },
   { value: 'MAINTENANCE', icon: '⚖️', label: 'Duy trì thể hình', desc: 'Yêu cầu 3-5 buổi/tuần', aiNote: 'cân bằng đều giữa các nhóm cơ chính với cấu trúc Set/Rep tiêu chuẩn.' }
 ]
 
 const minDaysRequired = computed(() => {
   if (genForm.goal === 'MUSCLE_GAIN' || genForm.goal === 'WEIGHT_LOSS') return 4
-  if (genForm.goal === 'ENDURANCE' || genForm.goal === 'MAINTENANCE') return 3
+  if (genForm.goal === 'ENDURANCE') return 2        // ← tách riêng, đổi 3 → 2
+  if (genForm.goal === 'MAINTENANCE') return 3
   return 3
 })
 
 const maxDaysRequired = computed(() => {
   if (genForm.goal === 'MUSCLE_GAIN' || genForm.goal === 'WEIGHT_LOSS') return 6
-  if (genForm.goal === 'ENDURANCE' || genForm.goal === 'MAINTENANCE') return 5
+  if (genForm.goal === 'ENDURANCE') return 4         // ← tách riêng, đổi 5 → 4
+  if (genForm.goal === 'MAINTENANCE') return 5
   return 5
 })
 

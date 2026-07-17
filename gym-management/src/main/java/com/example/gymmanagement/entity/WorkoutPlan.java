@@ -8,6 +8,7 @@ import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import com.example.gymmanagement.enums.AssessmentMetricType;
 
 @Entity
 @Table(name = "workout_plans")
@@ -89,7 +90,7 @@ public class WorkoutPlan {
     private FitnessCalculator.BodyType bodyType;
 
     // ── Mục tiêu đo lường được của giáo án (Business Rules v2) ──
-    private String  targetMetricType;
+    private AssessmentMetricType  targetMetricType;
     private Double  targetBaselineValue;
     private Double  targetGoalValue;
     private Double  targetCurrentValue;

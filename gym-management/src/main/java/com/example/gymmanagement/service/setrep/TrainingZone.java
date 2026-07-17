@@ -24,7 +24,7 @@ public final class TrainingZone {
     static {
         ZONES.put(Goal.MUSCLE_GAIN, new Zone(5, 12));
         ZONES.put(Goal.WEIGHT_LOSS, new Zone(12, 20));
-        ZONES.put(Goal.ENDURANCE, new Zone(12, 25));
+        ZONES.put(Goal.ENDURANCE, new Zone(8, 15));
         ZONES.put(Goal.MAINTENANCE, new Zone(8, 15));
     }
 

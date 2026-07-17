@@ -90,7 +90,7 @@ public class WorkoutPlanService {
 
         // ── MỚI (Patch 7): xác định target theo Goal — Business Rules v2 (LOCKED).
         // Validate TRƯỚC deactivateAndCleanOldPlan() để tránh huỷ giáo án cũ nếu request lỗi. ──
-        String targetMetricTypeVal = null;
+        AssessmentMetricType targetMetricTypeVal = null;
         Double targetBaselineValueVal = null;
         Double targetGoalValueVal = null;
         Double targetCurrentValueVal = null;
@@ -117,26 +117,29 @@ public class WorkoutPlanService {
             case ENDURANCE -> {
                 if (enduranceMetric == null || enduranceTargetValue == null)
                     throw new RuntimeException("Mục tiêu Sức bền yêu cầu enduranceMetric và enduranceTargetValue");
-                if (!List.of("PUSHUP_REPS", "PLANK_SECONDS", "SQUAT_REPS").contains(enduranceMetric))
+
+                AssessmentMetricType metricType;
+                try {
+                    metricType = AssessmentMetricType.valueOf(enduranceMetric);
+                } catch (IllegalArgumentException e) {
                     throw new RuntimeException("enduranceMetric không hợp lệ: " + enduranceMetric);
+                }
 
                 EnduranceTest test = enduranceTestRepo.findByUserId(user.getId())
                         .orElseThrow(() -> new RuntimeException(
                                 "Bạn cần thực hiện bài test sức bền trước khi tạo giáo án cho mục tiêu này"));
 
-                Double baseline = switch (enduranceMetric) {
-                    case "PUSHUP_REPS" -> test.getPushupReps() != null ? test.getPushupReps().doubleValue() : null;
-                    case "PLANK_SECONDS" -> test.getPlankSeconds() != null ? test.getPlankSeconds().doubleValue() : null;
-                    case "SQUAT_REPS" -> test.getSquatReps() != null ? test.getSquatReps().doubleValue() : null;
-                    default -> null;
+                Double baseline = switch (metricType) {
+                    case PUSHUP_REPS -> test.getPushupReps() != null ? test.getPushupReps().doubleValue() : null;
+                    case PLANK_SECONDS -> test.getPlankSeconds() != null ? test.getPlankSeconds().doubleValue() : null;
+                    case SQUAT_REPS -> test.getSquatReps() != null ? test.getSquatReps().doubleValue() : null;
                 };
                 if (baseline == null)
                     throw new RuntimeException("Kết quả bài test cho " + enduranceMetric + " chưa có dữ liệu");
 
-                targetMetricTypeVal = enduranceMetric;
+                targetMetricTypeVal = metricType;      // đổi String -> AssessmentMetricType
                 targetBaselineValueVal = baseline;
                 targetGoalValueVal = enduranceTargetValue;
-                // targetCurrentValue KHÔNG lưu cứng cho ENDURANCE — luôn đọc live từ EnduranceTest (LOCKED)
                 targetCurrentValueVal = null;
             }
             case MAINTENANCE -> {
@@ -336,13 +339,12 @@ public class WorkoutPlanService {
 
     private Double readLiveEnduranceValue(WorkoutPlan plan) {
         if (plan.getUser() == null || plan.getTargetMetricType() == null) return null;
-        String metricType = plan.getTargetMetricType();
+        AssessmentMetricType metricType = plan.getTargetMetricType();
         return enduranceTestRepo.findByUserId(plan.getUser().getId())
                 .map(test -> switch (metricType) {
-                    case "PUSHUP_REPS" -> test.getPushupReps() != null ? test.getPushupReps().doubleValue() : null;
-                    case "PLANK_SECONDS" -> test.getPlankSeconds() != null ? test.getPlankSeconds().doubleValue() : null;
-                    case "SQUAT_REPS" -> test.getSquatReps() != null ? test.getSquatReps().doubleValue() : null;
-                    default -> null;
+                    case PUSHUP_REPS -> test.getPushupReps() != null ? test.getPushupReps().doubleValue() : null;
+                    case PLANK_SECONDS -> test.getPlankSeconds() != null ? test.getPlankSeconds().doubleValue() : null;
+                    case SQUAT_REPS -> test.getSquatReps() != null ? test.getSquatReps().doubleValue() : null;
                 })
                 .orElse(null);
     }
@@ -600,11 +602,13 @@ public class WorkoutPlanService {
 
         int minRequired = switch (goal) {
             case MUSCLE_GAIN, WEIGHT_LOSS -> 4;
-            case ENDURANCE, MAINTENANCE -> 3;
+            case MAINTENANCE -> 3;
+            case ENDURANCE -> 2 ;
         };
         int maxRequired = switch (goal) {
             case MUSCLE_GAIN, WEIGHT_LOSS -> 6;
-            case ENDURANCE, MAINTENANCE -> 5;
+            case  MAINTENANCE -> 5;
+            case ENDURANCE  -> 4 ;
         };
 
         val = Math.max(val, minRequired);
@@ -639,10 +643,44 @@ public class WorkoutPlanService {
                     .dayOfWeek(dow)
                     .dayName(names[dow])
                     .build();
-            day.setExercises(buildExercisesNew(day, weekPlan.get(i), goal, level, fsLevel, bodyType, profile, fs));
+
+            List<WorkoutPlanExercise> exercises =
+                    buildExercisesNew(day, weekPlan.get(i), goal, level, fsLevel, bodyType, profile, fs);
+
+            // ── Assessment Exercise: chỉ dựa vào targetMetricType, không hardcode Goal ──
+            // defaultSchedule luôn ở dạng dayOfWeek tăng dần (xem ScheduleCatalog.CANDIDATES),
+            // nên index cuối (i == sessions-1) luôn là buổi cuối cùng theo lịch = Last Session of Cycle.
+            boolean isLastSessionOfCycle = (i == sessions - 1);
+            if (isLastSessionOfCycle && plan.getTargetMetricType() != null) {
+                exercises.add(buildAssessmentExercise(day, plan.getTargetMetricType(), exercises.size() + 1));
+            }
+
+            day.setExercises(exercises);
             days.add(day);
         }
         return days;
+    }
+
+    /** Append Assessment Exercise SAU khi buildExercisesNew() đã chạy xong
+     *  -> không đi qua MuscleGroupSplitPlanner -> không ảnh hưởng chia nhóm cơ,
+     *  không ảnh hưởng số lượng bài tập thường. Dùng chung cho MỌI Goal có targetMetricType. */
+    private WorkoutPlanExercise buildAssessmentExercise(WorkoutPlanDay day, AssessmentMetricType metricType, int orderIndex) {
+        Exercise testEx = exerciseRepo.findFirstByAssessmentMetricTypeAndIsActiveTrue(metricType)
+                .orElseThrow(() -> new IllegalStateException(
+                        "Thiếu Assessment Exercise cho AssessmentMetricType=" + metricType
+                                + " — cần seed Exercise tương ứng trước khi tạo giáo án. Đây là lỗi cấu hình dữ liệu."));
+
+        return WorkoutPlanExercise.builder()
+                .planDay(day)
+                .exercise(testEx)
+                .sets(1)
+                .reps(testEx.getDefaultReps())
+                .durationSeconds(testEx.getDefaultDurationSeconds())
+                .restSeconds(0)
+                .orderIndex(orderIndex)
+                .notes("🎯 Bài kiểm tra tiến độ mục tiêu — cố gắng hết sức để hệ thống đánh giá chính xác")
+                .isAssessment(true)
+                .build();
     }
 
     private List<WorkoutPlanExercise> buildExercisesNew(WorkoutPlanDay day,
@@ -757,7 +795,7 @@ public class WorkoutPlanService {
             case MUSCLE_GAIN -> 1.05;
             case WEIGHT_LOSS -> 0.90;
             case MAINTENANCE -> 1.00;
-            case ENDURANCE -> 0.80;
+            case ENDURANCE -> 0.6;
         };
     }
 
@@ -799,7 +837,7 @@ public class WorkoutPlanService {
         return switch (goal) {
             case MUSCLE_GAIN -> ex.getMuscleGainScore()   != null ? ex.getMuscleGainScore()   : 0;
             case WEIGHT_LOSS -> ex.getWeightLossScore()   != null ? ex.getWeightLossScore()   : 0;
-            case ENDURANCE   -> ex.getEnduranceScore()    != null ? ex.getEnduranceScore()    : 0;
+            case ENDURANCE   -> ex.getFlexibilityScore()    != null ? ex.getFlexibilityScore()    : 0;
             default          -> ex.getMaintenanceScore()  != null ? ex.getMaintenanceScore()  : 0;
         };
     }
@@ -817,7 +855,6 @@ public class WorkoutPlanService {
         return switch (goal) {
             case MUSCLE_GAIN -> (int) (base * 1.3);
             case WEIGHT_LOSS -> (int) (base * 0.7);
-            case ENDURANCE -> (int) (base * 0.6);
             default -> base;
         };
     }
@@ -839,7 +876,7 @@ public class WorkoutPlanService {
         int score = switch (goal) {
             case MUSCLE_GAIN -> ex.getMuscleGainScore() != null ? ex.getMuscleGainScore() : 0;
             case WEIGHT_LOSS -> ex.getWeightLossScore() != null ? ex.getWeightLossScore() : 0;
-            case ENDURANCE -> ex.getEnduranceScore() != null ? ex.getEnduranceScore() : 0;
+            case ENDURANCE ->ex.getFlexibilityScore() != null ? ex.getFlexibilityScore() : 0;
             default -> ex.getMaintenanceScore() != null ? ex.getMaintenanceScore() : 0;
         };
         if (score >= 9) return "⭐ Hàng đầu cho mục tiêu này";
@@ -860,17 +897,14 @@ public class WorkoutPlanService {
                 : null;
         String note = buildScheduleNote(plan.getGoal(), plan.getSessionsPerWeek());
 
-        // ── MỚI (Patch 7): ENDURANCE luôn đọc targetCurrentValue LIVE từ EnduranceTest,
-        // KHÔNG dùng plan.getTargetCurrentValue() (cột này luôn null với ENDURANCE — LOCKED) ──
         Double liveTargetCurrentValue = plan.getTargetCurrentValue();
         if (plan.getGoal() == Goal.ENDURANCE && plan.getUser() != null && plan.getTargetMetricType() != null) {
-            String metricType = plan.getTargetMetricType();
+            AssessmentMetricType metricType = plan.getTargetMetricType();
             liveTargetCurrentValue = enduranceTestRepo.findByUserId(plan.getUser().getId())
                     .map(test -> switch (metricType) {
-                        case "PUSHUP_REPS" -> test.getPushupReps() != null ? test.getPushupReps().doubleValue() : null;
-                        case "PLANK_SECONDS" -> test.getPlankSeconds() != null ? test.getPlankSeconds().doubleValue() : null;
-                        case "SQUAT_REPS" -> test.getSquatReps() != null ? test.getSquatReps().doubleValue() : null;
-                        default -> null;
+                        case PUSHUP_REPS -> test.getPushupReps() != null ? test.getPushupReps().doubleValue() : null;
+                        case PLANK_SECONDS -> test.getPlankSeconds() != null ? test.getPlankSeconds().doubleValue() : null;
+                        case SQUAT_REPS -> test.getSquatReps() != null ? test.getSquatReps().doubleValue() : null;
                     })
                     .orElse(null);
         }
@@ -907,7 +941,7 @@ public class WorkoutPlanService {
                 .fitnessScore(plan.getFitnessScore())
                 .fitnessLevel(plan.getFitnessLevel() != null ? plan.getFitnessLevel().name() : null)
                 .bodyType(plan.getBodyType() != null ? plan.getBodyType().name() : null)
-                .targetMetricType(plan.getTargetMetricType())
+                .targetMetricType(plan.getTargetMetricType() != null ? plan.getTargetMetricType().name() : null)
                 .targetBaselineValue(plan.getTargetBaselineValue())
                 .targetGoalValue(plan.getTargetGoalValue())
                 .targetCurrentValue(liveTargetCurrentValue)

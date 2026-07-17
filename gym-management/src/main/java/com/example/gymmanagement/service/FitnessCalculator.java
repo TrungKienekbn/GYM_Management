@@ -138,10 +138,10 @@ public class FitnessCalculator {
                 case WEAK -> new int[]{3, 12};
             };
             case ENDURANCE -> switch (fsLevel) {
-                case EXCELLENT -> new int[]{4, 16};
-                case GOOD -> new int[]{4, 14};
-                case AVERAGE -> new int[]{3, 13};
-                case WEAK -> new int[]{3, 12};
+                case EXCELLENT -> new int[]{3, 15};
+                case GOOD -> new int[]{3, 13};
+                case AVERAGE -> new int[]{2, 12};
+                case WEAK -> new int[]{2, 10};
             };
             case MAINTENANCE -> switch (fsLevel) {
                 case EXCELLENT -> new int[]{3, 10};
@@ -175,11 +175,11 @@ public class FitnessCalculator {
             };
             case ENDURANCE -> switch (bodyType) {
                 case CAO_GAY -> new int[]{0, +1};
-                case GAY_CAN_DOI -> new int[]{0, +1};
+                case GAY_CAN_DOI -> new int[]{0, 0};
                 case CAN_DOI -> new int[]{0, 0};
-                case CO_BAP -> new int[]{+1, 0};
-                case VAN_DONG_VIEN -> new int[]{+1, +1};
-                case THUA_CAN -> new int[]{+1, 0};
+                case CO_BAP -> new int[]{0, +1};
+                case VAN_DONG_VIEN -> new int[]{0, +1};
+                case THUA_CAN -> new int[]{0, +1};
             };
             case MAINTENANCE -> switch (bodyType) {
                 case CAO_GAY -> new int[]{0, +1};

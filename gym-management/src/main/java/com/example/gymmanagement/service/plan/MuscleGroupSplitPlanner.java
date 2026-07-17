@@ -91,22 +91,19 @@ public final class MuscleGroupSplitPlanner {
 
         // ── ENDURANCE ──
         Map<Integer, List<List<MuscleGroup>>> endurance = new HashMap<>();
-        endurance.put(3, List.of(
-                List.of(MuscleGroup.CHEST, MuscleGroup.SHOULDERS, MuscleGroup.CARDIO),
-                List.of(MuscleGroup.CORE, MuscleGroup.LEGS, MuscleGroup.CARDIO),
-                List.of(MuscleGroup.ARMS, MuscleGroup.BACK, MuscleGroup.CARDIO)
-        ));
-        endurance.put(4, List.of(
-                List.of(MuscleGroup.CHEST, MuscleGroup.SHOULDERS, MuscleGroup.CARDIO),
-                List.of(MuscleGroup.CORE, MuscleGroup.LEGS, MuscleGroup.CARDIO),
-                List.of(MuscleGroup.ARMS, MuscleGroup.BACK, MuscleGroup.CARDIO),
+        endurance.put(2, List.of(
+                List.of(MuscleGroup.FULL_BODY, MuscleGroup.CARDIO),
                 List.of(MuscleGroup.FULL_BODY, MuscleGroup.CARDIO)
         ));
-        endurance.put(5, List.of(
-                List.of(MuscleGroup.CHEST, MuscleGroup.SHOULDERS, MuscleGroup.CARDIO),
-                List.of(MuscleGroup.CORE, MuscleGroup.LEGS, MuscleGroup.CARDIO),
+        endurance.put(3, List.of(
                 List.of(MuscleGroup.FULL_BODY, MuscleGroup.CARDIO),
-                List.of(MuscleGroup.ARMS, MuscleGroup.BACK, MuscleGroup.CARDIO),
+                List.of(MuscleGroup.FULL_BODY, MuscleGroup.CARDIO),
+                List.of(MuscleGroup.FULL_BODY, MuscleGroup.CARDIO)
+        ));
+        endurance.put(4, List.of(
+                List.of(MuscleGroup.FULL_BODY, MuscleGroup.CARDIO),
+                List.of(MuscleGroup.FULL_BODY, MuscleGroup.CARDIO),
+                List.of(MuscleGroup.FULL_BODY, MuscleGroup.CARDIO),
                 List.of(MuscleGroup.FULL_BODY, MuscleGroup.CARDIO)
         ));
         DAY_MUSCLE_GROUPS.put(Goal.ENDURANCE, endurance);
@@ -145,12 +142,19 @@ public final class MuscleGroupSplitPlanner {
         BASE_QUOTA.put(Goal.MUSCLE_GAIN, strengthLike);
         BASE_QUOTA.put(Goal.WEIGHT_LOSS, new EnumMap<>(strengthLike));
 
-        Map<FitnessLevel, Integer> enduranceLike = new EnumMap<>(FitnessLevel.class);
-        enduranceLike.put(FitnessLevel.BEGINNER, 3);
-        enduranceLike.put(FitnessLevel.INTERMEDIATE, 4);
-        enduranceLike.put(FitnessLevel.ADVANCED, 5);
-        BASE_QUOTA.put(Goal.ENDURANCE, enduranceLike);
-        BASE_QUOTA.put(Goal.MAINTENANCE, new EnumMap<>(enduranceLike));
+        // ── ENDURANCE: dùng đúng số liệu FLEXIBILITY cũ (4/4/6) — chủ đích của bạn ──
+        Map<FitnessLevel, Integer> enduranceQuota = new EnumMap<>(FitnessLevel.class);
+        enduranceQuota.put(FitnessLevel.BEGINNER, 4);
+        enduranceQuota.put(FitnessLevel.INTERMEDIATE, 4);
+        enduranceQuota.put(FitnessLevel.ADVANCED, 6);
+        BASE_QUOTA.put(Goal.ENDURANCE, enduranceQuota);
+
+        // ── MAINTENANCE: GIỮ NGUYÊN số liệu gốc (3/4/5) — KHÔNG liên quan đến việc đổi ENDURANCE ──
+        Map<FitnessLevel, Integer> maintenanceQuota = new EnumMap<>(FitnessLevel.class);
+        maintenanceQuota.put(FitnessLevel.BEGINNER, 3);
+        maintenanceQuota.put(FitnessLevel.INTERMEDIATE, 4);
+        maintenanceQuota.put(FitnessLevel.ADVANCED, 5);
+        BASE_QUOTA.put(Goal.MAINTENANCE, maintenanceQuota);
     }
 
     /**

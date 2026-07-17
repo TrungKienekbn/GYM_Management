@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.context.annotation.Lazy;
+import com.example.gymmanagement.enums.AssessmentMetricType;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +34,7 @@ public class WorkoutSessionService {
     private final UserProfileRepository     profileRepo;
     private final ProgressService progressService;
     private WorkoutPlanService workoutPlanService;
+    private final EnduranceTestRepository enduranceTestRepo;
     @org.springframework.beans.factory.annotation.Autowired
     public void setWorkoutPlanService(@Lazy WorkoutPlanService workoutPlanService) {
         this.workoutPlanService = workoutPlanService;
@@ -234,6 +236,11 @@ public class WorkoutSessionService {
             WorkoutPlanExercise pe = plannedByExerciseId.get(r.getExerciseId());
             Integer cp = computeCompletionPercent(pe, r.getRepsCompleted(), r.getDurationCompleted());
 
+            // ── MỚI: bài Assessment cập nhật thẳng vào EnduranceTest, không đi qua completionPercent ──
+            if (pe != null && Boolean.TRUE.equals(pe.getIsAssessment())) {
+                applyAssessmentResult(user, ex, r.getRepsCompleted(), r.getDurationCompleted());
+            }
+
             return SessionExerciseLog.builder()
                     .session(s).exercise(ex)
                     .repsCompleted(r.getRepsCompleted())
@@ -398,6 +405,30 @@ public class WorkoutSessionService {
 
         double clamped = Math.max(0, Math.min(200, rawPercent));
         return (int) Math.round(clamped);
+    }
+
+    /** Cập nhật EnduranceTest khi bài checkout là Assessment Exercise.
+     *  Tái dùng đúng field mà adjustPlanAfterWeek()/readLiveEnduranceValue() đang đọc
+     *  -> KHÔNG sửa 2 hàm đó, dữ liệu tự động "chảy" vào đúng chỗ. */
+    private void applyAssessmentResult(User user, Exercise ex, Integer repsCompleted, Integer durationCompleted) {
+        AssessmentMetricType type = ex.getAssessmentMetricType();
+        if (type == null) return; // an toàn: lệch dữ liệu isAssessment/metricType thì bỏ qua, không chặn checkout
+
+        EnduranceTest test = enduranceTestRepo.findByUserId(user.getId())
+                .orElseGet(() -> EnduranceTest.builder().user(user).build());
+
+        switch (type) {
+            case PUSHUP_REPS -> {
+                if (repsCompleted != null) test.setPushupReps(repsCompleted);
+            }
+            case PLANK_SECONDS -> {
+                if (durationCompleted != null) test.setPlankSeconds(durationCompleted);
+            }
+            case SQUAT_REPS -> {
+                if (repsCompleted != null) test.setSquatReps(repsCompleted);
+            }
+        }
+        enduranceTestRepo.save(test);
     }
 
     @Transactional

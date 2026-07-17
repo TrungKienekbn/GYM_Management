@@ -25,7 +25,7 @@ class MuscleGroupSplitPlannerTest {
     private static final Map<Goal, List<Integer>> VALID_SESSIONS = Map.of(
             Goal.MUSCLE_GAIN, List.of(4, 5, 6),
             Goal.WEIGHT_LOSS, List.of(4, 5, 6),
-            Goal.ENDURANCE, List.of(3, 4, 5),
+            Goal.ENDURANCE, List.of(2, 3, 4),
             Goal.MAINTENANCE, List.of(3, 4, 5)
     );
 

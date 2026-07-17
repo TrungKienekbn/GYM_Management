@@ -40,4 +40,7 @@ public class WorkoutPlanExercise {
     // từ recommendedWeightKg gốc, KHÔNG tích luỹ chồng lên giá trị tuần trước.
     // Đóng băng (ngừng cập nhật) vĩnh viễn kể từ khi baseWeightKg != null.
     private Double currentRecommendedWeightKg;
+
+    @Builder.Default
+    private Boolean isAssessment = false;
 }
