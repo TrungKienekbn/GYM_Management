@@ -20,7 +20,7 @@ public class WorkoutSessionResponse {
     private String  notes;
     private Integer weekNumber;
     private String  planName;
-    private Long planId;  // === dùng để FE match session đúng plan, tránh nhầm plan cùng tên
+    private Long planId;
     private String  dayName;
     private String  customSessionName;
     private Boolean isCustom;
@@ -28,9 +28,6 @@ public class WorkoutSessionResponse {
     private Boolean isLastSessionOfWeek;
     private String dayMismatchWarning;
 
-    // ── MỚI: mục 8.3 I.docx — khi hệ thống không còn xác định được lịch tập chuẩn nào
-    // phù hợp với lịch sử check-in, FE phải hiện popup cho người dùng chọn lại 1 trong
-    // các lịch khuyến nghị (scheduleOptions), rồi gọi API /confirm-schedule.
     @Builder.Default
     private Boolean scheduleSelectionRequired = false;
     private List<List<Integer>> scheduleOptions;
@@ -40,5 +37,15 @@ public class WorkoutSessionResponse {
     private List<ExerciseLogResponse>         exerciseLogs;
     private List<WorkoutPlanExerciseResponse> planExercises;
 
-    private Boolean injuryRisk; // true nếu buổi tập vừa checkout vượt quá mana hiện có
+    private Boolean injuryRisk;
+
+    // ── MỚI (Patch 10) ──
+    // Trả về ở lần gọi enrollSession() khi buổi được mở không đúng thứ tự đề xuất.
+    private String orderWarning;
+    // Trả về ở checkOut() khi tổng thực tế > 150% kế hoạch — chỉ cảnh báo, không chặn.
+    private String overLimitWarning;
+    // true = đây là Last Completed Session và LẦN GỌI NÀY CHƯA lưu gì cả,
+    // FE phải mở Popup Review rồi gọi lại chính API Checkout với đầy đủ dữ liệu.
+    @Builder.Default
+    private Boolean needWeeklyReview = false;
 }

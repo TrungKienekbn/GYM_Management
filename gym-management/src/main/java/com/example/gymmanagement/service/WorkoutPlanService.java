@@ -647,19 +647,19 @@ public class WorkoutPlanService {
             List<WorkoutPlanExercise> exercises =
                     buildExercisesNew(day, weekPlan.get(i), goal, level, fsLevel, bodyType, profile, fs);
 
-            // ── Assessment Exercise: chỉ dựa vào targetMetricType, không hardcode Goal ──
-            // defaultSchedule luôn ở dạng dayOfWeek tăng dần (xem ScheduleCatalog.CANDIDATES),
-            // nên index cuối (i == sessions-1) luôn là buổi cuối cùng theo lịch = Last Session of Cycle.
-            boolean isLastSessionOfCycle = (i == sessions - 1);
-            if (isLastSessionOfCycle && plan.getTargetMetricType() != null) {
-                exercises.add(buildAssessmentExercise(day, plan.getTargetMetricType(), exercises.size() + 1));
-            }
+            // ── XOÁ (Patch 10, mục 5/10/14): không còn append Assessment Exercise.
+            // Assessment giờ chỉ tồn tại trong Popup Review (CheckOutRequest), không
+            // còn là WorkoutPlanExercise. buildAssessmentExercise() đã bị xoá khỏi class. ──
 
             day.setExercises(exercises);
             days.add(day);
         }
         return days;
     }
+
+// ── XOÁ HOÀN TOÀN (Patch 10): buildAssessmentExercise() không còn được gọi ở đâu,
+// đã xoá khỏi class. ExerciseRepository.findFirstByAssessmentMetricTypeAndIsActiveTrue
+// vẫn còn tồn tại trong Repository nhưng không còn được dùng. ──
 
     /** Append Assessment Exercise SAU khi buildExercisesNew() đã chạy xong
      *  -> không đi qua MuscleGroupSplitPlanner -> không ảnh hưởng chia nhóm cơ,

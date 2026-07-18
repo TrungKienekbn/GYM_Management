@@ -68,10 +68,11 @@ export const sessionAPI = {
     getAll:       ()           => api.get('/sessions'),
     getWeek:      ()           => api.get('/sessions/this-week'),
     getById:      (id)         => api.get(`/sessions/${id}`),
-    checkIn:    (id, confirmReducedIntensity = false) =>
-        api.post(`/sessions/${id}/check-in`, null, { params: { confirmReducedIntensity } }),
+    // ── MỚI (bugfix): kiểm tra thứ tự TRƯỚC khi enroll, không tạo gì cả ──
+    checkOrder:   (planDayId, weekNumber) =>
+        api.get('/sessions/order-check', { params: { planDayId, weekNumber } }),
     enroll:       (data)       => api.post('/sessions/enroll', data),
-    complete:     (id, data)   => api.post(`/sessions/${id}/check-out`, data),
+    checkOut:     (id, data)   => api.post(`/sessions/${id}/check-out`, data),
     skip:         (id, notes)  => api.post(`/sessions/${id}/skip`, { notes }),
     delete:       (id)         => api.delete(`/sessions/${id}`),
     getWeekProgress: (planId, weekNumber) => api.get(`/sessions/week-progress?planId=${planId}&weekNumber=${weekNumber}`)
