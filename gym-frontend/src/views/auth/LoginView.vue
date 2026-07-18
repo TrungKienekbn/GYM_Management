@@ -31,6 +31,7 @@
       <div class="demo-box">
         <div style="font-size:0.72rem;font-weight:700;color:var(--c-text3);letter-spacing:0.1em;margin-bottom:4px">DEMO</div>
         <div style="font-size:0.78rem;color:var(--c-text2)">Admin: <strong>admin@gym.com</strong> / <strong>admin123</strong></div>
+        <div style="font-size:0.78rem;color:var(--c-text2);margin-top:4px">User VIP 👑: <strong>vip@gym.com</strong> / <strong>vip123</strong></div>
       </div>
     </div>
   </div>
