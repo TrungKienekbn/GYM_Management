@@ -6,6 +6,8 @@ import com.example.gymmanagement.enums.MuscleGroup;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import com.example.gymmanagement.enums.AssessmentMetricType;
+import java.util.Optional;
 
 import java.util.List;
 
@@ -44,4 +46,9 @@ public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
 
     @Query("SELECT e FROM Exercise e WHERE e.isActive = true ORDER BY e.enduranceScore DESC")
     List<Exercise> findTopByEndurance();
+
+    Optional<Exercise> findFirstByAssessmentMetricTypeAndIsActiveTrue(AssessmentMetricType type);
+
+    List<Exercise> findByMuscleGroupAndDifficultyAndIsActiveTrueAndIsAssessmentFalse(
+            MuscleGroup muscleGroup, Difficulty difficulty);
 }

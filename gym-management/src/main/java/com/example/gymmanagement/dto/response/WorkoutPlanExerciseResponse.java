@@ -16,8 +16,12 @@ public class WorkoutPlanExerciseResponse {
     private String videoUrl;
     private Integer caloriesBurned;
 
-    // ── MỚI ──
     private Double baseWeightKg;
     private Double currentWeightKg;
-    private Boolean weightJustRevealed; // true nếu tạ vừa được cập nhật trong tuần hiện tại -> FE show hộp quà bí ẩn
+    private Boolean weightJustRevealed;
+
+    private Double recommendedWeightKg;
+
+    // ── MỚI: Current Recommendation — chỉ có giá trị khi baseWeightKg == null ──
+    private Double currentRecommendedWeightKg;
 }

@@ -24,29 +24,37 @@ public class WorkoutPlanResponse {
     private LocalDate  weekStartDate;
     private LocalDateTime createdAt;
 
-    // Starting metrics
     private Double startingBmi;
     private Double startingWeight;
 
-    // Adjustments applied
     private Integer difficultyAdjustment;
     private Integer setsAdjustment;
     private Integer repsAdjustment;
 
     private List<WorkoutPlanDayResponse> planDays;
 
-    // ── SỬA: giờ trả về TẤT CẢ lịch tập khuyến nghị (mỗi phần tử là 1 danh sách ISO
-    // dayOfWeek), không còn 1 lịch cố định theo tên ngày tiếng Anh như trước ──
     private List<List<Integer>>      suggestedDays;
     private String                   scheduleNote;
 
     private String weightAdjustmentNote;
 
-    // Tiến độ tuần hiện tại
     private Integer enrolledThisWeek;
     private Integer completedThisWeek;
 
     private Integer maxMana;
     private Integer currentMana;
     private String manaMessage;
+
+    private Integer fitnessScore;
+    private String  fitnessLevel;
+    private String  bodyType;
+
+    private String  targetMetricType;
+    private Double  targetBaselineValue;
+    private Double  targetGoalValue;
+    private Double  targetCurrentValue;
+    private Boolean targetAchieved;
+
+    // ── MỚI (Patch 7): thời lượng ước tính ban đầu, cố định, dùng làm mẫu số %thời gian ──
+    private Integer estimatedWeeks;
 }

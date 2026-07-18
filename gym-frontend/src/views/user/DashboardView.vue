@@ -55,6 +55,22 @@
           </div>
         </el-card>
       </div>
+      <div class="grid-2" style="margin-bottom:24px">
+        <el-card>
+          <template #header>THỜI GIAN TẬP TUẦN NÀY (phút)</template>
+          <div style="height:200px;position:relative">
+            <canvas ref="durChart"></canvas>
+            <div v-if="noDuration" class="chart-empty">Chưa có dữ liệu</div>
+          </div>
+        </el-card>
+        <el-card>
+          <template #header>KHỐI LƯỢNG % HOÀN THÀNH TUẦN NÀY</template>
+          <div style="height:200px;position:relative">
+            <canvas ref="volChart"></canvas>
+            <div v-if="noVolume" class="chart-empty">Chưa có dữ liệu</div>
+          </div>
+        </el-card>
+      </div>
 
       <!-- This week sessions -->
       <el-card>
@@ -164,6 +180,9 @@ const loading      = ref(true)
 const calChart     = ref(null)
 const wkChart      = ref(null)
 let   calInst = null, wkInst = null
+const durChart = ref(null)
+const volChart = ref(null)
+let durInst = null, volInst = null
 
 const checkOutDialog = ref(false)
 const coSession      = ref(null)
@@ -184,7 +203,8 @@ const weightText = computed(() => {
 })
 const noCalories = computed(() => !Object.values(data.value.weeklyCalories || {}).some(v => v > 0))
 const noWorkouts = computed(() => !Object.values(data.value.weeklyWorkouts || {}).some(v => v > 0))
-
+const noDuration = computed(() => !Object.values(data.value.dailyDuration || {}).some(v => v > 0))
+const noVolume   = computed(() => !Object.values(data.value.dailyVolumePercent || {}).some(v => v > 0))
 const rateClass = computed(() => {
   const r = coForm.completionRate
   if (r >= 90) return 'rate-high'
@@ -239,6 +259,24 @@ function drawCharts() {
       data:{ labels:Object.keys(data.value.weeklyWorkouts),
         datasets:[{ data:Object.values(data.value.weeklyWorkouts), backgroundColor:'#6B4226', borderRadius:6, borderSkipped:false }] },
       options: opts('buổi')
+    })
+  }
+  if (durChart.value && data.value.dailyDuration) {
+    if (durInst) durInst.destroy()
+    durInst = new Chart(durChart.value, {
+      type:'bar',
+      data:{ labels:Object.keys(data.value.dailyDuration),
+        datasets:[{ data:Object.values(data.value.dailyDuration), backgroundColor:'#2E7D32', borderRadius:6, borderSkipped:false }] },
+      options: opts('phút')
+    })
+  }
+  if (volChart.value && data.value.dailyVolumePercent) {
+    if (volInst) volInst.destroy()
+    volInst = new Chart(volChart.value, {
+      type:'bar',
+      data:{ labels:Object.keys(data.value.dailyVolumePercent),
+        datasets:[{ data:Object.values(data.value.dailyVolumePercent), backgroundColor:'#1565C0', borderRadius:6, borderSkipped:false }] },
+      options: opts('%')
     })
   }
 }

@@ -26,8 +26,21 @@ public class WorkoutPlanExercise {
     private Integer orderIndex;
     private String notes;
 
-    // ── MỚI: tạ khởi điểm (nhập 1 lần tuần đầu) + tạ hiện tại (auto tính theo tuần) ──
+    // ── Tạ khởi điểm (nhập 1 lần) + tạ hiện tại (auto tính theo tuần) ──
     private Double baseWeightKg;
     private Double currentWeightKg;
-    private Integer weightUpdatedWeek; // tuần mà currentWeightKg vừa được cập nhật -> dùng để show "hộp quà bí ẩn"
+    private Integer weightUpdatedWeek;
+
+    // ── Mức tạ khuyến nghị — SNAPSHOT AI, tính đúng 1 lần khi sinh giáo án, KHÔNG BAO GIỜ
+    // thay đổi sau đó (LOCKED) ──
+    private Double recommendedWeightKg;
+
+    // ── MỚI: Current Recommendation — chỉ có ý nghĩa khi baseWeightKg == null.
+    // Công thức: roundToHalfKg(recommendedWeightKg × multiplier hiện tại), LUÔN tính lại
+    // từ recommendedWeightKg gốc, KHÔNG tích luỹ chồng lên giá trị tuần trước.
+    // Đóng băng (ngừng cập nhật) vĩnh viễn kể từ khi baseWeightKg != null.
+    private Double currentRecommendedWeightKg;
+
+    @Builder.Default
+    private Boolean isAssessment = false;
 }

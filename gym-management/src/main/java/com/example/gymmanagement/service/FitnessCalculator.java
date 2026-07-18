@@ -47,7 +47,7 @@ public class FitnessCalculator {
     }
 
     /** W_chuan dùng chung cho cả FS và BodyType để 2 điểm số nhất quán với nhau. */
-    private double wChuan(double heightCm, String gender) {
+    double wChuan(double heightCm, String gender) {
         double base = (heightCm - 100) * 0.9;
         return isFemale(gender) ? base * 0.9 : base;
     }
@@ -122,6 +122,7 @@ public class FitnessCalculator {
 
     // ── Sets/Reps theo FsLevel × Goal ────────────────────────
     // FIX: đồng bộ đúng số liệu đã chốt ở bảng 3.docx (không còn là số nháp cũ).
+    // ĐÃ XOÁ: case FLEXIBILITY (Goal FLEXIBILITY không còn tồn tại trong hệ thống).
     public int[] calcSetsRepsByFS(FsLevel fsLevel, Goal goal) {
         return switch (goal) {
             case MUSCLE_GAIN -> switch (fsLevel) {
@@ -137,12 +138,6 @@ public class FitnessCalculator {
                 case WEAK -> new int[]{3, 12};
             };
             case ENDURANCE -> switch (fsLevel) {
-                case EXCELLENT -> new int[]{4, 16};
-                case GOOD -> new int[]{4, 14};
-                case AVERAGE -> new int[]{3, 13};
-                case WEAK -> new int[]{3, 12};
-            };
-            case FLEXIBILITY -> switch (fsLevel) {
                 case EXCELLENT -> new int[]{3, 15};
                 case GOOD -> new int[]{3, 13};
                 case AVERAGE -> new int[]{2, 12};
@@ -159,6 +154,7 @@ public class FitnessCalculator {
 
     // ── Điều chỉnh Sets/Reps theo BodyType × Goal ────────────
     // FIX: WEIGHT_LOSS và ENDURANCE trước đây bị copy-paste giống hệt nhau — đã tách riêng.
+    // ĐÃ XOÁ: case FLEXIBILITY.
     public int[] bodyTypeAdjustment(BodyType bodyType, Goal goal) {
         return switch (goal) {
             case MUSCLE_GAIN -> switch (bodyType) {
@@ -179,14 +175,6 @@ public class FitnessCalculator {
             };
             case ENDURANCE -> switch (bodyType) {
                 case CAO_GAY -> new int[]{0, +1};
-                case GAY_CAN_DOI -> new int[]{0, +1};
-                case CAN_DOI -> new int[]{0, 0};
-                case CO_BAP -> new int[]{+1, 0};
-                case VAN_DONG_VIEN -> new int[]{+1, +1};
-                case THUA_CAN -> new int[]{+1, 0};
-            };
-            case FLEXIBILITY -> switch (bodyType) {
-                case CAO_GAY -> new int[]{0, +1};
                 case GAY_CAN_DOI -> new int[]{0, 0};
                 case CAN_DOI -> new int[]{0, 0};
                 case CO_BAP -> new int[]{0, +1};
@@ -203,7 +191,6 @@ public class FitnessCalculator {
             };
         };
     }
-
     // ── MỚI: cộng dồn base + adjustment rồi CLAMP theo training zone ──
     // Đây là điểm WorkoutPlanService nên gọi thay vì tự cộng tay bằng
     // Math.max(1, baseSR[0]+adj[0]) / Math.max(4, baseSR[1]+adj[1]) như hiện tại,

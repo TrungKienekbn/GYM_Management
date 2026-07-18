@@ -2,11 +2,13 @@ package com.example.gymmanagement.entity;
 
 import com.example.gymmanagement.enums.FitnessLevel;
 import com.example.gymmanagement.enums.Goal;
+import com.example.gymmanagement.service.FitnessCalculator;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import com.example.gymmanagement.enums.AssessmentMetricType;
 
 @Entity
 @Table(name = "workout_plans")
@@ -69,21 +71,37 @@ public class WorkoutPlan {
     private String weightAdjustmentNote;
 
     // ── Hệ thống Mana (thể lực) ─────────────────────────
-    private Integer maxMana;           // = FS * 2, tính khi tạo/rebuild giáo án AI
-    private Integer currentMana;       // giá trị runtime, trừ dần mỗi checkout
-    private LocalDate lastTrainingDate; // ngày checkout gần nhất, dùng để tính hồi phục
+    private Integer maxMana;
+    private Integer currentMana;
+    private LocalDate lastTrainingDate;
 
-    // ── Chặn applyRegen() cộng mana nhiều lần trong cùng 1 ngày ──
     private LocalDate lastManaRegenDate;
 
-    // ── MỚI: Lịch tập đã được CHỐT cho giáo án AI (mục 8.3 I.docx) ──
-    // Dạng "1,3,5" (ISO dayOfWeek, phân tách bởi dấu phẩy).
-    // CHỈ được ghi khi người dùng CHỦ ĐỘNG chọn lại lịch qua API confirm-schedule,
-    // sau khi hệ thống không còn xác định được lịch chuẩn nào phù hợp (survivors == 0).
-    // Nếu hệ thống tự xác định được lịch (survivors == 1) thì KHÔNG lưu xuống DB —
-    // mỗi lần cần chỉ suy luận lại từ lịch sử check-in (xem WorkoutSessionService).
-    // Khi tạo giáo án mới, field này luôn null (builder không set default -> mặc định null).
+    // ── Lịch tập đã được CHỐT cho giáo án AI ──
     private String confirmedScheduleDows;
+
+    // ── Snapshot Thể lực / Thể trạng tại THỜI ĐIỂM giáo án AI được tạo ──
+    private Integer fitnessScore;
+
+    @Enumerated(EnumType.STRING)
+    private FitnessCalculator.FsLevel fitnessLevel;
+
+    @Enumerated(EnumType.STRING)
+    private FitnessCalculator.BodyType bodyType;
+
+    // ── Mục tiêu đo lường được của giáo án (Business Rules v2) ──
+    private AssessmentMetricType  targetMetricType;
+    private Double  targetBaselineValue;
+    private Double  targetGoalValue;
+    private Double  targetCurrentValue;
+    private Boolean targetAchieved;
+
+    // ── MỚI (Patch 7): thời lượng ước tính ban đầu do AI sinh ra khi tạo giáo án.
+    // KHÔNG BAO GIỜ thay đổi sau khi tạo (LOCKED — Business Rules v2 mục 3/IX).
+    // durationWeeks vẫn thay đổi runtime theo tiến độ (Patch 8), estimatedWeeks là mẫu số
+    // cố định để tính %thời gian đã sử dụng = currentWeek / estimatedWeeks.
+    // Giáo án tạo TRƯỚC Patch 7 sẽ có estimatedWeeks = null -> áp dụng logic cũ (LOCKED).
+    private Integer estimatedWeeks;
 
     private LocalDateTime createdAt;
 
