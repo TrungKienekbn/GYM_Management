@@ -71,4 +71,5 @@ public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession, 
     void deleteByPlanDayIds(@Param("planDayIds") List<Long> planDayIds);
 
     List<WorkoutSession> findByPlanDayId(Long planDayId);
+    List<WorkoutSession> findByUserIdAndSessionDate(Long userId, LocalDate sessionDate);
 }

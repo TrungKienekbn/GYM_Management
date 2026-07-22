@@ -33,7 +33,7 @@ public class WorkoutPlanResponse {
 
     private List<WorkoutPlanDayResponse> planDays;
 
-    private List<List<Integer>>      suggestedDays;
+    private List<Integer> suggestedDays;
     private String                   scheduleNote;
 
     private String weightAdjustmentNote;

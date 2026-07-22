@@ -10,7 +10,6 @@ import com.example.gymmanagement.enums.ProgressSource;
 import com.example.gymmanagement.enums.SessionStatus;
 import com.example.gymmanagement.pet.PetService;
 import com.example.gymmanagement.repository.*;
-import com.example.gymmanagement.service.schedule.ScheduleCatalog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.context.annotation.Lazy;
+import com.example.gymmanagement.service.schedule.ScheduleCatalog;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +49,6 @@ public class WorkoutSessionService {
     private final WorkoutPlanMuscleGroupWeightRepository mgWeightRepo;
     private final WorkoutPlanExerciseRepository planExerciseRepo;
 
-    // ── Đăng ký buổi tập / "Bắt đầu tập" (Business Rule mục 4, LOCKED — KHÔNG đổi API) ──
     @Transactional
     public WorkoutSessionResponse enrollSession(String email, EnrollSessionRequest req) {
         User user = getUser(email);
@@ -105,13 +104,9 @@ public class WorkoutSessionService {
         notifService.sendToUser(user.getId(), "📅 Đã đăng ký lịch tập",
                 "\"" + name + "\" vào " + req.getSessionDate() + timeStr, "WORKOUT_REMINDER");
 
-        // ── enrollSession() CHỈ tạo + lưu (Business Rule mục 1, LOCKED). Không tính
-        // cảnh báo, không xác định buổi cuối, không kiểm tra thứ tự ở đây. buildResponse()
-        // (hàm dựng dữ liệu hiển thị, không phải logic tạo session) sẽ tự tính orderWarning. ──
         return buildResponse(session);
     }
 
-    // ── Tiến trình tuần ──────────────────────────────────────
     public Map<String, Object> getWeekProgress(String email, Long planId, Integer weekNumber) {
         User user = getUser(email);
         WorkoutPlan plan = planRepo.findById(planId).orElseThrow();
@@ -138,7 +133,6 @@ public class WorkoutSessionService {
         return r;
     }
 
-    // ── Xem sessions ─────────────────────────────────────────
     public List<WorkoutSessionResponse> getMySessions(String email) {
         return sessionRepo.findByUserIdOrderBySessionDateDesc(getUser(email).getId())
                 .stream().map(this::buildResponse).collect(Collectors.toList());
@@ -167,14 +161,8 @@ public class WorkoutSessionService {
 
         WorkoutPlan plan = s.getWorkoutPlan();
 
-        // ── Weekly Review — buổi HOÀN THÀNH cuối cùng của tuần, KHÔNG dùng
-        // isLastSessionOfWeek (field đó giờ chỉ còn nghĩa "buổi cuối lúc đăng ký lịch",
-        // không liên quan gì tới việc mở Weekly Review — Business Rule mới nhất, LOCKED).
-        // Quy tắc: sau khi Session hiện tại được hoàn thành, nếu KHÔNG còn Session nào
-        // khác trong tuần đang ở trạng thái SCHEDULED -> đây là buổi hoàn thành cuối cùng. ──
         boolean isLastCompletedSession = isLastCompletedSessionOfWeek(user.getId(), plan, s);
 
-        // ── Cảnh báo tập quá 150% (mục 4) — tính theo TỪNG bài tập, giữ nguyên ──
         String overLimitWarning = buildOverLimitWarning(s, req.getExerciseLogs());
 
         boolean isReviewSubmission = req.getCheckoutWeight() != null
@@ -195,8 +183,6 @@ public class WorkoutSessionService {
                 throw new RuntimeException("Vui lòng nhập kết quả Assessment (mục tiêu Sức bền) trước khi hoàn thành tuần.");
             }
         }
-
-        // ================= TỪ ĐÂY TRỞ XUỐNG: PERSIST TOÀN BỘ TRONG 1 TRANSACTION =================
 
         Map<Long, WorkoutPlanExercise> plannedByExerciseId = (s.getPlanDay() != null && s.getPlanDay().getExercises() != null)
                 ? s.getPlanDay().getExercises().stream()
@@ -240,8 +226,6 @@ public class WorkoutSessionService {
         s.setNotes(req.getNotes());
         if (req.getCheckoutWeight()  != null) s.setCheckoutWeight(req.getCheckoutWeight());
         if (req.getCheckoutBodyFat() != null) s.setCheckoutBodyFat(req.getCheckoutBodyFat());
-        // ── KHÔNG đụng isLastSessionOfWeek — field này giờ CHỈ mang nghĩa "buổi cuối lúc
-        // đăng ký lịch", không dùng cho Weekly Review, giữ nguyên giá trị gốc lúc enroll. ──
         sessionRepo.save(s);
 
         boolean injuryRisk = false;
@@ -322,25 +306,12 @@ public class WorkoutSessionService {
         return resp;
     }
 
-    /** Weekly Review = buổi HOÀN THÀNH cuối cùng của tuần (Business Rule mới nhất, LOCKED).
-     *  KHÔNG dùng isLastSessionOfWeek, KHÔNG dùng dayNumber/PlanDay index/thứ tự enroll.
-     *  So sánh SỐ LƯỢNG buổi đã COMPLETED thực tế với sessionsPerWeek (số cố định của
-     *  giáo án) — hoàn toàn không phụ thuộc buổi nào đã/chưa tồn tại trong DB. ──
-     *
-     *  SỬA (bugfix): bản cũ dựa vào findByPlanAndWeek() rồi lọc "không còn session nào
-     *  SCHEDULED" — nhưng buổi CHƯA được enroll thì KHÔNG hề có row trong DB, nên danh
-     *  sách "session khác" có thể trống ngay từ buổi đầu tiên (vacuous truth), khiến
-     *  Review mở sai ngay ở buổi đầu tiên bất kể tập buổi nào trước. ──
-     */
     private boolean isLastCompletedSessionOfWeek(Long userId, WorkoutPlan plan, WorkoutSession current) {
         if (plan == null || current.getWeekNumber() == null || plan.getSessionsPerWeek() == null) return false;
-
         long completedOthers = sessionRepo.countCompletedInWeek(userId, plan.getId(), current.getWeekNumber());
         return (completedOthers + 1) >= plan.getSessionsPerWeek();
     }
 
-    /** Cảnh báo tập vượt 150% kế hoạch (mục 7, LOCKED) — chỉ cảnh báo, không chặn.
-     *  Tính từ dữ liệu gửi lên MỖI LẦN gọi checkOut(), không phụ thuộc việc có persist hay không. */
     private String buildOverLimitWarning(WorkoutSession s, List<ExerciseLogRequest> logs) {
         if (s.getPlanDay() == null || s.getPlanDay().getExercises() == null) return null;
         Map<Long, WorkoutPlanExercise> plannedByExerciseId = s.getPlanDay().getExercises().stream()
@@ -387,8 +358,6 @@ public class WorkoutSessionService {
         return (int) Math.round(clamped);
     }
 
-    /** Ghi Assessment từ Popup Review (mục 10/14, LOCKED) — thay thế hoàn toàn
-     *  applyAssessmentResult() cũ (đã xoá, không còn qua Exercise/isAssessment). */
     private void applyAssessmentFromReview(User user, AssessmentMetricType type, Integer value) {
         if (type == null || value == null) return;
         EnduranceTest test = enduranceTestRepo.findByUserId(user.getId())
@@ -457,7 +426,6 @@ public class WorkoutSessionService {
             }).collect(Collectors.toList());
         }
 
-        ScheduleCheckInfo scheduleInfo = buildScheduleCheckInfo(s);
 
         return WorkoutSessionResponse.builder()
                 .id(s.getId()).sessionDate(s.getSessionDate()).scheduledTime(s.getScheduledTime())
@@ -473,17 +441,11 @@ public class WorkoutSessionService {
                 .isLastSessionOfWeek(s.getIsLastSessionOfWeek())
                 .checkoutWeight(s.getCheckoutWeight()).checkoutBodyFat(s.getCheckoutBodyFat())
                 .exerciseLogs(logs).planExercises(planExs)
-                .dayMismatchWarning(scheduleInfo != null ? scheduleInfo.warning() : null)
-                .scheduleSelectionRequired(scheduleInfo != null && scheduleInfo.selectionRequired())
-                .scheduleOptions(scheduleInfo != null ? scheduleInfo.options() : null)
-                // ── MỚI: cảnh báo sai thứ tự đề xuất — cơ chế độc lập với DayMismatch ──
                 .orderWarning(buildOrderWarning(s))
+                .scheduleWarning(buildScheduleWarning(s))
                 .build();
     }
 
-    /** Tính cảnh báo sai thứ tự (mục 3, LOCKED) cho MỘT WorkoutPlanDay cụ thể — KHÔNG
-     *  cần WorkoutSession đã tồn tại, KHÔNG ghi gì vào DB. Dùng chung cho bước "kiểm tra
-     *  TRƯỚC khi enroll" (mới, bugfix) và buildResponse() (sau khi đã enroll). */
     private String computeOrderWarning(Long userId, WorkoutPlan plan, WorkoutPlanDay targetDay, Integer weekNumber) {
         if (plan == null || targetDay == null || weekNumber == null) return null;
         if (!Boolean.TRUE.equals(plan.getIsAiGenerated())) return null;
@@ -502,28 +464,55 @@ public class WorkoutSessionService {
         return null;
     }
 
-    /** Cảnh báo sai thứ tự cho 1 session ĐÃ tồn tại — giữ để buildResponse() vẫn hiển
-     *  thị nhất quán, nhưng KHÔNG còn là điểm quyết định popup ở Frontend nữa (đã
-     *  chuyển sang checkOrderWarning() bên dưới, chạy TRƯỚC khi enroll). */
+    private String computeScheduleWarning(Long userId, WorkoutPlan plan, LocalDate sessionDate) {
+        if (plan == null || sessionDate == null) return null;
+        if (!Boolean.TRUE.equals(plan.getIsAiGenerated())) return null;
+        if (plan.getSessionsPerWeek() == null) return null;
+
+        List<Integer> recommended = ScheduleCatalog.recommendedFor(plan.getSessionsPerWeek());
+        int actualDow = sessionDate.getDayOfWeek().getValue();
+
+        boolean dayMismatch = !recommended.contains(actualDow);
+
+        boolean duplicateInDay = sessionRepo.findByUserIdAndSessionDate(userId, sessionDate).stream()
+                .anyMatch(s -> s.getStatus() == SessionStatus.CHECKED_IN || s.getStatus() == SessionStatus.COMPLETED);
+
+        if (dayMismatch || duplicateInDay) {
+            return "Bạn đang tập không đúng lịch khuyến nghị của hệ thống. Bạn vẫn có thể tiếp tục nếu muốn.";
+        }
+        return null;
+    }
+
+    private String buildScheduleWarning(WorkoutSession s) {
+        if (s.getWorkoutPlan() == null || s.getSessionDate() == null) {
+            return null;
+        }
+
+        if (s.getStatus() == SessionStatus.COMPLETED) {
+            return null;
+        }
+
+        return computeScheduleWarning(
+                s.getUser().getId(),
+                s.getWorkoutPlan(),
+                s.getSessionDate()
+        );
+    }
     private String buildOrderWarning(WorkoutSession s) {
         if (s.getWorkoutPlan() == null || s.getPlanDay() == null || s.getWeekNumber() == null) return null;
         if (s.getStatus() == SessionStatus.COMPLETED) return null;
         return computeOrderWarning(s.getUser().getId(), s.getWorkoutPlan(), s.getPlanDay(), s.getWeekNumber());
     }
 
-    /** MỚI (bugfix): kiểm tra thứ tự TRƯỚC khi tạo Session — không persist bất kỳ gì.
-     *  Frontend gọi hàm này trước enrollSession(); chỉ khi người dùng xác nhận "Tiếp tục"
-     *  (hoặc không có cảnh báo) thì mới thật sự gọi enrollSession(). Nếu người dùng bấm
-     *  Huỷ ở bước này, không có gì từng được tạo -> coi như chưa bấm gì cả (đúng yêu cầu). */
-    public Map<String, String> checkOrderWarning(String email, Long planDayId, Integer weekNumber) {
+    public Map<String, String> checkOrderWarning(String email, Long planDayId, Integer weekNumber, LocalDate sessionDate) {
         User user = getUser(email);
         WorkoutPlanDay day = dayRepo.findById(planDayId)
                 .orElseThrow(() -> new RuntimeException("Ngày tập không tồn tại"));
         WorkoutPlan plan = day.getWorkoutPlan();
 
-        String warning = computeOrderWarning(user.getId(), plan, day, weekNumber);
         Map<String, String> result = new java.util.HashMap<>();
-        result.put("orderWarning", warning);
+        result.put("orderWarning", computeOrderWarning(user.getId(), plan, day, weekNumber));
+        result.put("scheduleWarning", computeScheduleWarning(user.getId(), plan, sessionDate));
         return result;
     }
 
@@ -537,117 +526,6 @@ public class WorkoutSessionService {
 
     private User getUser(String email) {
         return userRepo.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
-    }
-
-    // ─────────────────────────────────────────────────────────
-    // DayMismatch — GIỮ NGUYÊN, độc lập với "orderWarning" mới (mục 14, LOCKED)
-    // ─────────────────────────────────────────────────────────
-    private record ScheduleCheckInfo(String warning, boolean selectionRequired, List<List<Integer>> options) {}
-
-    private ScheduleCheckInfo buildScheduleCheckInfo(WorkoutSession s) {
-        WorkoutPlan plan = s.getWorkoutPlan();
-        if (plan == null || s.getSessionDate() == null) return null;
-
-        boolean isAiPlan = Boolean.TRUE.equals(plan.getIsAiGenerated());
-        boolean isTemplatePlan = Boolean.FALSE.equals(plan.getIsAiGenerated());
-        if (!isAiPlan && !isTemplatePlan) return null;
-
-        List<WorkoutSession> allSessions = sessionRepo.findByPlanOrderBySessionDate(s.getUser().getId(), plan.getId());
-        if (allSessions.isEmpty()) return null;
-
-        List<Integer> schedule;
-
-        if (isTemplatePlan) {
-            List<WorkoutPlanDay> planDays = plan.getPlanDays() != null
-                    ? plan.getPlanDays()
-                    : dayRepo.findByWorkoutPlanIdOrderByDayOfWeek(plan.getId());
-            if (planDays == null || planDays.isEmpty()) return null;
-            schedule = planDays.stream()
-                    .map(WorkoutPlanDay::getDayOfWeek)
-                    .filter(Objects::nonNull).distinct().sorted().collect(Collectors.toList());
-            if (schedule.isEmpty()) return null;
-        } else {
-            if (plan.getConfirmedScheduleDows() != null) {
-                schedule = ScheduleCatalog.parse(plan.getConfirmedScheduleDows());
-            } else {
-                List<List<Integer>> candidates = ScheduleCatalog.candidatesFor(plan.getSessionsPerWeek());
-                List<List<Integer>> survivors = eliminateCandidates(candidates, allSessions);
-
-                if (survivors.isEmpty()) {
-                    return new ScheduleCheckInfo(
-                            "Không thể xác định lịch tập chuẩn từ các buổi tập hiện tại. " +
-                                    "Vui lòng chọn một trong các lịch tập khuyến nghị để hệ thống tiếp tục theo dõi chu kỳ tập luyện.",
-                            true,
-                            candidates);
-                } else if (survivors.size() > 1) {
-                    return new ScheduleCheckInfo(null, false, null);
-                } else {
-                    schedule = survivors.get(0);
-                }
-            }
-        }
-
-        int anchorDow = allSessions.get(0).getSessionDate().getDayOfWeek().getValue();
-        int idxInSchedule = schedule.indexOf(anchorDow);
-        List<Integer> rotated = idxInSchedule >= 0 ? rotate(schedule, idxInSchedule) : schedule;
-
-        int indexOfCurrent = -1;
-        for (int i = 0; i < allSessions.size(); i++) {
-            if (allSessions.get(i).getId().equals(s.getId())) {
-                indexOfCurrent = i;
-                break;
-            }
-        }
-        if (indexOfCurrent < 0) return null;
-
-        int expectedDow = rotated.get(indexOfCurrent % rotated.size());
-        int actualDow = s.getSessionDate().getDayOfWeek().getValue();
-
-        String warning = null;
-        if (actualDow != expectedDow) {
-            warning = "⚠️ Theo chu kỳ tập của bạn, buổi này nên rơi vào " + dowVietnameseName(expectedDow)
-                    + " nhưng bạn đang tập vào " + dowVietnameseName(actualDow)
-                    + ". Tập không đúng chu kỳ có thể làm giáo án không đạt hiệu quả tối ưu.";
-        }
-        return new ScheduleCheckInfo(warning, false, null);
-    }
-
-    private List<List<Integer>> eliminateCandidates(List<List<Integer>> candidates, List<WorkoutSession> allSessions) {
-        int anchorDow = allSessions.get(0).getSessionDate().getDayOfWeek().getValue();
-        List<List<Integer>> survivors = new ArrayList<>();
-        for (List<Integer> candidate : candidates) {
-            int idx = candidate.indexOf(anchorDow);
-            if (idx < 0) continue;
-            List<Integer> rotated = rotate(candidate, idx);
-            boolean ok = true;
-            for (int i = 0; i < allSessions.size(); i++) {
-                int expected = rotated.get(i % rotated.size());
-                int actual = allSessions.get(i).getSessionDate().getDayOfWeek().getValue();
-                if (expected != actual) { ok = false; break; }
-            }
-            if (ok) survivors.add(rotated);
-        }
-        return survivors;
-    }
-
-    private List<Integer> rotate(List<Integer> list, int startIdx) {
-        List<Integer> rotated = new ArrayList<>();
-        int n = list.size();
-        for (int i = 0; i < n; i++) rotated.add(list.get((startIdx + i) % n));
-        return rotated;
-    }
-
-    private String dowVietnameseName(int dow) {
-        return switch (dow) {
-            case 1 -> "Thứ Hai";
-            case 2 -> "Thứ Ba";
-            case 3 -> "Thứ Tư";
-            case 4 -> "Thứ Năm";
-            case 5 -> "Thứ Sáu";
-            case 6 -> "Thứ Bảy";
-            case 7 -> "Chủ Nhật";
-            default -> "?";
-        };
     }
 
     private static final double MAINTENANCE_TOLERANCE_PERCENT = 5.0;
@@ -675,19 +553,19 @@ public class WorkoutSessionService {
 
         String note;
         if (avgRate > 150) {
-            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%! Hiệu suất rất cao. Gợi ý tăng tạ khoảng 15%.";
+            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%! Hiệu suất rất cao.";
         } else if (avgRate >= 120) {
-            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Hiệu suất tốt. Gợi ý tăng tạ khoảng 10%.";
+            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Hiệu suất tốt.";
         } else if (avgRate >= 90) {
-            note = "Tỉ lệ hoàn thành tuần này của bạn là " + Math.round(avgRate) + "%. Hiệu suất ổn định. Gợi ý tăng tạ khoảng 5%.";
+            note = "Tỉ lệ hoàn thành tuần này của bạn là " + Math.round(avgRate) + "%. Hiệu suất ổn định.";
         } else if (avgRate >= 80) {
-            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Giữ nguyên mức tạ hiện tại.";
+            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Hiệu xuất khá ổn địmk.";
         } else if (avgRate >= 60) {
-            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Có thể giảm khoảng 5% để đảm bảo kỹ thuật.";
+            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Hiệu xuất chưa ổn định.";
         } else if (avgRate >= 30) {
-            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Nên giảm khoảng 10%.";
+            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Hiệu xuất tập chưa tốt hãy chú ý";
         } else {
-            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Nên giảm khoảng 20%.";
+            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Hiệu xuất tập Luyện không ổn định";
         }
 
         plan.setWeightAdjustmentNote(note);

@@ -53,16 +53,15 @@ public class WorkoutSessionController {
         return ResponseEntity.ok(ApiResponse.success(sessionService.getSessionById(ud.getUsername(), id)));
     }
 
-    // ── MỚI (bugfix): kiểm tra cảnh báo thứ tự TRƯỚC khi tạo Session, không ghi DB.
-    // Frontend gọi endpoint này trước /enroll — nếu người dùng Huỷ ở bước này thì
-    // enroll() không bao giờ được gọi, không có gì cần rollback. ──
     @GetMapping("/order-check")
     public ResponseEntity<ApiResponse<Map<String, String>>> checkOrder(
             @AuthenticationPrincipal UserDetails ud,
             @RequestParam Long planDayId,
-            @RequestParam Integer weekNumber) {
+            @RequestParam Integer weekNumber,
+            @RequestParam String sessionDate) {
         return ResponseEntity.ok(ApiResponse.success(
-                sessionService.checkOrderWarning(ud.getUsername(), planDayId, weekNumber)));
+                sessionService.checkOrderWarning(ud.getUsername(), planDayId, weekNumber,
+                        java.time.LocalDate.parse(sessionDate))));
     }
 
     // ── XOÁ (Patch 10): endpoint /check-in đã bị bỏ hoàn toàn khỏi nghiệp vụ ──
