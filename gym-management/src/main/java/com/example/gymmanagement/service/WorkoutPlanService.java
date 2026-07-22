@@ -389,26 +389,7 @@ public class WorkoutPlanService {
         return buildExResponse(pe);
     }
 
-    @Transactional
-    public WorkoutPlanResponse confirmSchedule(String email, Long planId, List<Integer> dayOfWeek) {
-        User user = getUser(email);
-        WorkoutPlan plan = planRepo.findById(planId)
-                .orElseThrow(() -> new RuntimeException("Plan not found"));
-        if (plan.getUser() == null || !plan.getUser().getId().equals(user.getId()))
-            throw new RuntimeException("Access denied");
-        if (plan.getSessionsPerWeek() == null)
-            throw new RuntimeException("Giáo án chưa có sessionsPerWeek hợp lệ");
 
-        List<Integer> matched = ScheduleCatalog.matchCandidate(plan.getSessionsPerWeek(), dayOfWeek)
-                .orElseThrow(() -> new RuntimeException(
-                        "Lịch tập không hợp lệ với số buổi/tuần hiện tại (" + plan.getSessionsPerWeek() + " buổi)"));
-
-        plan.setConfirmedScheduleDows(ScheduleCatalog.format(matched));
-        planRepo.save(plan);
-
-        plan.setPlanDays(dayRepo.findByWorkoutPlanIdOrderByDayOfWeek(planId));
-        return toPlanResponse(plan, profileRepo.findByUserId(user.getId()).orElse(null));
-    }
 
     @Transactional
     public WorkoutPlanResponse createManualTemplate(WorkoutTemplateRequest req) {
@@ -632,7 +613,7 @@ public class WorkoutPlanService {
                                                   UserProfile profile,
                                                   double fs) {
         List<Map<MuscleGroup, Integer>> weekPlan = MuscleGroupSplitPlanner.buildWeekPlan(goal, level, sessions);
-        List<Integer> defaultSchedule = ScheduleCatalog.candidatesFor(sessions).get(0);
+        List<Integer> defaultSchedule = ScheduleCatalog.recommendedFor(sessions);
         String[] names = {"", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 
         List<WorkoutPlanDay> days = new ArrayList<>();
@@ -647,19 +628,19 @@ public class WorkoutPlanService {
             List<WorkoutPlanExercise> exercises =
                     buildExercisesNew(day, weekPlan.get(i), goal, level, fsLevel, bodyType, profile, fs);
 
-            // ── Assessment Exercise: chỉ dựa vào targetMetricType, không hardcode Goal ──
-            // defaultSchedule luôn ở dạng dayOfWeek tăng dần (xem ScheduleCatalog.CANDIDATES),
-            // nên index cuối (i == sessions-1) luôn là buổi cuối cùng theo lịch = Last Session of Cycle.
-            boolean isLastSessionOfCycle = (i == sessions - 1);
-            if (isLastSessionOfCycle && plan.getTargetMetricType() != null) {
-                exercises.add(buildAssessmentExercise(day, plan.getTargetMetricType(), exercises.size() + 1));
-            }
+            // ── XOÁ (Patch 10, mục 5/10/14): không còn append Assessment Exercise.
+            // Assessment giờ chỉ tồn tại trong Popup Review (CheckOutRequest), không
+            // còn là WorkoutPlanExercise. buildAssessmentExercise() đã bị xoá khỏi class. ──
 
             day.setExercises(exercises);
             days.add(day);
         }
         return days;
     }
+
+// ── XOÁ HOÀN TOÀN (Patch 10): buildAssessmentExercise() không còn được gọi ở đâu,
+// đã xoá khỏi class. ExerciseRepository.findFirstByAssessmentMetricTypeAndIsActiveTrue
+// vẫn còn tồn tại trong Repository nhưng không còn được dùng. ──
 
     /** Append Assessment Exercise SAU khi buildExercisesNew() đã chạy xong
      *  -> không đi qua MuscleGroupSplitPlanner -> không ảnh hưởng chia nhóm cơ,
@@ -859,8 +840,8 @@ public class WorkoutPlanService {
         };
     }
 
-    public List<List<Integer>> suggestDays(int sessions) {
-        return ScheduleCatalog.candidatesFor(sessions);
+    public List<Integer> suggestDays(int sessions) {
+        return ScheduleCatalog.recommendedFor(sessions);
     }
 
     private String buildScheduleNote(Goal goal, int sessions) {
@@ -892,8 +873,8 @@ public class WorkoutPlanService {
                 .orElse(Collections.emptyList()).stream()
                 .map(this::buildDayResponse).collect(Collectors.toList());
 
-        List<List<Integer>> suggested = Boolean.TRUE.equals(plan.getIsAiGenerated())
-                ? ScheduleCatalog.candidatesFor(plan.getSessionsPerWeek())
+        List<Integer> suggested = Boolean.TRUE.equals(plan.getIsAiGenerated())
+                ? ScheduleCatalog.recommendedFor(plan.getSessionsPerWeek())
                 : null;
         String note = buildScheduleNote(plan.getGoal(), plan.getSessionsPerWeek());
 
@@ -1017,7 +998,7 @@ public class WorkoutPlanService {
         };
         String bmiNote = (profile != null && profile.getBmi() != null)
                 ? " (BMI hiện tại: " + profile.getBmi() + ")" : "";
-        return String.format("Giáo án AI cho mục tiêu %s%s. %d buổi/tuần. Cường độ điều chỉnh tự động theo tiến độ hàng tuần.",
+        return String.format("Giáo án cá nhân hóa cho mục tiêu %s%s. %d buổi/tuần.",
                 gv, bmiNote, days);
     }
 

@@ -3,13 +3,13 @@ package com.example.gymmanagement.service;
 import com.example.gymmanagement.dto.request.*;
 import com.example.gymmanagement.dto.response.*;
 import com.example.gymmanagement.entity.*;
+import com.example.gymmanagement.enums.AssessmentMetricType;
 import com.example.gymmanagement.enums.Goal;
 import com.example.gymmanagement.enums.MuscleGroup;
 import com.example.gymmanagement.enums.ProgressSource;
 import com.example.gymmanagement.enums.SessionStatus;
 import com.example.gymmanagement.pet.PetService;
 import com.example.gymmanagement.repository.*;
-import com.example.gymmanagement.service.schedule.ScheduleCatalog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.context.annotation.Lazy;
-import com.example.gymmanagement.enums.AssessmentMetricType;
+import com.example.gymmanagement.service.schedule.ScheduleCatalog;
 
 @Service
 @RequiredArgsConstructor
@@ -45,12 +45,10 @@ public class WorkoutSessionService {
         this.petService = petService;
     }
 
-    // ── mana + điều chỉnh tạ theo nhóm cơ ──
     private final ManaService manaService;
     private final WorkoutPlanMuscleGroupWeightRepository mgWeightRepo;
     private final WorkoutPlanExerciseRepository planExerciseRepo;
 
-    // ── Đăng ký buổi tập ─────────────────────────────────────
     @Transactional
     public WorkoutSessionResponse enrollSession(String email, EnrollSessionRequest req) {
         User user = getUser(email);
@@ -109,7 +107,6 @@ public class WorkoutSessionService {
         return buildResponse(session);
     }
 
-    // ── Tiến trình tuần ──────────────────────────────────────
     public Map<String, Object> getWeekProgress(String email, Long planId, Integer weekNumber) {
         User user = getUser(email);
         WorkoutPlan plan = planRepo.findById(planId).orElseThrow();
@@ -136,7 +133,6 @@ public class WorkoutSessionService {
         return r;
     }
 
-    // ── Xem sessions ─────────────────────────────────────────
     public List<WorkoutSessionResponse> getMySessions(String email) {
         return sessionRepo.findByUserIdOrderBySessionDateDesc(getUser(email).getId())
                 .stream().map(this::buildResponse).collect(Collectors.toList());
@@ -153,77 +149,41 @@ public class WorkoutSessionService {
         return buildResponse(getOwned(email, id));
     }
 
-    // ── Check-in ─────────────────────────────────────────────
-    // ── Mana giờ chỉ đại diện cho khả năng HỒI PHỤC, KHÔNG còn ảnh hưởng Set/Rep ──
-    // - Nếu mana không đủ cho buổi (estimatedCost > currentMana) và chưa xác nhận:
-    //     trả về requiresConfirmation=true, KHÔNG check-in thật, để FE hiện popup.
-    // - Nếu người dùng xác nhận "vẫn tập" (confirmReducedIntensity=true), hoặc nếu mana
-    //     đủ: check-in bình thường. Set/Rep hiển thị LUÔN giữ nguyên theo giáo án gốc.
-    @Transactional
-    public CheckInResult checkIn(String email, Long id, boolean confirmReducedIntensity) {
-        WorkoutSession s = getOwned(email, id);
-        if (s.getStatus() == SessionStatus.CHECKED_IN)
-            throw new RuntimeException("Đã check-in rồi!");
-        if (s.getStatus() == SessionStatus.COMPLETED)
-            throw new RuntimeException("Buổi tập đã hoàn thành!");
-
-        WorkoutPlan plan = s.getWorkoutPlan();
-        boolean hasManaSystem = plan != null && plan.getMaxMana() != null;
-
-        if (hasManaSystem && s.getPlanDay() != null && s.getPlanDay().getExercises() != null
-                && !s.getPlanDay().getExercises().isEmpty()) {
-
-            int estimatedCost = s.getPlanDay().getExercises().stream()
-                    .mapToInt(pe -> pe.getExercise().getStaminaCost() != null
-                            ? pe.getExercise().getStaminaCost() : 10)
-                    .sum();
-            int currentMana = manaService.getCurrentManaAfterRegen(plan);
-
-            if (currentMana < estimatedCost && !confirmReducedIntensity) {
-                return CheckInResult.builder()
-                        .requiresConfirmation(true)
-                        .warningMessage("⚠️ Thể lực hiện tại không đủ để hồi phục tối ưu sau buổi tập. " +
-                                "Nếu vẫn tiếp tục tập, cơ thể có thể hồi phục chậm hơn và tăng nguy cơ quá tải.")
-                        .estimatedManaCost(estimatedCost)
-                        .currentMana(currentMana)
-                        .session(null)
-                        .build();
-            }
-            // Dù mana đủ hay đã xác nhận "vẫn tập": check-in bình thường, KHÔNG chỉnh
-            // sửa Set/Rep hay bất kỳ dữ liệu hiển thị nào của buổi tập.
-        }
-
-        s.setStatus(SessionStatus.CHECKED_IN);
-        s.setCheckInTime(LocalDateTime.now());
-        sessionRepo.save(s);
-
-        return CheckInResult.builder()
-                .requiresConfirmation(false)
-                .session(buildResponse(s))
-                .build();
-    }
-
-    // ── Check-out ─────────────────────────────────────────────
-// ── Check-out ─────────────────────────────────────────────
     @Transactional
     public WorkoutSessionResponse checkOut(String email, Long id, CheckOutRequest req) {
         User user = getUser(email);
         WorkoutSession s = getOwned(email, id);
 
-        if (s.getStatus() != SessionStatus.CHECKED_IN)
-            throw new RuntimeException("Hãy check-in trước khi check-out!");
+        if (s.getStatus() == SessionStatus.COMPLETED)
+            throw new RuntimeException("Buổi tập đã hoàn thành!");
         if (req.getExerciseLogs() == null || req.getExerciseLogs().isEmpty())
             throw new RuntimeException("Vui lòng nhập dữ liệu cho bài tập!");
 
-        // Buổi cuối tuần bắt buộc nhập cân nặng
-        if (Boolean.TRUE.equals(s.getIsLastSessionOfWeek()) && req.getCheckoutWeight() == null)
-            throw new RuntimeException("Đây là buổi cuối tuần! Vui lòng nhập cân nặng hiện tại.");
+        WorkoutPlan plan = s.getWorkoutPlan();
 
-        // ── SỬA (Patch 4): completionPercent giờ do SERVER tự tính từ repsCompleted/
-        // durationCompleted (client gửi) đối chiếu với sets/reps/durationSeconds đã lên
-        // kế hoạch (WorkoutPlanExercise của buổi này), KHÔNG còn nhận completionPercent
-        // trực tiếp từ client. Không bắt buộc phải gửi đủ dữ liệu — thiếu thì
-        // completionPercent = null (không throw lỗi). ──
+        boolean isLastCompletedSession = isLastCompletedSessionOfWeek(user.getId(), plan, s);
+
+        String overLimitWarning = buildOverLimitWarning(s, req.getExerciseLogs());
+
+        boolean isReviewSubmission = req.getCheckoutWeight() != null
+                || req.getAssessmentMetricType() != null || req.getAssessmentValue() != null;
+
+        if (isLastCompletedSession && !isReviewSubmission) {
+            WorkoutSessionResponse resp = buildResponse(s);
+            resp.setNeedWeeklyReview(true);
+            resp.setOverLimitWarning(overLimitWarning);
+            return resp;
+        }
+
+        if (isLastCompletedSession) {
+            if (req.getCheckoutWeight() == null)
+                throw new RuntimeException("Đây là buổi cuối tuần! Vui lòng nhập cân nặng hiện tại.");
+            if (plan != null && plan.getGoal() == Goal.ENDURANCE
+                    && (req.getAssessmentMetricType() == null || req.getAssessmentValue() == null)) {
+                throw new RuntimeException("Vui lòng nhập kết quả Assessment (mục tiêu Sức bền) trước khi hoàn thành tuần.");
+            }
+        }
+
         Map<Long, WorkoutPlanExercise> plannedByExerciseId = (s.getPlanDay() != null && s.getPlanDay().getExercises() != null)
                 ? s.getPlanDay().getExercises().stream()
                 .collect(Collectors.toMap(pe -> pe.getExercise().getId(), pe -> pe, (a, b) -> a))
@@ -232,14 +192,8 @@ public class WorkoutSessionService {
         List<SessionExerciseLog> logs = req.getExerciseLogs().stream().map(r -> {
             Exercise ex = exerciseRepo.findById(r.getExerciseId())
                     .orElseThrow(() -> new RuntimeException("Exercise not found"));
-
             WorkoutPlanExercise pe = plannedByExerciseId.get(r.getExerciseId());
             Integer cp = computeCompletionPercent(pe, r.getRepsCompleted(), r.getDurationCompleted());
-
-            // ── MỚI: bài Assessment cập nhật thẳng vào EnduranceTest, không đi qua completionPercent ──
-            if (pe != null && Boolean.TRUE.equals(pe.getIsAssessment())) {
-                applyAssessmentResult(user, ex, r.getRepsCompleted(), r.getDurationCompleted());
-            }
 
             return SessionExerciseLog.builder()
                     .session(s).exercise(ex)
@@ -253,8 +207,6 @@ public class WorkoutSessionService {
         }).collect(Collectors.toList());
         logRepo.saveAll(logs);
 
-        // completionRate tổng của buổi = trung bình cộng completionPercent các bài
-        // (các log có completionPercent=null bị loại khỏi trung bình, giữ nguyên hành vi cũ)
         double avgSessionRate = logs.stream()
                 .filter(l -> l.getCompletionPercent() != null)
                 .mapToInt(SessionExerciseLog::getCompletionPercent)
@@ -274,117 +226,116 @@ public class WorkoutSessionService {
         s.setNotes(req.getNotes());
         if (req.getCheckoutWeight()  != null) s.setCheckoutWeight(req.getCheckoutWeight());
         if (req.getCheckoutBodyFat() != null) s.setCheckoutBodyFat(req.getCheckoutBodyFat());
-
-        if (s.getCheckInTime() != null) {
-            long mins = java.time.Duration.between(s.getCheckInTime(), s.getCheckOutTime()).toMinutes();
-            s.setDurationMinutes((int) mins);
-        }
         sessionRepo.save(s);
 
-        // ── Trừ mana theo tổng stamina đã tiêu thụ thực tế ──
         boolean injuryRisk = false;
-        if (s.getWorkoutPlan() != null) {
+        if (plan != null) {
             int totalConsumed = logs.stream()
                     .mapToInt(l -> {
                         int cost = l.getExercise().getStaminaCost() != null ? l.getExercise().getStaminaCost() : 10;
                         int pct  = l.getCompletionPercent() != null ? l.getCompletionPercent() : 0;
                         return Math.round(cost * (pct / 100f));
                     }).sum();
-
-            injuryRisk = manaService.consumeMana(s.getWorkoutPlan(), totalConsumed);
+            injuryRisk = manaService.consumeMana(plan, totalConsumed);
             if (injuryRisk) {
                 notifService.sendToUser(user.getId(), "⚠️ Cảnh báo chấn thương",
                         "Bạn đã tập vượt quá thể lực hiện có. Hãy cân nhắc nghỉ ngơi để tránh chấn thương.", "SYSTEM");
             }
         }
 
-        boolean isTemplatePlan = s.getWorkoutPlan() != null
-                && Boolean.FALSE.equals(s.getWorkoutPlan().getIsAiGenerated());
-        boolean isAiPlan = s.getWorkoutPlan() != null
-                && Boolean.TRUE.equals(s.getWorkoutPlan().getIsAiGenerated());
+        boolean isTemplatePlan = plan != null && Boolean.FALSE.equals(plan.getIsAiGenerated());
+        boolean isAiPlan       = plan != null && Boolean.TRUE.equals(plan.getIsAiGenerated());
 
-        if (Boolean.TRUE.equals(s.getIsLastSessionOfWeek()) && req.getCheckoutWeight() != null) {
+        if (isLastCompletedSession) {
 
-            // Lưu tiến độ cơ thể
+            if (plan != null && plan.getGoal() == Goal.ENDURANCE) {
+                applyAssessmentFromReview(user, req.getAssessmentMetricType(), req.getAssessmentValue());
+            }
+
             progressService.autoSaveProgress(
-                    user,
-                    req.getCheckoutWeight(),
-                    req.getCheckoutBodyFat(),
+                    user, req.getCheckoutWeight(), req.getCheckoutBodyFat(),
                     "Tự động ghi nhận sau tuần " + s.getWeekNumber(),
-                    ProgressSource.WEEKLY_CHECKOUT,
-                    s.getSessionDate()
-            );
+                    ProgressSource.WEEKLY_CHECKOUT, s.getSessionDate());
 
             profileRepo.findByUserId(user.getId()).ifPresent(profile -> {
                 profile.setWeight(req.getCheckoutWeight());
-                if (req.getCheckoutBodyFat() != null)
-                    profile.setBodyFatPercentage(req.getCheckoutBodyFat());
+                if (req.getCheckoutBodyFat() != null) profile.setBodyFatPercentage(req.getCheckoutBodyFat());
                 profileRepo.save(profile);
             });
 
-            // Gợi ý tăng/giảm tạ (note hiển thị) — áp dụng cho CẢ 2 loại plan
-            // Gợi ý tăng/giảm tạ (note hiển thị) — áp dụng cho CẢ 2 loại plan
-            // ── SỬA (Patch 9): truyền thêm checkoutWeight để nhánh MAINTENANCE so sánh đúng
-            // cân nặng vừa checkout (không đọc lại targetCurrentValue cũ chưa cập nhật) ──
-            applyWeightAdjustmentNote(user, s.getWorkoutPlan(), s.getWeekNumber(), req.getCheckoutWeight());
+            applyWeightAdjustmentNote(user, plan, s.getWeekNumber(), req.getCheckoutWeight());
 
-            // ── Điều chỉnh tạ THỰC theo nhóm cơ, dựa trên completionPercent cả tuần ──
             List<SessionExerciseLog> weekLogs = logRepo.findByUserIdAndPlanIdAndWeekNumber(
-                    user.getId(), s.getWorkoutPlan().getId(), s.getWeekNumber());
-            adjustMuscleGroupWeights(s.getWorkoutPlan(), weekLogs);
+                    user.getId(), plan.getId(), s.getWeekNumber());
+            adjustMuscleGroupWeights(plan, weekLogs);
 
             if (isTemplatePlan) {
-                advanceTemplatePlanWeek(s.getWorkoutPlan());
+                advanceTemplatePlanWeek(plan);
             } else if (isAiPlan) {
                 try {
                     workoutPlanService.adjustPlanAfterWeek(
-                            s.getWorkoutPlan().getId(),
-                            email,
-                            req.getCheckoutWeight(),
-                            req.getCheckoutBodyFat()
-                    );
+                            plan.getId(), email, req.getCheckoutWeight(), req.getCheckoutBodyFat());
                 } catch (Exception e) {
-                    notifService.sendToUser(user.getId(),
-                            "⚠️ Lưu ý",
-                            "Buổi tập đã hoàn thành nhưng căn chỉnh tuần mới gặp sự cố. Vui lòng thử lại.",
-                            "SYSTEM");
+                    notifService.sendToUser(user.getId(), "⚠️ Lưu ý",
+                            "Buổi tập đã hoàn thành nhưng căn chỉnh tuần mới gặp sự cố. Vui lòng thử lại.", "SYSTEM");
                 }
             }
         }
 
-        // Thông báo kết quả
         String msg = sessionCompletionRate >= 90
                 ? "🔥 Xuất sắc! " + sessionCompletionRate + "% hoàn thành!"
                 : sessionCompletionRate >= 70
-                  ? "✅ Tốt! " + sessionCompletionRate + "% hoàn thành."
-                  : "💪 " + sessionCompletionRate + "% — cố gắng hơn buổi sau nhé!";
+                ? "✅ Tốt! " + sessionCompletionRate + "% hoàn thành."
+                : "💪 " + sessionCompletionRate + "% — cố gắng hơn buổi sau nhé!";
         notifService.sendToUser(user.getId(), "Kết quả buổi tập", msg, "SYSTEM");
 
-        if (Boolean.TRUE.equals(s.getIsLastSessionOfWeek())) {
+        if (isLastCompletedSession) {
             String nextMsg = isTemplatePlan
                     ? "Dữ liệu đã ghi nhận. Giáo án tự động chuyển sang tuần tiếp theo."
                     : "Dữ liệu đã ghi nhận và giáo án đã được căn chỉnh cho tuần mới.";
             notifService.sendToUser(user.getId(),
-                    "📊 Hoàn thành tuần " + s.getWeekNumber() + "!",
-                    nextMsg, "SYSTEM");
+                    "📊 Hoàn thành tuần " + s.getWeekNumber() + "!", nextMsg, "SYSTEM");
         }
 
         try { petService.recalculate(email); } catch (Exception ignored) {}
 
         WorkoutSessionResponse resp = buildResponse(s);
         resp.setInjuryRisk(injuryRisk);
+        resp.setOverLimitWarning(overLimitWarning);
+        resp.setNeedWeeklyReview(false);
         return resp;
     }
 
-    // ── MỚI (Patch 4): tính completionPercent từ dữ liệu kế hoạch (WorkoutPlanExercise)
-    // và dữ liệu thực hiện (repsCompleted/durationCompleted).
-    // Quy tắc chọn công thức (đã xác nhận):
-    //   1) pe == null (buổi custom không có kế hoạch, hoặc exercise không khớp) -> null
-    //   2) pe.getReps() != null -> dùng công thức Reps (ưu tiên nếu cả 2 cùng có)
-    //   3) else nếu pe.getDurationSeconds() != null -> dùng công thức Duration
-    //   4) cả hai đều null -> null
-    // plannedTotal <= 0 hoặc input tương ứng null -> null (không fallback về 0)
-    // Kết quả: tính % thô -> clamp [0,200] -> Math.round() -> Integer
+    private boolean isLastCompletedSessionOfWeek(Long userId, WorkoutPlan plan, WorkoutSession current) {
+        if (plan == null || current.getWeekNumber() == null || plan.getSessionsPerWeek() == null) return false;
+        long completedOthers = sessionRepo.countCompletedInWeek(userId, plan.getId(), current.getWeekNumber());
+        return (completedOthers + 1) >= plan.getSessionsPerWeek();
+    }
+
+    private String buildOverLimitWarning(WorkoutSession s, List<ExerciseLogRequest> logs) {
+        if (s.getPlanDay() == null || s.getPlanDay().getExercises() == null) return null;
+        Map<Long, WorkoutPlanExercise> plannedByExerciseId = s.getPlanDay().getExercises().stream()
+                .collect(Collectors.toMap(pe -> pe.getExercise().getId(), pe -> pe, (a, b) -> a));
+
+        for (ExerciseLogRequest log : logs) {
+            WorkoutPlanExercise pe = plannedByExerciseId.get(log.getExerciseId());
+            if (pe == null || pe.getSets() == null) continue;
+
+            if (pe.getReps() != null && log.getRepsCompleted() != null) {
+                int plannedTotal = pe.getSets() * pe.getReps();
+                if (plannedTotal > 0 && log.getRepsCompleted() > plannedTotal * 1.5) {
+                    return "Bạn đã tập vượt quá 150% khối lượng bài tập. Điều này sẽ không tốt cho sức khỏe.";
+                }
+            } else if (pe.getDurationSeconds() != null && log.getDurationCompleted() != null) {
+                int plannedTotal = pe.getSets() * pe.getDurationSeconds();
+                if (plannedTotal > 0 && log.getDurationCompleted() > plannedTotal * 1.5) {
+                    return "Bạn đã tập vượt quá 150% khối lượng bài tập. Điều này sẽ không tốt cho sức khỏe.";
+                }
+            }
+        }
+        return null;
+    }
+
     private Integer computeCompletionPercent(WorkoutPlanExercise pe, Integer repsCompleted, Integer durationCompleted) {
         if (pe == null) return null;
 
@@ -407,26 +358,14 @@ public class WorkoutSessionService {
         return (int) Math.round(clamped);
     }
 
-    /** Cập nhật EnduranceTest khi bài checkout là Assessment Exercise.
-     *  Tái dùng đúng field mà adjustPlanAfterWeek()/readLiveEnduranceValue() đang đọc
-     *  -> KHÔNG sửa 2 hàm đó, dữ liệu tự động "chảy" vào đúng chỗ. */
-    private void applyAssessmentResult(User user, Exercise ex, Integer repsCompleted, Integer durationCompleted) {
-        AssessmentMetricType type = ex.getAssessmentMetricType();
-        if (type == null) return; // an toàn: lệch dữ liệu isAssessment/metricType thì bỏ qua, không chặn checkout
-
+    private void applyAssessmentFromReview(User user, AssessmentMetricType type, Integer value) {
+        if (type == null || value == null) return;
         EnduranceTest test = enduranceTestRepo.findByUserId(user.getId())
                 .orElseGet(() -> EnduranceTest.builder().user(user).build());
-
         switch (type) {
-            case PUSHUP_REPS -> {
-                if (repsCompleted != null) test.setPushupReps(repsCompleted);
-            }
-            case PLANK_SECONDS -> {
-                if (durationCompleted != null) test.setPlankSeconds(durationCompleted);
-            }
-            case SQUAT_REPS -> {
-                if (repsCompleted != null) test.setSquatReps(repsCompleted);
-            }
+            case PUSHUP_REPS -> test.setPushupReps(value);
+            case PLANK_SECONDS -> test.setPlankSeconds(value);
+            case SQUAT_REPS -> test.setSquatReps(value);
         }
         enduranceTestRepo.save(test);
     }
@@ -482,13 +421,11 @@ public class WorkoutSessionService {
                         .currentWeightKg(pe.getCurrentWeightKg())
                         .weightJustRevealed(justRevealed)
                         .recommendedWeightKg(pe.getRecommendedWeightKg())
-                        // ── MỚI ──
                         .currentRecommendedWeightKg(pe.getCurrentRecommendedWeightKg())
                         .build();
             }).collect(Collectors.toList());
         }
 
-        ScheduleCheckInfo scheduleInfo = buildScheduleCheckInfo(s);
 
         return WorkoutSessionResponse.builder()
                 .id(s.getId()).sessionDate(s.getSessionDate()).scheduledTime(s.getScheduledTime())
@@ -504,10 +441,79 @@ public class WorkoutSessionService {
                 .isLastSessionOfWeek(s.getIsLastSessionOfWeek())
                 .checkoutWeight(s.getCheckoutWeight()).checkoutBodyFat(s.getCheckoutBodyFat())
                 .exerciseLogs(logs).planExercises(planExs)
-                .dayMismatchWarning(scheduleInfo != null ? scheduleInfo.warning() : null)
-                .scheduleSelectionRequired(scheduleInfo != null && scheduleInfo.selectionRequired())
-                .scheduleOptions(scheduleInfo != null ? scheduleInfo.options() : null)
+                .orderWarning(buildOrderWarning(s))
+                .scheduleWarning(buildScheduleWarning(s))
                 .build();
+    }
+
+    private String computeOrderWarning(Long userId, WorkoutPlan plan, WorkoutPlanDay targetDay, Integer weekNumber) {
+        if (plan == null || targetDay == null || weekNumber == null) return null;
+        if (!Boolean.TRUE.equals(plan.getIsAiGenerated())) return null;
+
+        List<WorkoutPlanDay> days = dayRepo.findByWorkoutPlanIdOrderByDayOfWeek(plan.getId());
+        if (days == null || days.isEmpty()) return null;
+
+        long completedCount = sessionRepo.countCompletedInWeek(userId, plan.getId(), weekNumber);
+        if (completedCount >= days.size()) return null;
+
+        WorkoutPlanDay expectedDay = days.get((int) completedCount);
+        if (!expectedDay.getId().equals(targetDay.getId())) {
+            return "Tập không đúng lịch đề xuất có thể gây ảnh hướng đến hiệu quả của giáo án" +
+                    "Ban muốn tập tiếp không ?";
+        }
+        return null;
+    }
+
+    private String computeScheduleWarning(Long userId, WorkoutPlan plan, LocalDate sessionDate) {
+        if (plan == null || sessionDate == null) return null;
+        if (!Boolean.TRUE.equals(plan.getIsAiGenerated())) return null;
+        if (plan.getSessionsPerWeek() == null) return null;
+
+        List<Integer> recommended = ScheduleCatalog.recommendedFor(plan.getSessionsPerWeek());
+        int actualDow = sessionDate.getDayOfWeek().getValue();
+
+        boolean dayMismatch = !recommended.contains(actualDow);
+
+        boolean duplicateInDay = sessionRepo.findByUserIdAndSessionDate(userId, sessionDate).stream()
+                .anyMatch(s -> s.getStatus() == SessionStatus.CHECKED_IN || s.getStatus() == SessionStatus.COMPLETED);
+
+        if (dayMismatch || duplicateInDay) {
+            return "Bạn đang tập không đúng lịch khuyến nghị của hệ thống. Bạn vẫn có thể tiếp tục nếu muốn.";
+        }
+        return null;
+    }
+
+    private String buildScheduleWarning(WorkoutSession s) {
+        if (s.getWorkoutPlan() == null || s.getSessionDate() == null) {
+            return null;
+        }
+
+        if (s.getStatus() == SessionStatus.COMPLETED) {
+            return null;
+        }
+
+        return computeScheduleWarning(
+                s.getUser().getId(),
+                s.getWorkoutPlan(),
+                s.getSessionDate()
+        );
+    }
+    private String buildOrderWarning(WorkoutSession s) {
+        if (s.getWorkoutPlan() == null || s.getPlanDay() == null || s.getWeekNumber() == null) return null;
+        if (s.getStatus() == SessionStatus.COMPLETED) return null;
+        return computeOrderWarning(s.getUser().getId(), s.getWorkoutPlan(), s.getPlanDay(), s.getWeekNumber());
+    }
+
+    public Map<String, String> checkOrderWarning(String email, Long planDayId, Integer weekNumber, LocalDate sessionDate) {
+        User user = getUser(email);
+        WorkoutPlanDay day = dayRepo.findById(planDayId)
+                .orElseThrow(() -> new RuntimeException("Ngày tập không tồn tại"));
+        WorkoutPlan plan = day.getWorkoutPlan();
+
+        Map<String, String> result = new java.util.HashMap<>();
+        result.put("orderWarning", computeOrderWarning(user.getId(), plan, day, weekNumber));
+        result.put("scheduleWarning", computeScheduleWarning(user.getId(), plan, sessionDate));
+        return result;
     }
 
     private WorkoutSession getOwned(String email, Long id) {
@@ -522,136 +528,6 @@ public class WorkoutSessionService {
         return userRepo.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    // ─────────────────────────────────────────────────────────
-    // Lập lịch tập — Day Mismatch Detection (mục 8.3 I.docx)
-    // ─────────────────────────────────────────────────────────
-    private record ScheduleCheckInfo(String warning, boolean selectionRequired, List<List<Integer>> options) {}
-
-    /**
-     * - Giáo án mẫu (template): 1 lịch cố định lấy từ planDays, giữ nguyên logic cũ.
-     * - Giáo án AI:
-     *     + Nếu plan.confirmedScheduleDows đã có (do người dùng CHỦ ĐỘNG chọn lại sau
-     *       khi hệ thống không xác định được lịch) -> dùng lịch đó.
-     *     + Ngược lại: chạy thuật toán loại trừ dần trên TOÀN BỘ lịch sử check-in mỗi
-     *       lần gọi (KHÔNG lưu DB khi tự xác định được):
-     *         survivors == 1  -> coi là lịch chuẩn, kiểm tra mismatch bình thường.
-     *         survivors  > 1  -> chưa đủ dữ liệu, chưa cảnh báo gì, tiếp tục theo dõi.
-     *         survivors == 0  -> không còn lịch nào phù hợp, yêu cầu người dùng chọn lại
-     *                            (selectionRequired=true, options=toàn bộ candidate).
-     */
-    private ScheduleCheckInfo buildScheduleCheckInfo(WorkoutSession s) {
-        WorkoutPlan plan = s.getWorkoutPlan();
-        if (plan == null || s.getSessionDate() == null) return null;
-
-        boolean isAiPlan = Boolean.TRUE.equals(plan.getIsAiGenerated());
-        boolean isTemplatePlan = Boolean.FALSE.equals(plan.getIsAiGenerated());
-        if (!isAiPlan && !isTemplatePlan) return null;
-
-        List<WorkoutSession> allSessions = sessionRepo.findByPlanOrderBySessionDate(s.getUser().getId(), plan.getId());
-        if (allSessions.isEmpty()) return null;
-
-        List<Integer> schedule;
-
-        if (isTemplatePlan) {
-            List<WorkoutPlanDay> planDays = plan.getPlanDays() != null
-                    ? plan.getPlanDays()
-                    : dayRepo.findByWorkoutPlanIdOrderByDayOfWeek(plan.getId());
-            if (planDays == null || planDays.isEmpty()) return null;
-            schedule = planDays.stream()
-                    .map(WorkoutPlanDay::getDayOfWeek)
-                    .filter(Objects::nonNull).distinct().sorted().collect(Collectors.toList());
-            if (schedule.isEmpty()) return null;
-        } else {
-            if (plan.getConfirmedScheduleDows() != null) {
-                schedule = ScheduleCatalog.parse(plan.getConfirmedScheduleDows());
-            } else {
-                List<List<Integer>> candidates = ScheduleCatalog.candidatesFor(plan.getSessionsPerWeek());
-                List<List<Integer>> survivors = eliminateCandidates(candidates, allSessions);
-
-                if (survivors.isEmpty()) {
-                    return new ScheduleCheckInfo(
-                            "Không thể xác định lịch tập chuẩn từ các buổi tập hiện tại. " +
-                                    "Vui lòng chọn một trong các lịch tập khuyến nghị để hệ thống tiếp tục theo dõi chu kỳ tập luyện.",
-                            true,
-                            candidates);
-                } else if (survivors.size() > 1) {
-                    // chưa đủ dữ liệu để chốt lịch chuẩn -> chưa cảnh báo, tiếp tục theo dõi
-                    return new ScheduleCheckInfo(null, false, null);
-                } else {
-                    // survivors == 1 -> tự động coi là lịch chuẩn, KHÔNG lưu DB, suy luận lại mỗi lần gọi
-                    schedule = survivors.get(0);
-                }
-            }
-        }
-
-        int anchorDow = allSessions.get(0).getSessionDate().getDayOfWeek().getValue();
-        int idxInSchedule = schedule.indexOf(anchorDow);
-        List<Integer> rotated = idxInSchedule >= 0 ? rotate(schedule, idxInSchedule) : schedule;
-
-        int indexOfCurrent = -1;
-        for (int i = 0; i < allSessions.size(); i++) {
-            if (allSessions.get(i).getId().equals(s.getId())) {
-                indexOfCurrent = i;
-                break;
-            }
-        }
-        if (indexOfCurrent < 0) return null;
-
-        int expectedDow = rotated.get(indexOfCurrent % rotated.size());
-        int actualDow = s.getSessionDate().getDayOfWeek().getValue();
-
-        String warning = null;
-        if (actualDow != expectedDow) {
-            warning = "⚠️ Theo chu kỳ tập của bạn, buổi này nên rơi vào " + dowVietnameseName(expectedDow)
-                    + " nhưng bạn đang tập vào " + dowVietnameseName(actualDow)
-                    + ". Tập không đúng chu kỳ có thể làm giáo án không đạt hiệu quả tối ưu.";
-        }
-        return new ScheduleCheckInfo(warning, false, null);
-    }
-
-    /** Loại trừ dần: giữ lại các candidate mà TOÀN BỘ lịch sử check-in khớp, sau khi xoay theo buổi đầu tiên. */
-    private List<List<Integer>> eliminateCandidates(List<List<Integer>> candidates, List<WorkoutSession> allSessions) {
-        int anchorDow = allSessions.get(0).getSessionDate().getDayOfWeek().getValue();
-        List<List<Integer>> survivors = new ArrayList<>();
-        for (List<Integer> candidate : candidates) {
-            int idx = candidate.indexOf(anchorDow);
-            if (idx < 0) continue; // ngày bắt đầu không thuộc lịch này -> loại
-            List<Integer> rotated = rotate(candidate, idx);
-            boolean ok = true;
-            for (int i = 0; i < allSessions.size(); i++) {
-                int expected = rotated.get(i % rotated.size());
-                int actual = allSessions.get(i).getSessionDate().getDayOfWeek().getValue();
-                if (expected != actual) { ok = false; break; }
-            }
-            if (ok) survivors.add(rotated);
-        }
-        return survivors;
-    }
-
-    private List<Integer> rotate(List<Integer> list, int startIdx) {
-        List<Integer> rotated = new ArrayList<>();
-        int n = list.size();
-        for (int i = 0; i < n; i++) rotated.add(list.get((startIdx + i) % n));
-        return rotated;
-    }
-
-    private String dowVietnameseName(int dow) {
-        return switch (dow) {
-            case 1 -> "Thứ Hai";
-            case 2 -> "Thứ Ba";
-            case 3 -> "Thứ Tư";
-            case 4 -> "Thứ Năm";
-            case 5 -> "Thứ Sáu";
-            case 6 -> "Thứ Bảy";
-            case 7 -> "Chủ Nhật";
-            default -> "?";
-        };
-    }
-
-    // ── SỬA (Patch 9): rẽ nhánh riêng cho Goal.MAINTENANCE — so cân nặng vừa checkout với
-    // targetBaselineValue (±5%), KHÔNG dùng bảng 7 mốc completion% của Patch 5 (bảng đó chỉ
-    // áp dụng cho MUSCLE_GAIN/WEIGHT_LOSS/ENDURANCE). Các Goal khác giữ nguyên logic Patch 5,
-    // không đổi gì. ──
     private static final double MAINTENANCE_TOLERANCE_PERCENT = 5.0;
     private static final String MAINTENANCE_WARNING_NOTE =
             "Cân nặng hiện tại đã lệch quá 5% so với thời điểm bắt đầu giáo án. " +
@@ -672,38 +548,30 @@ public class WorkoutSessionService {
             return;
         }
 
-        // ── Giữ nguyên logic Patch 5 cho các Goal khác ──
         Double avgRate = sessionRepo.avgCompletionRateInWeek(user.getId(), plan.getId(), weekNumber);
         if (avgRate == null) return;
 
         String note;
         if (avgRate > 150) {
-            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%! Hiệu suất rất cao. Gợi ý tăng tạ khoảng 15%.";
+            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%! Hiệu suất rất cao.";
         } else if (avgRate >= 120) {
-            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Hiệu suất tốt. Gợi ý tăng tạ khoảng 10%.";
+            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Hiệu suất tốt.";
         } else if (avgRate >= 90) {
-            note = "Tỉ lệ hoàn thành tuần này của bạn là " + Math.round(avgRate) + "%. Hiệu suất ổn định. Gợi ý tăng tạ khoảng 5%.";
+            note = "Tỉ lệ hoàn thành tuần này của bạn là " + Math.round(avgRate) + "%. Hiệu suất ổn định.";
         } else if (avgRate >= 80) {
-            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Giữ nguyên mức tạ hiện tại.";
+            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Hiệu xuất khá ổn địmk.";
         } else if (avgRate >= 60) {
-            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Có thể giảm khoảng 5% để đảm bảo kỹ thuật.";
+            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Hiệu xuất chưa ổn định.";
         } else if (avgRate >= 30) {
-            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Nên giảm khoảng 10%.";
+            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Hiệu xuất tập chưa tốt hãy chú ý";
         } else {
-            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Nên giảm khoảng 20%.";
+            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Hiệu xuất tập Luyện không ổn định";
         }
 
         plan.setWeightAdjustmentNote(note);
         planRepo.save(plan);
     }
 
-
-
-    // ── SỬA (Patch 5): đổi bảng hệ số multiplier từ 5 mốc cũ sang 7 mốc mới, boundary
-    // xét từ cao xuống thấp, đồng bộ với applyWeightAdjustmentNote() ở trên. Không đổi
-    // kiến trúc (vẫn nhân dồn vào multiplier, vẫn áp lên baseWeightKg -> currentWeightKg,
-    // không đụng recommendedWeightKg). ──
-// ── Điều chỉnh tạ THỰC theo nhóm cơ (tích lũy multiplier) ──
     private void adjustMuscleGroupWeights(WorkoutPlan plan, List<SessionExerciseLog> weekLogs) {
         Map<MuscleGroup, List<Integer>> byGroup = weekLogs.stream()
                 .filter(l -> l.getCompletionPercent() != null && l.getExercise().getMuscleGroup() != null)
@@ -719,11 +587,11 @@ public class WorkoutSessionService {
 
             double factor = avgRate > 150 ? 1.15
                     : avgRate >= 120 ? 1.10
-                      : avgRate >= 90 ? 1.05
-                        : avgRate >= 80 ? 1.00
-                          : avgRate >= 60 ? 0.95
-                            : avgRate >= 30 ? 0.90
-                              : 0.80;
+                    : avgRate >= 90 ? 1.05
+                    : avgRate >= 80 ? 1.00
+                    : avgRate >= 60 ? 0.95
+                    : avgRate >= 30 ? 0.90
+                    : 0.80;
 
             WorkoutPlanMuscleGroupWeight mgw = mgWeightRepo
                     .findByWorkoutPlanIdAndMuscleGroup(plan.getId(), mg)
@@ -736,12 +604,9 @@ public class WorkoutSessionService {
                     .findByPlanDay_WorkoutPlan_IdAndExercise_MuscleGroup(plan.getId(), mg);
             for (WorkoutPlanExercise pe : exs) {
                 if (pe.getBaseWeightKg() != null) {
-                    // ── Đã nhập tạ: giữ nguyên cơ chế cũ, currentWeightKg = baseWeightKg × multiplier ──
                     pe.setCurrentWeightKg(Math.round(pe.getBaseWeightKg() * mgw.getMultiplier() * 10.0) / 10.0);
                     pe.setWeightUpdatedWeek(nextWeek);
                 } else if (pe.getRecommendedWeightKg() != null) {
-                    // ── MỚI: Chưa nhập tạ — cập nhật currentRecommendedWeightKg, LUÔN tính lại
-                    // từ recommendedWeightKg GỐC (không tích luỹ chồng lên giá trị tuần trước) ──
                     double raw = pe.getRecommendedWeightKg() * mgw.getMultiplier();
                     pe.setCurrentRecommendedWeightKg(Math.round(raw * 2) / 2.0);
                 }
@@ -759,5 +624,4 @@ public class WorkoutSessionService {
         }
         planRepo.save(plan);
     }
-
 }

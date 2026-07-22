@@ -53,32 +53,32 @@ public class WorkoutSessionController {
         return ResponseEntity.ok(ApiResponse.success(sessionService.getSessionById(ud.getUsername(), id)));
     }
 
-    // ── SỬA: check-in giờ trả về CheckInResult ──
-    // - requiresConfirmation=true  -> FE hiện popup cảnh báo chấn thương (warningMessage),
-    //                                   CHƯA thật sự check-in.
-    // - requiresConfirmation=false -> đã check-in thật, session chứa dữ liệu (có thể đã
-    //                                   giảm rep nếu người dùng xác nhận tập lúc thiếu mana).
-    // FE gọi lại đúng endpoint này với confirmReducedIntensity=true khi người dùng chọn
-    // "vẫn muốn tập" ở popup.
-    @PostMapping("/{id}/check-in")
-    public ResponseEntity<ApiResponse<CheckInResult>> checkIn(
+    @GetMapping("/order-check")
+    public ResponseEntity<ApiResponse<Map<String, String>>> checkOrder(
             @AuthenticationPrincipal UserDetails ud,
-            @PathVariable Long id,
-            @RequestParam(defaultValue = "false") boolean confirmReducedIntensity) {
-        CheckInResult result = sessionService.checkIn(ud.getUsername(), id, confirmReducedIntensity);
-        String message = result.isRequiresConfirmation()
-                ? "⚠️ Cần xác nhận trước khi check-in"
-                : "Check-in thành công! 💪";
-        return ResponseEntity.ok(ApiResponse.success(result, message));
+            @RequestParam Long planDayId,
+            @RequestParam Integer weekNumber,
+            @RequestParam String sessionDate) {
+        return ResponseEntity.ok(ApiResponse.success(
+                sessionService.checkOrderWarning(ud.getUsername(), planDayId, weekNumber,
+                        java.time.LocalDate.parse(sessionDate))));
     }
 
-    // Check-out bắt buộc nhập tỉ lệ hoàn thành + tiến độ (cuối tuần)
+    // ── XOÁ (Patch 10): endpoint /check-in đã bị bỏ hoàn toàn khỏi nghiệp vụ ──
+
+    // Checkout dùng CHUNG 1 API cho cả 2 lần gọi (Business Rule mục 13, LOCKED):
+    // - Lần 1 (chỉ exerciseLogs): nếu là Last Completed Session -> không lưu gì,
+    //   trả needWeeklyReview=true.
+    // - Lần 2 (exerciseLogs + checkoutWeight + assessment nếu ENDURANCE): lưu toàn bộ.
     @PostMapping("/{id}/check-out")
     public ResponseEntity<ApiResponse<WorkoutSessionResponse>> checkOut(
             @AuthenticationPrincipal UserDetails ud, @PathVariable Long id,
             @RequestBody CheckOutRequest req) {
-        return ResponseEntity.ok(ApiResponse.success(
-                sessionService.checkOut(ud.getUsername(), id, req), "Check-out thành công! 🎉"));
+        WorkoutSessionResponse resp = sessionService.checkOut(ud.getUsername(), id, req);
+        String message = Boolean.TRUE.equals(resp.getNeedWeeklyReview())
+                ? "Cần hoàn tất Review cuối tuần trước khi Checkout"
+                : "Check-out thành công! 🎉";
+        return ResponseEntity.ok(ApiResponse.success(resp, message));
     }
 
     @PostMapping("/{id}/skip")

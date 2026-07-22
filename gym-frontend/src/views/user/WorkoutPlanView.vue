@@ -42,7 +42,6 @@
               </el-tag>
             </div>
 
-            <!-- MỚI (Patch 7): estimatedWeeks — chỉ hiện với giáo án mới (có estimatedWeeks) -->
             <div v-if="plan.estimatedWeeks != null" style="font-size:0.82rem;color:var(--c-text2);margin-bottom:6px">
               ⏱ Dự kiến ban đầu: <strong>{{ plan.estimatedWeeks }} tuần</strong>
               <span v-if="plan.durationWeeks !== plan.estimatedWeeks">
@@ -50,8 +49,6 @@
               </span>
             </div>
 
-            <!-- MỚI (Patch 7-8): Tiến độ mục tiêu — dữ liệu LUÔN lấy trực tiếp từ Backend,
-                 không tự tính lại (kể cả ENDURANCE — targetCurrentValue đã là giá trị live). -->
             <div v-if="hasTarget(plan)" class="target-progress-box">
               <div style="font-weight:700;margin-bottom:6px">🎯 Tiến độ mục tiêu</div>
               <div style="font-size:0.85rem">
@@ -71,9 +68,6 @@
         </div>
       </el-card>
 
-      <!-- MỚI: weightAdjustmentNote — hiển thị NGUYÊN VĂN nội dung Backend trả về,
-           áp dụng cho mọi Goal (Patch 5 dùng cho MUSCLE_GAIN/WEIGHT_LOSS/ENDURANCE,
-           Patch 9 dùng cho MAINTENANCE). Frontend không tự sinh message. -->
       <div v-if="plan.weightAdjustmentNote" class="weight-adjustment-box">
         ⚖️ {{ plan.weightAdjustmentNote }}
       </div>
@@ -96,23 +90,20 @@
             ✅ Đã hoàn thành tuần này! Giáo án đã tự động căn chỉnh và chuyển sang tuần tiếp theo.
           </div>
           <div v-else-if="weekProgress.isWeekDone" style="color:var(--c-warning);font-size:0.9rem;font-weight:600">
-            ⚠ Bạn cần hoàn thành Checkout buổi cuối tuần để nộp số liệu trước khi chuyển tuần!
+            ⚠ Bạn cần hoàn thành Checkout buổi cuối cùng để nộp số liệu trước khi chuyển tuần!
           </div>
         </div>
       </el-card>
 
       <div v-if="plan.suggestedDays && plan.suggestedDays.length" class="suggested-days-box">
-        <div style="font-weight:700;font-size:0.9rem;margin-bottom:10px">📅 Các lịch tập khuyến nghị:</div>
-        <div v-for="(option, idx) in plan.suggestedDays" :key="idx" style="margin-bottom:10px">
-          <div style="font-size:0.78rem;color:var(--c-text3);margin-bottom:4px">Lịch {{ scheduleLabel(idx) }}</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <el-tag v-for="d in option" :key="d" effect="plain" type="success">
-              {{ dowVietName(d) }}
-            </el-tag>
-          </div>
+        <div style="font-weight:700;font-size:0.9rem;margin-bottom:10px">📅 Lịch tập khuyến nghị:</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <el-tag v-for="d in plan.suggestedDays" :key="d" effect="plain" type="success">
+            {{ dowVietName(d) }}
+          </el-tag>
         </div>
-        <div style="font-size:0.78rem;color:var(--c-text3);margin-top:4px">
-          Hệ thống sẽ tự nhận diện lịch bạn đang theo dựa trên các buổi check-in thực tế.
+        <div style="font-size:0.78rem;color:var(--c-text3);margin-top:8px">
+          Hệ thống sẽ cảnh báo nếu bạn tập không đúng lịch này, nhưng bạn vẫn có thể tiếp tục.
         </div>
       </div>
 
@@ -136,19 +127,20 @@
         <div style="margin-top:6px;font-size:0.85rem">{{ plan.manaMessage }}</div>
       </div>
 
+      <!-- SỬA: chỉ còn 2 trạng thái tương tác — SCHEDULED (đã đăng ký, sẵn sàng Checkout)
+           và chưa đăng ký (Bắt đầu tập). Bỏ hoàn toàn CHECKED_IN. -->
       <div class="days-grid">
         <el-card
             v-for="(day, index) in plan.planDays"
             :key="day.id"
             class="day-card"
-            :class="{ disabled: weekProgress?.isWeekDone, 'session-completed': day.sessionStatus === 'COMPLETED' }"
+            :class="{ 'session-completed': day.sessionStatus === 'COMPLETED' }"
         >
           <template #header>
             <div style="display:flex;justify-content:space-between;align-items:center">
               <span class="display accent" style="font-size:1.1rem">Buổi {{ index + 1 }}</span>
               <div>
-                <el-tag v-if="day.sessionStatus === 'SCHEDULED'" type="info" size="small">⏳ Chờ tập</el-tag>
-                <el-tag v-else-if="day.sessionStatus === 'CHECKED_IN'" type="danger" size="small">🏃 Đang tập</el-tag>
+                <el-tag v-if="day.sessionStatus === 'SCHEDULED'" type="warning" size="small">📝 Sẵn sàng Checkout</el-tag>
                 <el-tag v-else-if="day.sessionStatus === 'COMPLETED'" type="success" size="small">✅ Hoàn thành</el-tag>
                 <span v-else style="font-size:0.75rem;color:var(--c-text3)">{{ day.exercises?.length || 0 }} bài</span>
               </div>
@@ -157,15 +149,12 @@
 
           <div class="schedule-section">
             <div v-if="day.sessionStatus === 'NOT_SCHEDULED' || !day.sessionId" class="no-schedule">
-              <el-button type="success" size="small" @click="handleDirectCheckIn(day, index + 1)">
-                🏃 Check-in ngay
+              <el-button type="success" size="small" @click="handleStartSession(day, index + 1)">
+                🏃 Bắt đầu tập
               </el-button>
             </div>
-            <div v-else-if="day.sessionStatus === 'CHECKED_IN'" class="scheduled" style="background: #fef2f2; border: 1px dashed #fca5a5; padding: 6px; border-radius: 4px;">
-              <div class="date-display" style="color: #dc2626; font-weight: 700; font-size: 0.85rem">
-                🔥 Đang trong buổi tập...
-              </div>
-              <el-button type="danger" size="small" @click="openCheckOutDialog(day, index + 1)">Check-out 🏁</el-button>
+            <div v-else-if="day.sessionStatus === 'SCHEDULED'" class="scheduled">
+              <el-button type="danger" size="small" @click="openCheckOutDialog(day, index + 1)">Checkout 🏁</el-button>
             </div>
             <div v-else-if="day.sessionStatus === 'COMPLETED'" class="completed-zone">
               ✨ Hoàn thành vào {{ fmtDate(day.scheduledDate) }}
@@ -194,10 +183,9 @@
       </div>
     </template>
 
-    <!-- ===================== DIALOG TẠO GIÁO ÁN (AI hoặc Giáo án mẫu) ===================== -->
+    <!-- ===================== DIALOG TẠO GIÁO ÁN ===================== -->
     <el-dialog v-model="goalDialog" title="TẠO GIÁO ÁN" width="560px" align-center>
       <el-tabs v-model="createTab">
-
         <el-tab-pane label="✨ Tạo Giáo Án Cá Nhân Hóa" name="ai">
           <div style="margin-bottom:20px">
             <div style="font-weight:700;color:var(--c-text);margin-bottom:12px">🎯 Chọn mục tiêu chính</div>
@@ -215,7 +203,6 @@
             </div>
           </div>
 
-          <!-- MỚI (Patch 7): Nhập mục tiêu cụ thể theo Goal -->
           <template v-if="genForm.goal === 'MUSCLE_GAIN' || genForm.goal === 'WEIGHT_LOSS'">
             <el-divider/>
             <div style="margin-bottom:16px">
@@ -228,7 +215,6 @@
             </div>
           </template>
 
-          <!-- MỚI (Patch 6+7): Bài test sức bền + chọn mục tiêu ENDURANCE -->
           <template v-else-if="genForm.goal === 'ENDURANCE'">
             <el-divider/>
             <div style="margin-bottom:16px">
@@ -250,19 +236,15 @@
                   <p style="font-size:0.82rem;color:var(--c-text2);margin-bottom:10px">
                     Vui lòng thực hiện đủ 3 bài test dưới đây trước khi đặt mục tiêu.
                   </p>
-
-                    <el-form-item label="Chống đẩy tối đa (reps)">
-                      <el-input-number v-model="enduranceTestForm.pushupReps" :min="0" :max="500" style="width:100%"/>
-                    </el-form-item>
-                    <el-form-item label="Plank tối đa (giây)">
-                      <el-input-number v-model="enduranceTestForm.plankSeconds" :min="0" :max="3600" style="width:100%"/>
-                    </el-form-item>
-
-
+                  <el-form-item label="Chống đẩy tối đa (reps)">
+                    <el-input-number v-model="enduranceTestForm.pushupReps" :min="0" :max="500" style="width:100%"/>
+                  </el-form-item>
+                  <el-form-item label="Plank tối đa (giây)">
+                    <el-input-number v-model="enduranceTestForm.plankSeconds" :min="0" :max="3600" style="width:100%"/>
+                  </el-form-item>
                   <el-form-item label="Squat tối đa (reps)">
                     <el-input-number v-model="enduranceTestForm.squatReps" :min="0" :max="500" style="width:100%"/>
                   </el-form-item>
-
                   <el-button type="primary" size="small" @click="submitEnduranceTest" :loading="submittingEnduranceTest">
                     Lưu kết quả test
                   </el-button>
@@ -289,8 +271,8 @@
           <div style="margin-bottom:16px">
             <div style="font-weight:700;color:var(--c-text);margin-bottom:10px">⚙️ Tuỳ chỉnh nâng cao</div>
             <div class="grid-2">
-              <el-form-item label="Trình độ">
-                <el-select v-model="genForm.fitnessLevel" placeholder="Tự lấy từ Hồ sơ (BMI)" clearable style="width:100%">
+              <el-form-item label="Trình độ giáo án">
+                <el-select v-model="genForm.fitnessLevel" placeholder="Lấy từ Hồ sơ" clearable style="width:100%">
                   <el-option label="🌱 Mới bắt đầu" value="BEGINNER"/>
                   <el-option label="🔄 Trung bình" value="INTERMEDIATE"/>
                   <el-option label="⚡ Nâng cao" value="ADVANCED"/>
@@ -343,12 +325,10 @@
             </div>
           </div>
         </el-tab-pane>
-
       </el-tabs>
 
       <template #footer>
         <el-button @click="goalDialog=false">Hủy</el-button>
-
         <el-button
           v-if="createTab === 'ai'"
           type="primary" @click="generateWithGoal"
@@ -356,7 +336,6 @@
         >
           ✨ KHỞI TẠO GIÁO ÁN
         </el-button>
-
         <el-button
           v-else
           type="primary" @click="applyTemplate"
@@ -367,14 +346,12 @@
       </template>
     </el-dialog>
 
-    <!-- ===================== DIALOG CHECK-OUT (THEO TỪNG BÀI TẬP) ===================== -->
-    <el-dialog v-model="checkOutDialog" title="🏁 CHECK-OUT HOÀN THÀNH BUỔI TẬP" width="520px" align-center>
+    <!-- ===================== DIALOG CHECK-OUT (LẦN 1 — chỉ nhập kết quả bài tập) ===================== -->
+    <el-dialog v-model="checkOutDialog" title="🏁 CHECKOUT BUỔI TẬP" width="520px" align-center :close-on-click-modal="false">
       <div style="margin-bottom:14px; font-weight:600; color:var(--c-text)">
         Buổi {{ selectedDayNumber }} - Tuần {{ plan?.currentWeek }}
       </div>
 
-      <!-- SỬA (Patch 4): nhập số Rep/Giây thực hiện thay vì chọn % — Backend tự tính
-           completionPercent từ dữ liệu này đối chiếu với kế hoạch (sets×reps hoặc sets×duration) -->
       <div v-for="ex in checkoutExercises" :key="ex.exerciseId" class="checkout-ex-row">
         <div style="font-weight:600;margin-bottom:4px">{{ ex.exerciseName }}</div>
         <div style="font-size:0.78rem;color:var(--c-text3);margin-bottom:8px">
@@ -395,26 +372,45 @@
         <div v-else style="font-size:0.78rem;color:var(--c-text3)">Không có dữ liệu kế hoạch cho bài này</div>
       </div>
 
-      <div v-if="coForm.isLastSessionOfWeek" class="body-progress-box">
-        <h4 style="margin:0 0 10px 0; color:#b45309">⚖ CẬP NHẬT SỐ LIỆU CƠ THỂ (Buổi Cuối Tuần)</h4>
-        <p style="font-size:0.8rem; margin:0 0 12px 0; color:#d97706">
-          Đây là buổi tập cuối cùng trong tuần này. Vui lòng nhập cân nặng hiện tại để có thể cập nhật chỉ số cơ thể.
-        </p>
-        <div style="display:flex; flex-direction:column; gap:12px">
-          <el-form-item label="Cân nặng hiện tại (kg) *" required style="margin-bottom:0">
-            <el-input-number v-model="coForm.checkoutWeight" :min="30" :max="300" :precision="1" style="width:100%" />
-          </el-form-item>
-        </div>
-      </div>
-
       <template #footer>
         <el-button @click="checkOutDialog=false">Hủy</el-button>
-        <el-button
-          type="primary"
-          @click="submitCheckOut"
-          :loading="checkingOut"
-        >
-          {{ coForm.isLastSessionOfWeek && plan?.isAiGenerated ? '✅ Hoàn thành và căn chỉnh bài tập' : 'Hoàn thành buổi tập' }}
+        <el-button type="primary" @click="submitCheckOut" :loading="checkingOut">
+          Hoàn thành buổi tập
+        </el-button>
+      </template>
+    </el-dialog>
+
+    <!-- ===================== DIALOG WEEKLY REVIEW (chỉ mở khi needWeeklyReview=true) ===================== -->
+    <el-dialog
+        v-model="weeklyReviewDialog"
+        title="📊 REVIEW CUỐI TUẦN"
+        width="480px"
+        align-center
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+    >
+      <p style="font-size:0.85rem;color:var(--c-text2);margin-bottom:16px">
+        Đây là buổi tập hoàn thành cuối cùng của tuần này. Vui lòng nhập số liệu cơ thể để hệ thống căn chỉnh giáo án cho tuần tiếp theo.
+      </p>
+
+      <el-form-item label="Cân nặng hiện tại (kg) *" required>
+        <el-input-number v-model="reviewForm.checkoutWeight" :min="30" :max="300" :precision="1" style="width:100%"/>
+      </el-form-item>
+
+      <template v-if="plan?.goal === 'ENDURANCE'">
+        <el-divider/>
+        <div style="font-weight:700;color:var(--c-text);margin-bottom:10px">
+          🏃 Bài test: {{ assessmentMetricLabel(plan.targetMetricType) }} *
+        </div>
+        <el-form-item :label="'Kết quả (' + assessmentMetricUnit(plan.targetMetricType) + ')'" required>
+          <el-input-number v-model="reviewForm.assessmentValue" :min="0" :max="9999" style="width:100%"/>
+        </el-form-item>
+      </template>
+
+      <template #footer>
+        <el-button @click="cancelWeeklyReview">Hủy</el-button>
+        <el-button type="primary" @click="submitWeeklyReview" :loading="submittingReview">
+          ✅ Hoàn thành và căn chỉnh giáo án
         </el-button>
       </template>
     </el-dialog>
@@ -443,28 +439,18 @@
         </el-descriptions-item>
       </el-descriptions>
 
-
-<!-- Mức tạ khuyến nghị -->
-<div v-if="selEx.recommendedWeightKg != null" class="recommended-weight-box">
-  <div>
-    🎯 Mức tạ khuyến nghị:
-    <strong>{{ currentRecommendedDisplay(selEx) }} kg</strong>
-  </div>
-
-  <div
-    v-if="selEx.baseWeightKg == null"
-    style="font-size:0.78rem;color:var(--c-text3);margin-top:4px"
-  >
-    Hệ thống tự điều chỉnh theo tiến độ luyện tập của bạn.
-  </div>
-
-  <div
-    v-else
-    style="font-size:0.78rem;color:var(--c-text3);margin-top:4px"
-  >
-    Được tính từ mức tạ bạn đã nhập và tiến độ luyện tập.
-  </div>
-</div>
+      <div v-if="selEx.recommendedWeightKg != null" class="recommended-weight-box">
+        <div>
+          🎯 Mức tạ khuyến nghị:
+          <strong>{{ currentRecommendedDisplay(selEx) }} kg</strong>
+        </div>
+        <div v-if="selEx.baseWeightKg == null" style="font-size:0.78rem;color:var(--c-text3);margin-top:4px">
+          Hệ thống tự điều chỉnh theo tiến độ luyện tập của bạn.
+        </div>
+        <div v-else style="font-size:0.78rem;color:var(--c-text3);margin-top:4px">
+          Được tính từ mức tạ bạn đã nhập và tiến độ luyện tập.
+        </div>
+      </div>
 
       <div v-if="!selEx.baseWeightKg" style="margin-top:14px">
         <el-form-item label="Nhập mức tạ mà bạn tập : ">
@@ -473,27 +459,16 @@
         <el-button type="primary" @click="saveBaseWeight" :loading="savingWeight">Lưu tạ khởi điểm</el-button>
       </div>
 
-<div
-  v-if="selEx.baseWeightKg != null && selEx.currentWeightKg != null"
-  class="weight-reveal"
->
-  ⚖️ Mức tạ áp dụng tuần này:
-  <strong>{{ selEx.currentWeightKg }} kg</strong>
-
-  <span
-    v-if="selEx.weightJustRevealed && selEx.currentWeightKg > selEx.baseWeightKg"
-    style="color:#16a34a"
-  >
-    (tăng so với tuần trước 📈)
-  </span>
-
-  <span
-    v-else-if="selEx.weightJustRevealed && selEx.currentWeightKg < selEx.baseWeightKg"
-    style="color:#dc2626"
-  >
-    (giảm so với tuần trước 📉)
-  </span>
-</div>
+      <div v-if="selEx.baseWeightKg != null && selEx.currentWeightKg != null" class="weight-reveal">
+        ⚖️ Mức tạ áp dụng tuần này:
+        <strong>{{ selEx.currentWeightKg }} kg</strong>
+        <span v-if="selEx.weightJustRevealed && selEx.currentWeightKg > selEx.baseWeightKg" style="color:#16a34a">
+          (tăng so với tuần trước 📈)
+        </span>
+        <span v-else-if="selEx.weightJustRevealed && selEx.currentWeightKg < selEx.baseWeightKg" style="color:#dc2626">
+          (giảm so với tuần trước 📉)
+        </span>
+      </div>
 
       <template #footer>
         <el-button @click="exDetailDialog=false">Đóng</el-button>
@@ -512,7 +487,7 @@
           </div>
           <div style="display:flex;gap:6px;align-items:center">
             <el-tag v-if="p.isActive" type="success" size="small">Đang chạy</el-tag>
-            <el-tag v-if="p.isAiGenerated" size="small">✨ AI</el-tag>
+            <el-tag v-if="p.isAiGenerated" size="small">Cá nhân hóa</el-tag>
           </div>
         </div>
       </div>
@@ -521,45 +496,7 @@
       </template>
     </el-dialog>
 
-    <el-dialog
-        v-model="scheduleSelectionDialog"
-        title="⚠️ CHỌN LẠI LỊCH TẬP CHUẨN"
-        width="480px"
-        align-center
-        :close-on-click-modal="false"
-        :close-on-press-escape="false"
-        :show-close="false"
-    >
-      <p style="color:var(--c-text2);font-size:0.9rem;margin-bottom:16px">
-        Hệ thống không thể xác định lịch tập chuẩn của bạn từ các buổi tập gần đây (có thể do bạn tập lệch ngày nhiều lần).
-        Vui lòng chọn lại 1 trong các lịch khuyến nghị dưới đây để hệ thống tiếp tục theo dõi đúng chu kỳ.
-      </p>
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <div
-            v-for="(option, idx) in scheduleOptionsList" :key="idx"
-            class="schedule-option-card"
-            :class="{selected: selectedScheduleIndex === idx}"
-            @click="selectedScheduleIndex = idx"
-        >
-          <div style="font-size:0.78rem;color:var(--c-text3);margin-bottom:6px">Lịch {{ scheduleLabel(idx) }}</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <el-tag v-for="d in option" :key="d" effect="plain" type="success">
-              {{ dowVietName(d) }}
-            </el-tag>
-          </div>
-        </div>
-      </div>
-      <template #footer>
-        <el-button
-            type="primary"
-            @click="confirmScheduleSelection"
-            :loading="confirmingSchedule"
-            :disabled="selectedScheduleIndex === null"
-        >
-          Xác nhận lịch tập này
-        </el-button>
-      </template>
-    </el-dialog>
+
   </div>
 </template>
 
@@ -577,11 +514,13 @@ const loading = ref(true)
 
 const generating = ref(false)
 const checkingOut = ref(false)
+const submittingReview = ref(false)
 
 const goalDialog = ref(false)
 const allPlansDialog = ref(false)
 const exDetailDialog = ref(false)
 const checkOutDialog = ref(false)
+const weeklyReviewDialog = ref(false)
 
 const selEx = ref(null)
 const selectedDayNumber = ref(null)
@@ -598,12 +537,8 @@ const checkoutExercises = ref([])
 const baseWeightInput = ref(null)
 const savingWeight = ref(false)
 
-const scheduleSelectionDialog = ref(false)
-const scheduleOptionsList = ref([])
-const selectedScheduleIndex = ref(null)
-const confirmingSchedule = ref(false)
 
-// ── MỚI (Patch 6): Endurance Test state ──
+
 const enduranceTest = ref(null)
 const loadingEnduranceTest = ref(false)
 const enduranceTestForm = reactive({ pushupReps: null, plankSeconds: null, squatReps: null })
@@ -620,22 +555,24 @@ const genForm = reactive({
   goal: '',
   fitnessLevel: null,
   daysPerWeek: null,
-  // MỚI (Patch 7): target theo Goal
   targetDeltaKgInput: null,
   enduranceMetric: null,
   enduranceTargetValue: null
 })
 
-// === coForm.logs: repsCompleted/durationCompleted thay cho completionPercent (Patch 4) ===
+// coForm chỉ còn dữ liệu bài tập — KHÔNG còn isLastSessionOfWeek/checkoutWeight
+// (những field đó giờ thuộc Weekly Review, một dialog riêng, chỉ mở khi Backend
+// trả needWeeklyReview=true — Business Rule mục 9/13, LOCKED)
 const coForm = reactive({
   logs: {}, // { [exerciseId]: { repsCompleted, durationCompleted, weightUsedKg } }
-  checkoutWeight: null,
-  checkoutBodyFat: null,
-  notes: '',
-  isLastSessionOfWeek: false
+  notes: ''
 })
 
-// SỬA (Patch 1): đã bỏ FLEXIBILITY khỏi hệ thống
+// ── MỚI: cache exerciseLogs của LẦN GỌI ĐẦU để gửi lại nguyên vẹn ở LẦN GỌI THỨ HAI
+// (Backend không lưu tạm gì cả — mục 13, LOCKED — nên FE phải tự giữ lại dữ liệu này) ──
+const reviewCache = reactive({ exerciseLogs: null, notes: '' })
+const reviewForm = reactive({ checkoutWeight: null, checkoutBodyFat: null, assessmentValue: null })
+
 const goals = [
   { value: 'MUSCLE_GAIN', icon: '💪', label: 'Tăng cơ / Sức mạnh', desc: 'Yêu cầu 4-6 buổi/tuần', aiNote: 'ưu tiên bài tập compound nặng, tăng Sets, hạ Reps. Phân bổ cách ngày để phục hồi cơ.' },
   { value: 'WEIGHT_LOSS', icon: '🔥', label: 'Giảm cân / Đốt mỡ', desc: 'Yêu cầu 4-6 buổi/tuần', aiNote: 'ưu tiên Cardio/HIIT, tăng lượng Reps, giảm thời gian nghỉ. Sắp xếp chu kỳ tập liên tục.' },
@@ -645,14 +582,14 @@ const goals = [
 
 const minDaysRequired = computed(() => {
   if (genForm.goal === 'MUSCLE_GAIN' || genForm.goal === 'WEIGHT_LOSS') return 4
-  if (genForm.goal === 'ENDURANCE') return 2        // ← tách riêng, đổi 3 → 2
+  if (genForm.goal === 'ENDURANCE') return 2
   if (genForm.goal === 'MAINTENANCE') return 3
   return 3
 })
 
 const maxDaysRequired = computed(() => {
   if (genForm.goal === 'MUSCLE_GAIN' || genForm.goal === 'WEIGHT_LOSS') return 6
-  if (genForm.goal === 'ENDURANCE') return 4         // ← tách riêng, đổi 5 → 4
+  if (genForm.goal === 'ENDURANCE') return 4
   if (genForm.goal === 'MAINTENANCE') return 5
   return 5
 })
@@ -663,7 +600,6 @@ const validDaysOptions = computed(() => {
   return opts
 })
 
-// MỚI: chặn khởi tạo nếu ENDURANCE chưa có kết quả test
 const canGenerate = computed(() => {
   if (!genForm.goal) return false
   if (genForm.goal === 'ENDURANCE' && !enduranceTest.value) return false
@@ -687,12 +623,17 @@ function handleGoalSelect(goalValue) {
     })
   }
 }
-// MỚI: Current Recommendation — nếu đã nhập baseWeightKg thì dùng currentWeightKg,
-// nếu chưa thì dùng currentRecommendedWeightKg (fallback về recommendedWeightKg gốc
-// cho giáo án cũ tạo trước khi có field này — currentRecommendedWeightKg sẽ là null)
+
 function currentRecommendedDisplay(ex) {
   if (ex.baseWeightKg != null) return ex.currentWeightKg
   return ex.currentRecommendedWeightKg != null ? ex.currentRecommendedWeightKg : ex.recommendedWeightKg
+}
+
+function assessmentMetricLabel(metric) {
+  return enduranceMetricOptions.find(m => m.value === metric)?.label || metric
+}
+function assessmentMetricUnit(metric) {
+  return enduranceMetricOptions.find(m => m.value === metric)?.unit || ''
 }
 
 // ====================== LOAD DATA ======================
@@ -734,9 +675,7 @@ async function load() {
         }
       })
 
-      const planSessions = activeSessions.value.filter(s => s.planId === plan.value.id)
-      const needsSelection = planSessions.find(s => s.scheduleSelectionRequired)
-      checkScheduleSelection(needsSelection)
+
     }
   } catch (err) {
     console.error(err)
@@ -810,7 +749,7 @@ async function loadTemplates() {
     const res = await planAPI.getTemplates()
     templates.value = res.data || []
   } catch (e) {
-    // im lặng, không chặn tab AI nếu API template lỗi
+    // im lặng
   } finally {
     loadingTemplates.value = false
   }
@@ -897,9 +836,59 @@ async function applyTemplate() {
   }
 }
 
-// === mở checkout dialog, load danh sách bài tập của buổi đó ===
-function openCheckOutDialog(day, dayNumber) {
-  checkoutSessionId.value = day.sessionId
+async function handleStartSession(day, dayNumber) {
+  try {
+    const today = dayjs().format('YYYY-MM-DD')
+    const checkRes = await sessionAPI.checkOrder(day.id, plan.value.currentWeek, today)
+    const { orderWarning, scheduleWarning } = checkRes.data || {}
+
+    if (orderWarning) {
+      try {
+        await ElMessageBox.confirm(
+          orderWarning,
+          '⚠️ Cảnh báo thứ tự',
+          { confirmButtonText: 'Tiếp tục', cancelButtonText: 'Huỷ', type: 'warning' }
+        )
+      } catch {
+        return
+      }
+    }
+
+    if (scheduleWarning) {
+      try {
+        await ElMessageBox.confirm(
+          scheduleWarning,
+          '⚠️ Cảnh báo lịch tập',
+          { confirmButtonText: 'Tiếp tục', cancelButtonText: 'Huỷ', type: 'warning' }
+        )
+      } catch {
+        return
+      }
+    }
+
+    const nowTime = dayjs().format('HH:mm:ss')
+    const isLast = (dayNumber === plan.value.sessionsPerWeek)
+
+    const enrollRes = await sessionAPI.enroll({
+      planDayId: day.id,
+      sessionDate: today,
+      scheduledTime: nowTime,
+      weekNumber: plan.value.currentWeek,
+      isLastSessionOfWeek: isLast
+    })
+    const session = enrollRes.data
+    if (!session?.id) throw new Error('Không lấy được session id')
+
+    await load()
+    openCheckOutDialog(day, dayNumber, session.id)
+  } catch (err) {
+    ElMessage.error(err.response?.data?.message || 'Không thể bắt đầu buổi tập')
+  }
+}
+
+// ====================== CHECKOUT (LẦN 1) ======================
+function openCheckOutDialog(day, dayNumber, sessionId) {
+  checkoutSessionId.value = sessionId || day.sessionId
   selectedDayNumber.value = dayNumber
   checkoutExercises.value = day.exercises || []
 
@@ -908,17 +897,22 @@ function openCheckOutDialog(day, dayNumber) {
     coForm.logs[ex.exerciseId] = { repsCompleted: null, durationCompleted: null, weightUsedKg: null }
   })
   coForm.notes = ''
-  coForm.checkoutWeight = null
-  coForm.checkoutBodyFat = null
-  coForm.isLastSessionOfWeek = (dayNumber === plan.value.sessionsPerWeek)
   checkOutDialog.value = true
 }
 
-// MỚI (Patch 4): hiển thị kế hoạch reps/duration để người dùng đối chiếu
 function plannedText(ex) {
   if (ex.reps) return `${ex.sets} set × ${ex.reps} rep = ${ex.sets * ex.reps} rep`
   if (ex.durationSeconds) return `${ex.sets} set × ${ex.durationSeconds}s = ${ex.sets * ex.durationSeconds}s`
   return '--'
+}
+
+function buildExerciseLogs() {
+  return Object.entries(coForm.logs).map(([exerciseId, v]) => ({
+    exerciseId: Number(exerciseId),
+    repsCompleted: v.repsCompleted,
+    durationCompleted: v.durationCompleted,
+    weightUsedKg: v.weightUsedKg
+  }))
 }
 
 async function submitCheckOut() {
@@ -932,28 +926,37 @@ async function submitCheckOut() {
     ElMessage.warning('Vui lòng nhập kết quả thực hiện cho tất cả bài tập!')
     return
   }
-  if (coForm.isLastSessionOfWeek && !coForm.checkoutWeight) {
-    ElMessage.warning('Vui lòng nhập cân nặng để cập nhật chỉ số cơ thể!')
-    return
-  }
 
-  const exerciseLogs = Object.entries(coForm.logs).map(([exerciseId, v]) => ({
-    exerciseId: Number(exerciseId),
-    repsCompleted: v.repsCompleted,
-    durationCompleted: v.durationCompleted,
-    weightUsedKg: v.weightUsedKg
-  }))
+  const exerciseLogs = buildExerciseLogs()
 
   checkingOut.value = true
   try {
-    const r = await sessionAPI.complete(checkoutSessionId.value, {
-      checkoutWeight: coForm.checkoutWeight,
-      checkoutBodyFat: coForm.checkoutBodyFat,
+    // ── LẦN GỌI THỨ NHẤT: chỉ gửi exerciseLogs. Backend tự xác định có phải buổi
+    // hoàn thành cuối cùng của tuần không (mục 2/9, LOCKED — không phải FE tự đoán). ──
+    const r = await sessionAPI.checkOut(checkoutSessionId.value, {
       notes: coForm.notes,
       exerciseLogs
     })
+    const resp = r.data
 
-    if (r.data?.injuryRisk) {
+    if (resp.overLimitWarning) {
+      ElMessageBox.alert(resp.overLimitWarning, '⚠️ Cảnh báo tập quá nhiều', { type: 'warning' })
+    }
+
+    if (resp.needWeeklyReview) {
+      // Chưa lưu gì cả (mục 9/13, LOCKED). Cache lại exerciseLogs để gửi lại nguyên vẹn
+      // ở LẦN GỌI THỨ HAI cùng với Weight/Assessment.
+      reviewCache.exerciseLogs = exerciseLogs
+      reviewCache.notes = coForm.notes
+      reviewForm.checkoutWeight = null
+      reviewForm.checkoutBodyFat = null
+      reviewForm.assessmentValue = null
+      checkOutDialog.value = false
+      weeklyReviewDialog.value = true
+      return
+    }
+
+    if (resp.injuryRisk) {
       ElMessageBox.alert(
         'Bạn đã tập vượt quá thể lực hiện có. Nguy cơ chấn thương — hãy nghỉ ngơi trước khi tập tiếp!',
         '⚠️ Cảnh báo chấn thương',
@@ -961,20 +964,71 @@ async function submitCheckOut() {
       )
     }
 
-    const isLastAi = coForm.isLastSessionOfWeek && plan.value?.isAiGenerated
-    ElMessage.success(isLastAi ? 'Hoàn thành tuần tập! Giáo án đã được căn chỉnh 🎉' : 'Hoàn thành buổi tập! 🎉')
-    if (r.data?.dayMismatchWarning) {
-      ElMessage({ message: r.data.dayMismatchWarning, type: 'warning', duration: 8000 })
-    }
+
+    ElMessage.success('Hoàn thành buổi tập! 🎉')
     checkOutDialog.value = false
 
-    checkScheduleSelection(r.data)
     await load()
   } catch (err) {
     ElMessage.error(err.response?.data?.message || 'Hoàn thành buổi tập thất bại')
   } finally {
     checkingOut.value = false
   }
+}
+
+// ====================== WEEKLY REVIEW (LẦN GỌI THỨ HAI) ======================
+async function submitWeeklyReview() {
+  if (!reviewForm.checkoutWeight) {
+    ElMessage.warning('Vui lòng nhập cân nặng hiện tại!')
+    return
+  }
+  if (plan.value?.goal === 'ENDURANCE' && reviewForm.assessmentValue == null) {
+    ElMessage.warning('Vui lòng nhập kết quả bài test!')
+    return
+  }
+
+  submittingReview.value = true
+  try {
+    const payload = {
+      notes: reviewCache.notes,
+      exerciseLogs: reviewCache.exerciseLogs,
+      checkoutWeight: reviewForm.checkoutWeight,
+      checkoutBodyFat: reviewForm.checkoutBodyFat
+    }
+    if (plan.value?.goal === 'ENDURANCE') {
+      payload.assessmentMetricType = plan.value.targetMetricType
+      payload.assessmentValue = reviewForm.assessmentValue
+    }
+
+    const r = await sessionAPI.checkOut(checkoutSessionId.value, payload)
+    const resp = r.data
+
+    if (resp.injuryRisk) {
+      ElMessageBox.alert(
+        'Bạn đã tập vượt quá thể lực hiện có. Nguy cơ chấn thương — hãy nghỉ ngơi trước khi tập tiếp!',
+        '⚠️ Cảnh báo chấn thương',
+        { type: 'warning' }
+      )
+    }
+
+    ElMessage.success('Hoàn thành tuần tập! Giáo án đã được căn chỉnh 🎉')
+    weeklyReviewDialog.value = false
+
+    await load()
+  } catch (err) {
+    ElMessage.error(err.response?.data?.message || 'Hoàn thành Review thất bại')
+  } finally {
+    submittingReview.value = false
+  }
+}
+
+// Cancel Popup Review (mục 11, LOCKED): KHÔNG gọi API nào cả — không lưu bất kỳ dữ liệu
+// nào (Session vẫn SCHEDULED, ExerciseLogs không tồn tại vì lần 1 chưa persist gì).
+function cancelWeeklyReview() {
+  weeklyReviewDialog.value = false
+  reviewCache.exerciseLogs = null
+  reviewCache.notes = ''
+  load()
 }
 
 // ====================== UTILITY FUNCTIONS ======================
@@ -1011,7 +1065,6 @@ function ytEmbed(url) {
   return m ? `https://www.youtube.com/embed/${m[1]}` : url
 }
 
-// SỬA (Patch 1): đã bỏ FLEXIBILITY
 function goalLabel(g) {
   return {
     WEIGHT_LOSS: '🔥 Giảm cân',
@@ -1055,7 +1108,6 @@ function bodyTypeLabel(bt) {
   }[bt] || bt
 }
 
-// MỚI (Patch 7-8): Tiến độ mục tiêu — LUÔN dùng dữ liệu Backend trả về, không tự tính
 function hasTarget(p) {
   return p && p.targetGoalValue != null
 }
@@ -1094,13 +1146,8 @@ function diffBadge(d) {
 
 function dowVietName(day) {
   const map = {
-    1: 'Thứ Hai',
-    2: 'Thứ Ba',
-    3: 'Thứ Tư',
-    4: 'Thứ Năm',
-    5: 'Thứ Sáu',
-    6: 'Thứ Bảy',
-    7: 'Chủ Nhật'
+    1: 'Thứ Hai', 2: 'Thứ Ba', 3: 'Thứ Tư', 4: 'Thứ Năm',
+    5: 'Thứ Sáu', 6: 'Thứ Bảy', 7: 'Chủ Nhật'
   }
   return map[day] || day
 }
@@ -1109,93 +1156,8 @@ function scheduleLabel(idx) {
   return String.fromCharCode(65 + idx)
 }
 
-async function handleDirectCheckIn(day, dayNumber) {
-  const today = dayjs().format('YYYY-MM-DD')
-  const nowTime = dayjs().format('HH:mm:ss')
-  const isLast = (dayNumber === plan.value.sessionsPerWeek)
 
-  try {
-    const enrollRes = await sessionAPI.enroll({
-      planDayId: day.id,
-      sessionDate: today,
-      scheduledTime: nowTime,
-      weekNumber: plan.value.currentWeek,
-      isLastSessionOfWeek: isLast
-    })
-    const sessionId = enrollRes.data?.id
-    if (!sessionId) throw new Error('Không lấy được session id')
 
-    await performCheckIn(sessionId)
-  } catch (err) {
-    ElMessage.error(err.response?.data?.message || 'Check-in thất bại')
-  }
-}
-
-async function performCheckIn(sessionId, confirmReducedIntensity = false) {
-  try {
-    const r = await sessionAPI.checkIn(sessionId, confirmReducedIntensity)
-    const result = r.data
-
-    if (result?.requiresConfirmation) {
-      try {
-        await ElMessageBox.confirm(
-          result.warningMessage || 'Thể lực hiện tại không đủ để hồi phục tối ưu sau buổi tập.',
-          '⚠️ Cảnh báo thể lực',
-          {
-            confirmButtonText: 'Vẫn tiếp tục tập',
-            cancelButtonText: 'Nghỉ ngơi',
-            type: 'warning'
-          }
-        )
-        await performCheckIn(sessionId, true)
-      } catch {
-        ElMessage.info('Đã hủy check-in. Hãy nghỉ ngơi để hồi phục thể lực nhé 💤')
-      }
-      return
-    }
-
-    ElMessage.success('Check-in thành công! Hãy tập luyện hết mình 💪')
-    if (result?.session?.dayMismatchWarning) {
-      ElMessage({ message: result.session.dayMismatchWarning, type: 'warning', duration: 8000 })
-    }
-    checkScheduleSelection(result?.session)
-    await load()
-  } catch (err) {
-    ElMessage.error(err.response?.data?.message || 'Check-in thất bại')
-  }
-}
-
-function checkScheduleSelection(sessionObj) {
-  if (sessionObj?.scheduleSelectionRequired && sessionObj?.scheduleOptions?.length) {
-    scheduleOptionsList.value = sessionObj.scheduleOptions
-    selectedScheduleIndex.value = null
-    scheduleSelectionDialog.value = true
-    return true
-  }
-  return false
-}
-
-async function confirmScheduleSelection() {
-  if (selectedScheduleIndex.value === null) {
-    ElMessage.warning('Vui lòng chọn 1 lịch tập')
-    return
-  }
-  if (!plan.value?.id) return
-
-  confirmingSchedule.value = true
-  try {
-    const dayOfWeek = scheduleOptionsList.value[selectedScheduleIndex.value]
-    const r = await planAPI.confirmSchedule(plan.value.id, dayOfWeek)
-    plan.value = r.data
-    ElMessage.success('Đã lưu lịch tập chuẩn!')
-    scheduleSelectionDialog.value = false
-    await load()
-  } catch (err) {
-    ElMessage.error(err.response?.data?.message || 'Lưu lịch tập thất bại')
-  } finally {
-    confirmingSchedule.value = false
-  }
-}
 
 onMounted(load)
 </script>
@@ -1204,10 +1166,6 @@ onMounted(load)
 .empty-plan {
   text-align:center; padding:80px 40px;
   background:var(--c-card); border-radius:var(--radius-lg); box-shadow:var(--shadow);
-}
-.backend-note {
-  margin-top: 10px; padding: 10px 14px; background: #eef5fe;
-  border-left: 4px solid #409eff; color: #409eff; font-size: 0.85rem; border-radius: 4px;
 }
 .progress-panel {
   background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px;
@@ -1218,9 +1176,6 @@ onMounted(load)
 .weight-adjustment-box {
   background: #fff7ed; color: #c2410c; padding: 12px 14px; border-radius: 8px;
   margin-bottom: 20px; border: 1px solid #fed7aa; font-size: 0.875rem;
-}
-.body-progress-box {
-  background: #fffbeb; border: 1px dashed #fef3c7; padding: 14px; border-radius: 8px; margin: 16px 0;
 }
 .goal-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:10px; }
 .goal-card {
@@ -1236,8 +1191,6 @@ onMounted(load)
 .info-box {
   padding:12px 14px; background:#FFF8F0; border:1px solid var(--c-border); border-radius:var(--radius-lg); margin-top:12px;
 }
-
-/* MỚI: mục tiêu đo lường được + endurance test */
 .target-progress-box {
   background:#eff6ff; border:1px solid #bfdbfe; padding:12px 14px; border-radius:8px; margin-top:8px;
 }
@@ -1264,13 +1217,10 @@ onMounted(load)
 
 .schedule-section { margin: 12px 0; padding: 10px 12px; background: var(--c-card2); border-radius: var(--radius); }
 .no-schedule { display: flex; justify-content: center; padding: 2px 0; }
-.scheduled { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.scheduled { display: flex; align-items: center; justify-content: center; gap: 12px; }
 .completed-zone { background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; font-weight: 500; text-align: center; padding: 6px; border-radius: 4px; font-size: 0.85rem; }
-.time-badge { background: var(--c-accent); color: white; padding: 2px 6px; font-size: 0.75rem; border-radius: 4px; margin-right: 6px; }
-.date-display { font-size: 0.9rem; color: var(--c-text); }
 
 .days-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; margin-top:16px; }
-.day-card.disabled { opacity: 0.85; }
 .session-completed { border-top: 3px solid #16a34a; }
 .exercise-list { display:flex; flex-direction:column; gap:6px; }
 .ex-row {
@@ -1305,10 +1255,6 @@ onMounted(load)
 }
 .checkout-ex-row {
   padding:12px 0; border-bottom:1px solid var(--c-border2);
-}
-.weight-guide-box {
-  margin-top:14px; padding:10px 12px; background:#eef5fe; border-left:4px solid #409eff;
-  font-size:0.82rem; border-radius:4px;
 }
 .weight-reveal {
   margin-top:16px; padding:14px; background:#f0fdf4; border-radius:8px; font-size:0.95rem;
