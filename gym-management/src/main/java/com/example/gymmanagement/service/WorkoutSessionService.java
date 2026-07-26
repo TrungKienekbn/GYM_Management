@@ -458,8 +458,7 @@ public class WorkoutSessionService {
 
         WorkoutPlanDay expectedDay = days.get((int) completedCount);
         if (!expectedDay.getId().equals(targetDay.getId())) {
-            return "Tập không đúng lịch đề xuất có thể gây ảnh hướng đến hiệu quả của giáo án" +
-                    "Ban muốn tập tiếp không ?";
+            return "Tập không đúng thứ tự buổi tập";
         }
         return null;
     }
@@ -478,10 +477,31 @@ public class WorkoutSessionService {
                 .anyMatch(s -> s.getStatus() == SessionStatus.CHECKED_IN || s.getStatus() == SessionStatus.COMPLETED);
 
         if (dayMismatch || duplicateInDay) {
-            return "Bạn đang tập không đúng lịch khuyến nghị của hệ thống. Bạn vẫn có thể tiếp tục nếu muốn.";
+            return "Tập không đúng lịch tập khuyến nghị.";
         }
         return null;
     }
+
+    // ── MỚI: cảnh báo Mana không đủ cho TOÀN BỘ buổi tập, tính lúc "Bắt đầu tập"
+    // (KHÔNG dùng injuryRisk — injuryRisk chỉ tính được SAU Check-out dựa trên
+    // completionPercent thực tế). Chỉ cảnh báo, không chặn. ──
+    private String computeManaWarning(WorkoutPlanDay day, WorkoutPlan plan) {
+        if (plan == null || plan.getMaxMana() == null) return null;
+        if (day == null || day.getExercises() == null || day.getExercises().isEmpty()) return null;
+
+        List<Integer> staminaCosts = day.getExercises().stream()
+                .map(pe -> pe.getExercise() != null ? pe.getExercise().getStaminaCost() : null)
+                .collect(Collectors.toList());
+
+        int estimatedCost = manaService.estimateSessionCost(staminaCosts);
+        int currentMana = manaService.getCurrentManaAfterRegen(plan);
+
+        if (estimatedCost > currentMana) {
+            return "Mức độ sẵn sàng tập luyện không đủ.";
+        }
+        return null;
+    }
+
 
     private String buildScheduleWarning(WorkoutSession s) {
         if (s.getWorkoutPlan() == null || s.getSessionDate() == null) {
@@ -513,6 +533,7 @@ public class WorkoutSessionService {
         Map<String, String> result = new java.util.HashMap<>();
         result.put("orderWarning", computeOrderWarning(user.getId(), plan, day, weekNumber));
         result.put("scheduleWarning", computeScheduleWarning(user.getId(), plan, sessionDate));
+        result.put("manaWarning", computeManaWarning(day, plan));
         return result;
     }
 
@@ -553,19 +574,19 @@ public class WorkoutSessionService {
 
         String note;
         if (avgRate > 150) {
-            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%! Hiệu suất rất cao.";
+            note = "Tỉ lệ hoàn thành tuần trước của bạn là " + Math.round(avgRate) + "%! Hiệu suất rất cao.";
         } else if (avgRate >= 120) {
-            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Hiệu suất tốt.";
+            note = "Tỉ lệ hoàn thành tuần trước của bạn là " + Math.round(avgRate) + "%. Hiệu suất tốt.";
         } else if (avgRate >= 90) {
-            note = "Tỉ lệ hoàn thành tuần này của bạn là " + Math.round(avgRate) + "%. Hiệu suất ổn định.";
+            note = "Tỉ lệ hoàn thành tuần trước của bạn là " + Math.round(avgRate) + "%. Hiệu suất ổn định.";
         } else if (avgRate >= 80) {
-            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Hiệu xuất khá ổn địmk.";
+            note = "Tỉ lệ hoàn thành tuần trước của bạn là " + Math.round(avgRate) + "%. Hiệu xuất khá ổn địmk.";
         } else if (avgRate >= 60) {
-            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Hiệu xuất chưa ổn định.";
+            note = "Tỉ lệ hoàn thành tuần trước của bạn là " + Math.round(avgRate) + "%. Hiệu xuất chưa ổn định.";
         } else if (avgRate >= 30) {
-            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Hiệu xuất tập chưa tốt hãy chú ý";
+            note = "Tỉ lệ hoàn thành tuần trước của bạn là " + Math.round(avgRate) + "%. Hiệu xuất tập chưa tốt hãy chú ý";
         } else {
-            note = "Tỉ lệ hoàn thành tuần này của bạn là" + Math.round(avgRate) + "%. Hiệu xuất tập Luyện không ổn định";
+            note = "Tỉ lệ hoàn thành tuần trước của bạn là " + Math.round(avgRate) + "%. Hiệu xuất tập Luyện không ổn định";
         }
 
         plan.setWeightAdjustmentNote(note);

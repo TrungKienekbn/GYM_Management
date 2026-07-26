@@ -574,7 +574,7 @@ const reviewCache = reactive({ exerciseLogs: null, notes: '' })
 const reviewForm = reactive({ checkoutWeight: null, checkoutBodyFat: null, assessmentValue: null })
 
 const goals = [
-  { value: 'MUSCLE_GAIN', icon: '💪', label: 'Tăng cơ / Sức mạnh', desc: 'Yêu cầu 4-6 buổi/tuần', aiNote: 'ưu tiên bài tập compound nặng, tăng Sets, hạ Reps. Phân bổ cách ngày để phục hồi cơ.' },
+  { value: 'MUSCLE_GAIN', icon: '💪', label: 'Tăng cơ / Tăng cân', desc: 'Yêu cầu 4-6 buổi/tuần', aiNote: 'ưu tiên bài tập compound nặng, tăng Sets, hạ Reps. Phân bổ cách ngày để phục hồi cơ.' },
   { value: 'WEIGHT_LOSS', icon: '🔥', label: 'Giảm cân / Đốt mỡ', desc: 'Yêu cầu 4-6 buổi/tuần', aiNote: 'ưu tiên Cardio/HIIT, tăng lượng Reps, giảm thời gian nghỉ. Sắp xếp chu kỳ tập liên tục.' },
   { value: 'ENDURANCE', icon: '🏃', label: 'Tăng sức bền', desc: 'Yêu cầu 2-4 buổi/tuần', aiNote: 'chọn Cardio và Full Body thời gian dài, cường độ vừa, xen kẽ phục hồi tim mạch.' },
   { value: 'MAINTENANCE', icon: '⚖️', label: 'Duy trì thể hình', desc: 'Yêu cầu 3-5 buổi/tuần', aiNote: 'cân bằng đều giữa các nhóm cơ chính với cấu trúc Set/Rep tiêu chuẩn.' }
@@ -840,26 +840,22 @@ async function handleStartSession(day, dayNumber) {
   try {
     const today = dayjs().format('YYYY-MM-DD')
     const checkRes = await sessionAPI.checkOrder(day.id, plan.value.currentWeek, today)
-    const { orderWarning, scheduleWarning } = checkRes.data || {}
+    const { orderWarning, scheduleWarning, manaWarning } = checkRes.data || {}
 
-    if (orderWarning) {
+    const warnings = [orderWarning, scheduleWarning, manaWarning].filter(Boolean)
+
+    if (warnings.length > 0) {
+      const message = warnings.map(w => `• ${w}`).join('\n') + '\nTIẾP TỤC TẬP.'
       try {
         await ElMessageBox.confirm(
-          orderWarning,
-          '⚠️ Cảnh báo thứ tự',
-          { confirmButtonText: 'Tiếp tục', cancelButtonText: 'Huỷ', type: 'warning' }
-        )
-      } catch {
-        return
-      }
-    }
-
-    if (scheduleWarning) {
-      try {
-        await ElMessageBox.confirm(
-          scheduleWarning,
-          '⚠️ Cảnh báo lịch tập',
-          { confirmButtonText: 'Tiếp tục', cancelButtonText: 'Huỷ', type: 'warning' }
+          message,
+          'LƯU Ý TRƯỚC KHI TẬP',
+          {
+            confirmButtonText: 'Tiếp tục tập',
+            cancelButtonText: 'Huỷ',
+            dangerouslyUseHTMLString: false,
+            customClass: 'pre-line-message'
+          }
         )
       } catch {
         return
@@ -956,15 +952,6 @@ async function submitCheckOut() {
       return
     }
 
-    if (resp.injuryRisk) {
-      ElMessageBox.alert(
-        'Bạn đã tập vượt quá thể lực hiện có. Nguy cơ chấn thương — hãy nghỉ ngơi trước khi tập tiếp!',
-        '⚠️ Cảnh báo chấn thương',
-        { type: 'warning' }
-      )
-    }
-
-
     ElMessage.success('Hoàn thành buổi tập! 🎉')
     checkOutDialog.value = false
 
@@ -1002,14 +989,6 @@ async function submitWeeklyReview() {
 
     const r = await sessionAPI.checkOut(checkoutSessionId.value, payload)
     const resp = r.data
-
-    if (resp.injuryRisk) {
-      ElMessageBox.alert(
-        'Bạn đã tập vượt quá thể lực hiện có. Nguy cơ chấn thương — hãy nghỉ ngơi trước khi tập tiếp!',
-        '⚠️ Cảnh báo chấn thương',
-        { type: 'warning' }
-      )
-    }
 
     ElMessage.success('Hoàn thành tuần tập! Giáo án đã được căn chỉnh 🎉')
     weeklyReviewDialog.value = false
@@ -1266,4 +1245,7 @@ onMounted(load)
 }
 .schedule-option-card:hover { border-color:var(--c-accent); }
 .schedule-option-card.selected { border-color:var(--c-accent); background:#FFF8F0; }
+:global(.pre-line-message .el-message-box__message) {
+  white-space: pre-line;
+}
 </style>

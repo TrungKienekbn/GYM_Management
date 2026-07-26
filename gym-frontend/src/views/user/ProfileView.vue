@@ -33,7 +33,6 @@
               <el-select v-model="form.gender" style="width:100%">
                 <el-option label="Nam" value="male"/>
                 <el-option label="Nữ" value="female"/>
-                <el-option label="Khác" value="other"/>
               </el-select>
             </el-form-item>
           </div>
@@ -45,11 +44,11 @@
               <el-option label="⚖️ Duy trì thể hình" value="MAINTENANCE"/>
             </el-select>
           </el-form-item>
-          <el-form-item label="Trình độ hiện tại">
+          <el-form-item label="Trình độ giáo án">
             <el-select v-model="form.fitnessLevel" style="width:100%">
-              <el-option label="🌱 Mới bắt đầu (< 6 tháng)" value="BEGINNER"/>
-              <el-option label="🔄 Trung bình (6 tháng - 2 năm)" value="INTERMEDIATE"/>
-              <el-option label="⚡ Nâng cao (> 2 năm)" value="ADVANCED"/>
+              <el-option label="🌱 Mới bắt đầu" value="BEGINNER"/>
+              <el-option label="🔄 Trung bình" value="INTERMEDIATE"/>
+              <el-option label="⚡ Nâng cao" value="ADVANCED"/>
             </el-select>
           </el-form-item>
           <div class="grid-2">
@@ -87,24 +86,16 @@
             <el-descriptions-item label="Chiều cao">{{ profile.height || '--' }} cm</el-descriptions-item>
             <el-descriptions-item label="Cân nặng">{{ profile.weight || '--' }} kg</el-descriptions-item>
             <el-descriptions-item label="Mục tiêu">{{ goalLabel(profile.goal) }}</el-descriptions-item>
-            <el-descriptions-item label="Trình độ">{{ levelLabel(profile.fitnessLevel) }}</el-descriptions-item>
-            <el-descriptions-item label="Lịch tập">{{ profile.availableDaysPerWeek }} ngày/tuần · {{ profile.preferredSessionDuration }} phút/buổi</el-descriptions-item>
+            <el-descriptions-item label="Trình độ giáo án">{{ levelLabel(profile.fitnessLevel) }}</el-descriptions-item>
+            <el-descriptions-item label="Lịch tập">{{ profile.availableDaysPerWeek }} ngày/tuần </el-descriptions-item>
           </el-descriptions>
         </el-card>
 
         <!-- Tips card -->
         <el-card>
-          <template #header>💡 GỢI Ý CHO BẠN</template>
-          <div class="tips-list">
-            <div class="tip-item" v-for="tip in tips" :key="tip">
-              <span style="color:var(--c-accent);font-weight:700;margin-right:6px">▸</span>{{ tip }}
-            </div>
-          </div>
-          <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--c-border2)">
             <el-button type="primary" style="width:100%" @click="$router.push('/app/plan')">
-              ✨ Tạo giáo án AI theo hồ sơ
+              ✨ Chuyển đến tạo giáo án
             </el-button>
-          </div>
         </el-card>
       </div>
     </div>
@@ -127,7 +118,6 @@ const form    = reactive({
   goal: 'WEIGHT_LOSS',
   fitnessLevel: 'BEGINNER',
   availableDaysPerWeek: 3,
-  preferredSessionDuration: 60,
   medicalConditions: ''
 })
 
@@ -140,27 +130,7 @@ const bmiColor = computed(() => {
   return 'var(--c-danger)'
 })
 
-const tips = computed(() => {
-  const g = form.goal
-  if (g === 'WEIGHT_LOSS') return [
-    'Tập cardio ít nhất 3 buổi/tuần (30–45 phút)',
-    'Duy trì thâm hụt 300–500 kcal/ngày',
-    'Ưu tiên protein cao để giữ cơ khi giảm cân',
-    'Uống đủ 2–3 lít nước mỗi ngày'
-  ]
-  if (g === 'MUSCLE_GAIN') return [
-    'Ưu tiên bài tập compound: squat, deadlift, bench',
-    'Ăn đủ protein 1.6–2.2g/kg cân nặng mỗi ngày',
-    'Ngủ đủ 7–9 tiếng để cơ phục hồi',
-    'Tăng tải trọng từ từ mỗi 1–2 tuần'
-  ]
-  if (g === 'ENDURANCE') return [
-    'Tập cardio dài và đều: chạy bộ, đạp xe, bơi lội',
-    'Tăng dần thời gian và cường độ mỗi tuần',
-    'Bổ sung carbs đầy đủ để có năng lượng duy trì'
-  ]
-  return ['Hoàn thiện hồ sơ để nhận gợi ý phù hợp nhất từ hệ thống AI']
-})
+
 
 async function load() {
   try {
@@ -175,7 +145,6 @@ async function load() {
       goal: r.data.goal,
       fitnessLevel: r.data.fitnessLevel,
       availableDaysPerWeek: r.data.availableDaysPerWeek,
-      preferredSessionDuration: r.data.preferredSessionDuration,
       medicalConditions: r.data.medicalConditions || ''
     })
   } catch {}
