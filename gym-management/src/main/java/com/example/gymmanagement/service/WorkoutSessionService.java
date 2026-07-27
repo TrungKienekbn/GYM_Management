@@ -448,7 +448,8 @@ public class WorkoutSessionService {
 
     private String computeOrderWarning(Long userId, WorkoutPlan plan, WorkoutPlanDay targetDay, Integer weekNumber) {
         if (plan == null || targetDay == null || weekNumber == null) return null;
-        if (!Boolean.TRUE.equals(plan.getIsAiGenerated())) return null;
+        // ── XOÁ: if (!Boolean.TRUE.equals(plan.getIsAiGenerated())) return null;
+        // OrderWarning giờ áp dụng chung cho cả AI và Admin ──
 
         List<WorkoutPlanDay> days = dayRepo.findByWorkoutPlanIdOrderByDayOfWeek(plan.getId());
         if (days == null || days.isEmpty()) return null;
@@ -458,26 +459,43 @@ public class WorkoutSessionService {
 
         WorkoutPlanDay expectedDay = days.get((int) completedCount);
         if (!expectedDay.getId().equals(targetDay.getId())) {
-            return "Tập không đúng thứ tự buổi tập";
+            return "Thứ tự buổi tập không đúng.";
         }
         return null;
     }
 
     private String computeScheduleWarning(Long userId, WorkoutPlan plan, LocalDate sessionDate) {
         if (plan == null || sessionDate == null) return null;
-        if (!Boolean.TRUE.equals(plan.getIsAiGenerated())) return null;
         if (plan.getSessionsPerWeek() == null) return null;
 
-        List<Integer> recommended = ScheduleCatalog.recommendedFor(plan.getSessionsPerWeek());
         int actualDow = sessionDate.getDayOfWeek().getValue();
+        boolean isAi = Boolean.TRUE.equals(plan.getIsAiGenerated());
+        boolean dayMismatch;
 
-        boolean dayMismatch = !recommended.contains(actualDow);
+        if (isAi) {
+            // AI: kiểm tra theo lịch khuyến nghị của hệ thống
+            List<Integer> recommended = ScheduleCatalog.recommendedFor(plan.getSessionsPerWeek());
+            dayMismatch = !recommended.contains(actualDow);
+        } else {
+            // Admin: kiểm tra theo đúng ngày Admin đã cấu hình
+            List<Integer> configuredDows = dayRepo
+                    .findByWorkoutPlanIdOrderByDayOfWeek(plan.getId())
+                    .stream()
+                    .map(WorkoutPlanDay::getDayOfWeek)
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .collect(Collectors.toList());
 
-        boolean duplicateInDay = sessionRepo.findByUserIdAndSessionDate(userId, sessionDate).stream()
-                .anyMatch(s -> s.getStatus() == SessionStatus.CHECKED_IN || s.getStatus() == SessionStatus.COMPLETED);
+            if (configuredDows.isEmpty()) return null;
 
-        if (dayMismatch || duplicateInDay) {
-            return "Tập không đúng lịch tập khuyến nghị.";
+            dayMismatch = !configuredDows.contains(actualDow);
+        }
+
+
+        if (dayMismatch) {
+            return isAi
+                    ? "Không tập đúng lịch khuyến nghị của hệ thống."
+                    : "Không tập đúng lịch khuyến nghị của Admin.";
         }
         return null;
     }
