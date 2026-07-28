@@ -90,10 +90,10 @@ const router = createRouter({
                 },
 
                 {
-                    path: 'nutrition',
-                    name: 'Nutrition',
+                    path: 'foods',
+                    name: 'FoodList',
                     component: () =>
-                        import('@/views/user/NutritionView.vue')
+                        import('@/views/user/FoodListView.vue')
                 },
 
                 {
@@ -185,6 +185,13 @@ const router = createRouter({
                     name: 'AdminExercises',
                     component: () =>
                         import('@/views/admin/ExercisesAdmin.vue')
+                },
+
+                {
+                    path: 'foods',
+                    name: 'AdminFoods',
+                    component: () =>
+                        import('@/views/admin/FoodsAdmin.vue')
                 },
 
                 {

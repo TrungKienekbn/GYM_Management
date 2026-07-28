@@ -13,7 +13,7 @@
         <el-menu-item index="/app/plan"><el-icon><Calendar/></el-icon><template #title>Giáo án</template></el-menu-item>
         <el-menu-item index="/app/sessions"><el-icon><Timer/></el-icon><template #title>Buổi tập</template></el-menu-item>
         <el-menu-item index="/app/progress"><el-icon><TrendCharts/></el-icon><template #title>Tiến độ</template></el-menu-item>
-        <el-menu-item index="/app/nutrition"><el-icon><Apple/></el-icon><template #title>Dinh dưỡng</template></el-menu-item>
+        <el-menu-item index="/app/foods"><el-icon><Dish/></el-icon><template #title>Món ăn</template></el-menu-item>
         <el-menu-item index="/app/membership"><el-icon><CreditCard/></el-icon><template #title>Gói tập</template></el-menu-item>
         <el-menu-item index="/app/exercises"><el-icon><Trophy/></el-icon><template #title>Bài tập</template></el-menu-item>
         <el-menu-item index="/app/ratings"><el-icon><Star/></el-icon><template #title>Đánh giá</template></el-menu-item>

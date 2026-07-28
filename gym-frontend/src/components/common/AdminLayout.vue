@@ -13,6 +13,7 @@
         <el-menu-item index="/admin/memberships"><el-icon><CreditCard/></el-icon><template #title>Hóa đơn</template></el-menu-item>
         <el-menu-item index="/admin/invoices"><el-icon><Tickets/></el-icon><template #title>Lịch sử giao dịch</template></el-menu-item>
         <el-menu-item index="/admin/exercises"><el-icon><Trophy/></el-icon><template #title>Bài tập</template></el-menu-item>
+        <el-menu-item index="/admin/foods"><el-icon><Food/></el-icon><template #title>Món ăn</template></el-menu-item>
         <el-menu-item index="/admin/plans"><el-icon><Calendar/></el-icon><template #title>Giáo án</template></el-menu-item>
         <el-menu-item index="/admin/ratings"><el-icon><Star/></el-icon><template #title>Đánh giá</template></el-menu-item>
         <el-menu-item index="/admin/support">

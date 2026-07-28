@@ -110,12 +110,6 @@ export const invoiceAPI = {
     cancel:        (id) => api.post(`/invoices/${id}/cancel`)
 }
 
-// ── Nutrition ─────────────────────────────────
-export const nutritionAPI = {
-    generate:   ()  => api.post('/nutrition/generate'),
-    getLatest:  ()  => api.get('/nutrition'),
-    getHistory: ()  => api.get('/nutrition/history')
-}
 
 // ── Exercises ─────────────────────────────────
 export const exerciseAPI = {
@@ -124,6 +118,14 @@ export const exerciseAPI = {
     create:   (data)   => api.post('/exercises', data),
     update:   (id, d)  => api.put(`/exercises/${id}`, d),
     delete:   (id)     => api.delete(`/exercises/${id}`)
+}
+// ── Foods (Món ăn) ────────────────────────────
+export const foodAPI = {
+    getAll:   (params) => api.get('/foods', { params }), // params: { keyword, goal }
+    getById:  (id)     => api.get(`/foods/${id}`),
+    create:   (data)   => api.post('/foods', data),
+    update:   (id, d)  => api.put(`/foods/${id}`, d),
+    delete:   (id)     => api.delete(`/foods/${id}`)
 }
 
 // ── Ratings ───────────────────────────────────

@@ -55,22 +55,33 @@
           </div>
         </el-card>
       </div>
-      <div class="grid-2" style="margin-bottom:24px">
-        <el-card>
-          <template #header>THỜI GIAN TẬP TUẦN NÀY (phút)</template>
-          <div style="height:200px;position:relative">
-            <canvas ref="durChart"></canvas>
-            <div v-if="noDuration" class="chart-empty">Chưa có dữ liệu</div>
+
+      <el-card style="margin-bottom:24px">
+        <template #header>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span>KHỐI LƯỢNG % HOÀN THÀNH TUẦN NÀY</span>
+            <span v-if="volumeGapText" style="font-size:0.8rem;font-weight:600" :style="{color:volumeGapColor}">
+              {{ volumeGapText }}
+            </span>
           </div>
-        </el-card>
-        <el-card>
-          <template #header>KHỐI LƯỢNG % HOÀN THÀNH TUẦN NÀY</template>
-          <div style="height:200px;position:relative">
-            <canvas ref="volChart"></canvas>
-            <div v-if="noVolume" class="chart-empty">Chưa có dữ liệu</div>
+        </template>
+        <div style="height:220px;position:relative">
+          <canvas ref="volChart"></canvas>
+          <div v-if="noVolume" class="chart-empty">Chưa có dữ liệu</div>
+        </div>
+
+        <!-- Danh sách bài tập còn thiếu / cần tập hôm nay -->
+        <div v-if="todayMissingExercises.length" class="missing-box">
+          <div class="missing-title">
+            {{ todaySession?.status === 'CHECKED_IN' ? '📋 Bài tập hôm nay còn thiếu:' : '📋 Bài tập cần tập hôm nay:' }}
           </div>
-        </el-card>
-      </div>
+          <div class="missing-tags">
+            <el-tag v-for="ex in todayMissingExercises" :key="ex.exerciseId" type="warning" effect="plain" size="small">
+              {{ ex.exerciseName }}
+            </el-tag>
+          </div>
+        </div>
+      </el-card>
 
       <!-- This week sessions -->
       <el-card>
@@ -122,20 +133,36 @@
     </template>
 
     <!-- ── Check-out Dialog ──────────────────────────────────── -->
-    <el-dialog v-model="checkOutDialog" title="CHECK-OUT BUỔI TẬP" width="460px" align-center>
+    <el-dialog v-model="checkOutDialog" title="CHECK-OUT BUỔI TẬP" width="520px" align-center>
       <el-form label-position="top">
-        <el-form-item required>
-          <template #label>
-            <span style="font-weight:700">Tỉ lệ hoàn thành * </span>
-            <span style="color:var(--c-text3);font-size:0.8rem">(bắt buộc)</span>
-          </template>
-          <div style="display:flex;align-items:center;gap:12px">
-            <el-slider v-model="coForm.completionRate" :min="0" :max="100" :step="5" style="flex:1"
-                       :marks="{0:'0%',50:'50%',90:'90%',100:'100%'}"/>
-            <span class="rate-badge" :class="rateClass">{{ coForm.completionRate }}%</span>
+        <div v-if="coExercises.length" style="margin-bottom:16px">
+          <div style="font-weight:700;margin-bottom:10px">📋 Nhập kết quả từng bài tập</div>
+          <div v-for="ex in coExercises" :key="ex.exerciseId" class="co-ex-row">
+            <div class="co-ex-name">
+              {{ ex.exerciseName }}
+              <span class="co-ex-target">
+                (mục tiêu: {{ ex.sets }}×{{ ex.reps != null ? ex.reps + ' reps' : (ex.durationSeconds + 's') }})
+              </span>
+            </div>
+            <el-input-number
+                v-if="ex.reps != null"
+                v-model="ex.repsCompleted" :min="0" size="small" style="width:150px"
+                controls-position="right"/>
+            <el-input-number
+                v-else-if="ex.durationSeconds != null"
+                v-model="ex.durationCompleted" :min="0" size="small" style="width:150px"
+                controls-position="right"/>
+            <span v-else style="color:var(--c-text3);font-size:0.78rem">Không có mục tiêu</span>
           </div>
-          <div class="rate-hint">{{ rateHint }}</div>
-        </el-form-item>
+
+          <div class="rate-preview">
+            Tỉ lệ hoàn thành ước tính:
+            <span class="rate-badge" :class="previewRateClass">{{ previewCompletionRate }}%</span>
+          </div>
+        </div>
+        <div v-else class="info-box" style="margin-bottom:16px">
+          ⚠️ Buổi này không có danh sách bài tập từ giáo án (buổi tự do) nên không thể checkout chi tiết từng bài.
+        </div>
 
         <!-- Cuối tuần → nhập cân nặng -->
         <template v-if="coSession?.isLastSessionOfWeek">
@@ -180,14 +207,14 @@ const loading      = ref(true)
 const calChart     = ref(null)
 const wkChart      = ref(null)
 let   calInst = null, wkInst = null
-const durChart = ref(null)
 const volChart = ref(null)
-let durInst = null, volInst = null
+let volInst = null
 
 const checkOutDialog = ref(false)
 const coSession      = ref(null)
 const checkingOut    = ref(false)
-const coForm = reactive({ completionRate:80, notes:'', checkoutWeight:null })
+const coForm      = reactive({ notes:'', checkoutWeight:null })
+const coExercises = ref([])   // [{exerciseId, exerciseName, sets, reps, durationSeconds, repsCompleted, durationCompleted}]
 
 const today = dayjs().format('dddd, DD/MM/YYYY')
 
@@ -203,20 +230,70 @@ const weightText = computed(() => {
 })
 const noCalories = computed(() => !Object.values(data.value.weeklyCalories || {}).some(v => v > 0))
 const noWorkouts = computed(() => !Object.values(data.value.weeklyWorkouts || {}).some(v => v > 0))
-const noDuration = computed(() => !Object.values(data.value.dailyDuration || {}).some(v => v > 0))
 const noVolume   = computed(() => !Object.values(data.value.dailyVolumePercent || {}).some(v => v > 0))
-const rateClass = computed(() => {
-  const r = coForm.completionRate
+
+const dowKeys  = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
+const todayKey = computed(() => dowKeys[dayjs().day() === 0 ? 6 : dayjs().day() - 1])
+
+const volumeGapText = computed(() => {
+  const actual = data.value.dailyVolumePercent?.[todayKey.value]
+  const target = data.value.dailyVolumeTarget?.[todayKey.value]
+  if (!target) return ''
+  if (!actual) return `Hôm nay cần đạt ${target}% — chưa tập`
+  const gap = target - actual
+  return gap > 0 ? `Còn thiếu ${gap}% so với mục tiêu hôm nay` : '✅ Đã đạt mục tiêu hôm nay!'
+})
+const volumeGapColor = computed(() => {
+  const actual = data.value.dailyVolumePercent?.[todayKey.value]
+  const target = data.value.dailyVolumeTarget?.[todayKey.value]
+  if (!target) return 'var(--c-text3)'
+  return actual >= target ? 'var(--c-success)' : 'var(--c-warning)'
+})
+
+// ── Buổi tập hôm nay + danh sách bài tập còn thiếu ──────────
+const todaySession = computed(() => {
+  const todayStr = dayjs().format('YYYY-MM-DD')
+  return weekSessions.value.find(s => dayjs(s.sessionDate).format('YYYY-MM-DD') === todayStr) || null
+})
+
+const todayMissingExercises = computed(() => {
+  const s = todaySession.value
+  if (!s || s.status === 'COMPLETED' || s.status === 'SKIPPED') return []
+  const planExs = s.planExercises || []
+  const logs    = s.exerciseLogs || []
+  return planExs.filter(pe => {
+    const log = logs.find(l => l.exerciseId === pe.exerciseId)
+    const done = log && (log.isCompleted || (log.completionPercent != null && log.completionPercent >= 100))
+    return !done
+  })
+})
+
+// ── Check-out: tính % hoàn thành từng bài (giống công thức backend) ──
+function calcExPercent(ex) {
+  let raw
+  if (ex.reps != null) {
+    if (!ex.sets || ex.repsCompleted == null) return null
+    const planned = ex.sets * ex.reps
+    if (planned <= 0) return null
+    raw = (ex.repsCompleted / planned) * 100
+  } else if (ex.durationSeconds != null) {
+    if (!ex.sets || ex.durationCompleted == null) return null
+    const planned = ex.sets * ex.durationSeconds
+    if (planned <= 0) return null
+    raw = (ex.durationCompleted / planned) * 100
+  } else return null
+  return Math.round(Math.max(0, Math.min(200, raw)))
+}
+const previewCompletionRate = computed(() => {
+  const vals = coExercises.value.map(calcExPercent).filter(v => v != null)
+  if (!vals.length) return 0
+  return Math.round(vals.reduce((a, b) => a + b, 0) / vals.length)
+})
+const previewRateClass = computed(() => {
+  const r = previewCompletionRate.value
   if (r >= 90) return 'rate-high'
   if (r >= 60) return 'rate-mid'
   return 'rate-low'
-})
-const rateHint = computed(() => {
-  const r = coForm.completionRate
-  if (r >= 90) return '🔥 Xuất sắc! Hệ thống sẽ tăng độ khó tuần sau.'
-  if (r >= 70) return '✅ Tốt! Giữ nguyên cường độ.'
-  if (r >= 50) return '💪 Vừa đủ. Cố gắng hơn nhé!'
-  return '⚠️ Hệ thống sẽ điều chỉnh nhẹ hơn cho tuần sau.'
 })
 
 async function load() {
@@ -233,9 +310,9 @@ async function load() {
 
 function drawCharts() {
   const GRID = 'rgba(196,154,108,0.3)', TICK = '#4A3728'
-  const opts = (label) => ({
+  const opts = (label, showLegend=false) => ({
     responsive:true, maintainAspectRatio:false,
-    plugins:{ legend:{ display:false } },
+    plugins:{ legend:{ display:showLegend, position:'top', labels:{color:TICK,boxWidth:12,font:{size:11}} } },
     scales:{
       x:{ grid:{color:GRID}, ticks:{color:TICK,font:{size:11}} },
       y:{ grid:{color:GRID}, ticks:{color:TICK,font:{size:11}}, beginAtZero:true,
@@ -248,7 +325,7 @@ function drawCharts() {
     calInst = new Chart(calChart.value, {
       type:'bar',
       data:{ labels:Object.keys(data.value.weeklyCalories),
-        datasets:[{ data:Object.values(data.value.weeklyCalories), backgroundColor:'#D4892A', borderRadius:6, borderSkipped:false }] },
+        datasets:[{ label:'Calories', data:Object.values(data.value.weeklyCalories), backgroundColor:'#D4892A', borderRadius:6, borderSkipped:false }] },
       options: opts('kcal')
     })
   }
@@ -257,17 +334,8 @@ function drawCharts() {
     wkInst = new Chart(wkChart.value, {
       type:'bar',
       data:{ labels:Object.keys(data.value.weeklyWorkouts),
-        datasets:[{ data:Object.values(data.value.weeklyWorkouts), backgroundColor:'#6B4226', borderRadius:6, borderSkipped:false }] },
+        datasets:[{ label:'Buổi tập', data:Object.values(data.value.weeklyWorkouts), backgroundColor:'#6B4226', borderRadius:6, borderSkipped:false }] },
       options: opts('buổi')
-    })
-  }
-  if (durChart.value && data.value.dailyDuration) {
-    if (durInst) durInst.destroy()
-    durInst = new Chart(durChart.value, {
-      type:'bar',
-      data:{ labels:Object.keys(data.value.dailyDuration),
-        datasets:[{ data:Object.values(data.value.dailyDuration), backgroundColor:'#2E7D32', borderRadius:6, borderSkipped:false }] },
-      options: opts('phút')
     })
   }
   if (volChart.value && data.value.dailyVolumePercent) {
@@ -275,8 +343,11 @@ function drawCharts() {
     volInst = new Chart(volChart.value, {
       type:'bar',
       data:{ labels:Object.keys(data.value.dailyVolumePercent),
-        datasets:[{ data:Object.values(data.value.dailyVolumePercent), backgroundColor:'#1565C0', borderRadius:6, borderSkipped:false }] },
-      options: opts('%')
+        datasets:[
+          { label:'Hiện tại', data:Object.values(data.value.dailyVolumePercent),     backgroundColor:'#1565C0', borderRadius:6, borderSkipped:false },
+          { label:'Yêu cầu',  data:Object.values(data.value.dailyVolumeTarget||{}),  backgroundColor:'#90CAF9', borderRadius:6, borderSkipped:false }
+        ] },
+      options: opts('%', true)
     })
   }
 }
@@ -287,24 +358,40 @@ async function checkIn(id) {
 
 function openCheckOut(s) {
   coSession.value = s
-  coForm.completionRate  = 80
-  coForm.notes           = ''
-  coForm.checkoutWeight  = null
-  checkOutDialog.value   = true
+  coForm.notes = ''
+  coForm.checkoutWeight = null
+  coExercises.value = (s.planExercises || []).map(pe => ({
+    exerciseId: pe.exerciseId,
+    exerciseName: pe.exerciseName,
+    sets: pe.sets,
+    reps: pe.reps,
+    durationSeconds: pe.durationSeconds,
+    // Mặc định điền sẵn = hoàn thành đủ mục tiêu giáo án, user tự chỉnh xuống nếu tập chưa hết
+    repsCompleted:     pe.reps != null ? (pe.sets || 1) * pe.reps : null,
+    durationCompleted: pe.reps == null && pe.durationSeconds != null ? (pe.sets || 1) * pe.durationSeconds : null
+  }))
+  checkOutDialog.value = true
 }
 
 async function submitCheckOut() {
-  if (coForm.completionRate == null) { ElMessage.warning('Nhập tỉ lệ hoàn thành'); return }
+  if (coExercises.value.length === 0) {
+    ElMessage.warning('Buổi này không có bài tập để checkout chi tiết.'); return
+  }
   if (coSession.value?.isLastSessionOfWeek && !coForm.checkoutWeight) {
     ElMessage.warning('Đây là buổi cuối tuần! Vui lòng nhập cân nặng.'); return
   }
   checkingOut.value = true
   try {
     await sessionAPI.checkOut(coSession.value.id, {
-      completionRate:  coForm.completionRate,
-      notes:           coForm.notes,
-      checkoutWeight:  coForm.checkoutWeight || null,
-      exerciseLogs:    []
+      notes: coForm.notes,
+      checkoutWeight: coForm.checkoutWeight || null,
+      exerciseLogs: coExercises.value.map(ex => ({
+        exerciseId: ex.exerciseId,
+        repsCompleted: ex.repsCompleted,
+        durationCompleted: ex.durationCompleted,
+        weightUsedKg: null,
+        notes: null
+      }))
     })
     ElMessage.success('Check-out thành công! 🎉')
     checkOutDialog.value = false
@@ -337,10 +424,21 @@ onMounted(load)
 
 .chart-empty { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--c-text3); font-size:0.85rem; }
 
+.missing-box   { margin-top:14px; padding-top:14px; border-top:1px dashed var(--c-border2); }
+.missing-title { font-size:0.82rem; font-weight:700; color:var(--c-text2); margin-bottom:8px; }
+.missing-tags  { display:flex; flex-wrap:wrap; gap:6px; }
+
+.co-ex-row {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:8px 0; border-bottom:1px solid var(--c-border2); gap:12px;
+}
+.co-ex-name   { font-size:0.85rem; flex:1; }
+.co-ex-target { font-size:0.75rem; color:var(--c-text3); display:block; }
+.rate-preview { margin-top:12px; font-size:0.85rem; display:flex; align-items:center; gap:8px; }
+
 .rate-badge { min-width:52px; text-align:center; padding:4px 10px; border-radius:20px; font-weight:700; font-size:0.9rem; }
 .rate-high  { background:#E8F5E9; color:#2E7D32; }
 .rate-mid   { background:#FFF3E0; color:#E65100; }
 .rate-low   { background:#FFEBEE; color:#C62828; }
-.rate-hint  { font-size:0.78rem; color:var(--c-text3); margin-top:6px; }
 .info-box   { padding:10px 14px; background:#FFF8F0; border:1px solid var(--c-border); border-radius:var(--radius-lg); font-size:0.8rem; color:var(--c-text2); }
 </style>
