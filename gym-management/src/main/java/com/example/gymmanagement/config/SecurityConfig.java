@@ -70,12 +70,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/sessions/**").authenticated()
                         .requestMatchers("/api/progress/**").authenticated()
                         .requestMatchers("/api/memberships/**").authenticated()
-                        .requestMatchers("/api/nutrition/**").authenticated()
                         .requestMatchers("/api/ratings/admin/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/ratings/**").authenticated()
                         .requestMatchers("/api/notifications/**").authenticated()
                         .requestMatchers("/api/dashboard/**").authenticated()
                         .requestMatchers("/api/exercises/**").authenticated()
+                        .requestMatchers("/api/foods/**").authenticated()
 
                         .anyRequest().authenticated()
                 )

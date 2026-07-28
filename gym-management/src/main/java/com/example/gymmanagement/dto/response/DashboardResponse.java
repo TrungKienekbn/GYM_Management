@@ -29,4 +29,9 @@ public class DashboardResponse {
     private Map<String, Integer> weeklyDuration;        // tổng phút tập, 4 tuần gần nhất
     private Map<String, Integer> weeklyVolumePercent;   // % hoàn thành trung bình, 4 tuần gần nhất
     private Long totalDurationMinutes;                  // tổng phút tập từ trước đến giờ
+    // MỚI: mục tiêu (yêu cầu) tương ứng để so sánh 2 thanh
+    private Map<String, Integer> dailyDurationTarget;
+    private Map<String, Integer> weeklyDurationTarget;
+    private Map<String, Integer> dailyVolumeTarget;
+    private Map<String, Integer> weeklyVolumeTarget;
 }
