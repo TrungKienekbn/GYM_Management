@@ -53,8 +53,7 @@ export const planAPI = {
     getTemplates:    ()    => api.get('/workout-plans/templates'),
     selectTemplate:  (id)  => api.post(`/workout-plans/templates/${id}/select`),
     setBaseWeight: (planExerciseId, payload) => api.patch(`/workout-plans/plan-exercises/${planExerciseId}/base-weight`, payload),
-    suggestDays: (sessions) => api.get('/workout-plans/suggest-days', { params: { sessions } }),
-    confirmSchedule: (id, dayOfWeek) => api.post(`/workout-plans/${id}/confirm-schedule`, { dayOfWeek })
+    suggestDays: (sessions) => api.get('/workout-plans/suggest-days', { params: { sessions } })
 }
 
 // ── MỚI (Patch 6): Endurance Test ─────────────
@@ -69,8 +68,8 @@ export const sessionAPI = {
     getWeek:      ()           => api.get('/sessions/this-week'),
     getById:      (id)         => api.get(`/sessions/${id}`),
     // ── MỚI (bugfix): kiểm tra thứ tự TRƯỚC khi enroll, không tạo gì cả ──
-    checkOrder:   (planDayId, weekNumber) =>
-        api.get('/sessions/order-check', { params: { planDayId, weekNumber } }),
+    checkOrder: (planDayId, weekNumber, sessionDate) =>
+        api.get('/sessions/order-check', { params: { planDayId, weekNumber, sessionDate } }),
     enroll:       (data)       => api.post('/sessions/enroll', data),
     checkOut:     (id, data)   => api.post(`/sessions/${id}/check-out`, data),
     skip:         (id, notes)  => api.post(`/sessions/${id}/skip`, { notes }),

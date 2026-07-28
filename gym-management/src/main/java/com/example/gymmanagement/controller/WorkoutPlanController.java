@@ -98,25 +98,13 @@ public class WorkoutPlanController {
         return ResponseEntity.ok(ApiResponse.success(planService.getAllPlans(ud.getUsername())));
     }
 
-    // ── SỬA: bỏ tham số goal — lịch tập giờ chỉ phụ thuộc số buổi/tuần (mục 8.2 I.docx) ──
     @GetMapping("/suggest-days")
     public ResponseEntity<ApiResponse<Map<String, Object>>> suggestDays(
             @RequestParam int sessions) {
-        List<List<Integer>> options = planService.suggestDays(sessions);
-        return ResponseEntity.ok(ApiResponse.success(Map.of("scheduleOptions", options)));
+        List<Integer> schedule = planService.suggestDays(sessions);
+        return ResponseEntity.ok(ApiResponse.success(Map.of("scheduleOptions", schedule)));
     }
 
-    // ── MỚI: xác nhận lịch tập chuẩn khi hệ thống không còn tự xác định được
-    // (mục 8.3 I.docx) — body: { "dayOfWeek": [1,2,4,5] } ──
-    @PostMapping("/{id}/confirm-schedule")
-    public ResponseEntity<ApiResponse<WorkoutPlanResponse>> confirmSchedule(
-            @AuthenticationPrincipal UserDetails ud,
-            @PathVariable Long id,
-            @RequestBody Map<String, List<Integer>> body) {
-        return ResponseEntity.ok(ApiResponse.success(
-                planService.confirmSchedule(ud.getUsername(), id, body.get("dayOfWeek")),
-                "Đã lưu lịch tập chuẩn"));
-    }
 
     @GetMapping("/goals")
     public ResponseEntity<ApiResponse<List<Map<String, String>>>> getGoals() {

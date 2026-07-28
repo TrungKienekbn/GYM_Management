@@ -389,26 +389,7 @@ public class WorkoutPlanService {
         return buildExResponse(pe);
     }
 
-    @Transactional
-    public WorkoutPlanResponse confirmSchedule(String email, Long planId, List<Integer> dayOfWeek) {
-        User user = getUser(email);
-        WorkoutPlan plan = planRepo.findById(planId)
-                .orElseThrow(() -> new RuntimeException("Plan not found"));
-        if (plan.getUser() == null || !plan.getUser().getId().equals(user.getId()))
-            throw new RuntimeException("Access denied");
-        if (plan.getSessionsPerWeek() == null)
-            throw new RuntimeException("Giáo án chưa có sessionsPerWeek hợp lệ");
 
-        List<Integer> matched = ScheduleCatalog.matchCandidate(plan.getSessionsPerWeek(), dayOfWeek)
-                .orElseThrow(() -> new RuntimeException(
-                        "Lịch tập không hợp lệ với số buổi/tuần hiện tại (" + plan.getSessionsPerWeek() + " buổi)"));
-
-        plan.setConfirmedScheduleDows(ScheduleCatalog.format(matched));
-        planRepo.save(plan);
-
-        plan.setPlanDays(dayRepo.findByWorkoutPlanIdOrderByDayOfWeek(planId));
-        return toPlanResponse(plan, profileRepo.findByUserId(user.getId()).orElse(null));
-    }
 
     @Transactional
     public WorkoutPlanResponse createManualTemplate(WorkoutTemplateRequest req) {
@@ -500,6 +481,20 @@ public class WorkoutPlanService {
         List<WorkoutPlanDay> templateDays = dayRepo.findByWorkoutPlanIdOrderByDayOfWeek(template.getId());
         UserProfile profile = profileRepo.findByUserId(user.getId()).orElse(null);
 
+        // ── MỚI: snapshot thể lực/thể trạng của User — TÁI SỬ DỤNG đúng công thức AI
+        // (fitnessCalculator.calculateFS/getFsLevel/classifyBodyType), KHÔNG viết mới ──
+        double fs = (profile != null && profile.getAge() != null
+                && profile.getHeight() != null && profile.getWeight() != null)
+                ? fitnessCalculator.calculateFS(profile.getAge(), profile.getHeight(),
+                profile.getWeight(), profile.getGender())
+                : 60.0;
+        FitnessCalculator.FsLevel fsLevel = fitnessCalculator.getFsLevel(fs);
+        FitnessCalculator.BodyType bodyType = (profile != null)
+                ? fitnessCalculator.classifyBodyType(profile.getHeight(), profile.getWeight(),
+                profile.getBmi(), profile.getGender(), profile.getBodyFatPercentage())
+                : FitnessCalculator.BodyType.CAN_DOI;
+        int maxMana = (int) Math.round(fs * 2);
+
         deactivateAndCleanOldPlan(user.getId());
 
         WorkoutPlan newPlan = WorkoutPlan.builder()
@@ -516,6 +511,12 @@ public class WorkoutPlanService {
                 .isActive(true)
                 .isAiGenerated(false)
                 .isTemplate(false)
+                // ── MỚI: snapshot dùng chung với AI — cần cho Set/Rep, Weight, Mana ──
+                .fitnessScore((int) Math.round(fs))
+                .fitnessLevel(fsLevel)
+                .bodyType(bodyType)
+                .maxMana(maxMana)
+                .currentMana(maxMana)
                 .build();
         planRepo.save(newPlan);
 
@@ -523,23 +524,16 @@ public class WorkoutPlanService {
         for (WorkoutPlanDay srcDay : templateDays) {
             WorkoutPlanDay newDay = WorkoutPlanDay.builder()
                     .workoutPlan(newPlan)
-                    .dayOfWeek(srcDay.getDayOfWeek())
+                    .dayOfWeek(srcDay.getDayOfWeek())   // ── GIỮ NGUYÊN lịch Admin ──
                     .dayName(srcDay.getDayName())
                     .build();
 
             List<WorkoutPlanExercise> copiedExercises = new ArrayList<>();
             if (srcDay.getExercises() != null) {
                 for (WorkoutPlanExercise srcEx : srcDay.getExercises()) {
-                    copiedExercises.add(WorkoutPlanExercise.builder()
-                            .planDay(newDay)
-                            .exercise(srcEx.getExercise())
-                            .sets(srcEx.getSets())
-                            .reps(srcEx.getReps())
-                            .durationSeconds(srcEx.getDurationSeconds())
-                            .restSeconds(srcEx.getRestSeconds())
-                            .orderIndex(srcEx.getOrderIndex())
-                            .notes(srcEx.getNotes())
-                            .build());
+                    // ── MỚI: cá nhân hoá theo đúng logic AI, GIỮ NGUYÊN exercise/order/notes ──
+                    copiedExercises.add(personalizeTemplateExercise(newDay, srcEx, template.getGoal(),
+                            template.getTargetLevel(), fsLevel, bodyType, fs, profile));
                 }
             }
             newDay.setExercises(copiedExercises);
@@ -550,6 +544,44 @@ public class WorkoutPlanService {
         newPlan.setPlanDays(savedDays);
 
         return toPlanResponse(newPlan, profile);
+    }
+
+    /** MỚI: cá nhân hoá 1 WorkoutPlanExercise copy từ Admin Template theo ĐÚNG các hàm
+     *  cá nhân hoá đang dùng cho giáo án AI (resolveFinalSetsReps/adjustDuration/calcRest/
+     *  computeRecommendedWeightKg) — KHÔNG viết công thức mới. GIỮ NGUYÊN exercise/orderIndex/
+     *  notes do Admin chọn. Quyết định bài rep-based hay duration-based dựa trên
+     *  srcEx.getReps() != null (tôn trọng lựa chọn Admin — đã xác nhận Q5). */
+    private WorkoutPlanExercise personalizeTemplateExercise(WorkoutPlanDay newDay, WorkoutPlanExercise srcEx,
+                                                            Goal goal, FitnessLevel level,
+                                                            FitnessCalculator.FsLevel fsLevel,
+                                                            FitnessCalculator.BodyType bodyType,
+                                                            double fs, UserProfile profile) {
+        var srResult = fitnessCalculator.resolveFinalSetsReps(fsLevel, goal, bodyType);
+        int finalSets = srResult.sets();
+        int finalReps = srResult.reps();
+
+        Exercise ex = srcEx.getExercise();
+
+        Integer newReps = srcEx.getReps() != null ? finalReps : null;
+        Integer newDuration = srcEx.getDurationSeconds() != null
+                ? adjustDuration(srcEx.getDurationSeconds(), level) : null;
+        Integer newRest = calcRest(srcEx.getRestSeconds(), goal);
+
+        Double recommendedWeightKg = computeRecommendedWeightKg(
+                ex.getMuscleGroup(), ex.getUsesWeight(), fs, bodyType, goal, profile);
+
+        return WorkoutPlanExercise.builder()
+                .planDay(newDay)
+                .exercise(ex)
+                .sets(finalSets)
+                .reps(newReps)
+                .durationSeconds(newDuration)
+                .restSeconds(newRest)
+                .orderIndex(srcEx.getOrderIndex())
+                .notes(srcEx.getNotes())
+                .recommendedWeightKg(recommendedWeightKg)
+                .currentRecommendedWeightKg(recommendedWeightKg)
+                .build();
     }
 
     private void validateTemplateRequest(WorkoutTemplateRequest req) {
@@ -632,7 +664,7 @@ public class WorkoutPlanService {
                                                   UserProfile profile,
                                                   double fs) {
         List<Map<MuscleGroup, Integer>> weekPlan = MuscleGroupSplitPlanner.buildWeekPlan(goal, level, sessions);
-        List<Integer> defaultSchedule = ScheduleCatalog.candidatesFor(sessions).get(0);
+        List<Integer> defaultSchedule = ScheduleCatalog.recommendedFor(sessions);
         String[] names = {"", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 
         List<WorkoutPlanDay> days = new ArrayList<>();
@@ -859,8 +891,8 @@ public class WorkoutPlanService {
         };
     }
 
-    public List<List<Integer>> suggestDays(int sessions) {
-        return ScheduleCatalog.candidatesFor(sessions);
+    public List<Integer> suggestDays(int sessions) {
+        return ScheduleCatalog.recommendedFor(sessions);
     }
 
     private String buildScheduleNote(Goal goal, int sessions) {
@@ -892,8 +924,8 @@ public class WorkoutPlanService {
                 .orElse(Collections.emptyList()).stream()
                 .map(this::buildDayResponse).collect(Collectors.toList());
 
-        List<List<Integer>> suggested = Boolean.TRUE.equals(plan.getIsAiGenerated())
-                ? ScheduleCatalog.candidatesFor(plan.getSessionsPerWeek())
+        List<Integer> suggested = Boolean.TRUE.equals(plan.getIsAiGenerated())
+                ? ScheduleCatalog.recommendedFor(plan.getSessionsPerWeek())
                 : null;
         String note = buildScheduleNote(plan.getGoal(), plan.getSessionsPerWeek());
 
@@ -1017,7 +1049,7 @@ public class WorkoutPlanService {
         };
         String bmiNote = (profile != null && profile.getBmi() != null)
                 ? " (BMI hiện tại: " + profile.getBmi() + ")" : "";
-        return String.format("Giáo án AI cho mục tiêu %s%s. %d buổi/tuần. Cường độ điều chỉnh tự động theo tiến độ hàng tuần.",
+        return String.format("Giáo án cá nhân hóa cho mục tiêu %s%s. %d buổi/tuần.",
                 gv, bmiNote, days);
     }
 

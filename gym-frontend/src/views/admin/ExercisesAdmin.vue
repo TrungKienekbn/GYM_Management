@@ -134,12 +134,7 @@
               <div class="score-input-val" :style="{color:scoreColor(form.weightLossScore)}">{{ form.weightLossScore }}/10</div>
             </div>
             <div class="score-input-item">
-              <div class="score-input-label">🏃 Sức bền</div>
-              <el-slider v-model="form.enduranceScore" :min="0" :max="10" :step="1" show-stops/>
-              <div class="score-input-val" :style="{color:scoreColor(form.enduranceScore)}">{{ form.enduranceScore }}/10</div>
-            </div>
-            <div class="score-input-item">
-              <div class="score-input-label">🤸 Linh hoạt</div>
+              <div class="score-input-label">🤸 Sức bền</div>
               <el-slider v-model="form.flexibilityScore" :min="0" :max="10" :step="1" show-stops/>
               <div class="score-input-val" :style="{color:scoreColor(form.flexibilityScore)}">{{ form.flexibilityScore }}/10</div>
             </div>

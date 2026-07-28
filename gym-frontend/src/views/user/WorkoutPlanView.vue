@@ -96,17 +96,14 @@
       </el-card>
 
       <div v-if="plan.suggestedDays && plan.suggestedDays.length" class="suggested-days-box">
-        <div style="font-weight:700;font-size:0.9rem;margin-bottom:10px">📅 Các lịch tập khuyến nghị:</div>
-        <div v-for="(option, idx) in plan.suggestedDays" :key="idx" style="margin-bottom:10px">
-          <div style="font-size:0.78rem;color:var(--c-text3);margin-bottom:4px">Lịch {{ scheduleLabel(idx) }}</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <el-tag v-for="d in option" :key="d" effect="plain" type="success">
-              {{ dowVietName(d) }}
-            </el-tag>
-          </div>
+        <div style="font-weight:700;font-size:0.9rem;margin-bottom:10px">📅 Lịch tập khuyến nghị:</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <el-tag v-for="d in plan.suggestedDays" :key="d" effect="plain" type="success">
+            {{ dowVietName(d) }}
+          </el-tag>
         </div>
-        <div style="font-size:0.78rem;color:var(--c-text3);margin-top:4px">
-          Hệ thống sẽ tự nhận diện lịch bạn đang theo dựa trên các buổi check-in thực tế.
+        <div style="font-size:0.78rem;color:var(--c-text3);margin-top:8px">
+          Hệ thống sẽ cảnh báo nếu bạn tập không đúng lịch này, nhưng bạn vẫn có thể tiếp tục.
         </div>
       </div>
 
@@ -274,8 +271,8 @@
           <div style="margin-bottom:16px">
             <div style="font-weight:700;color:var(--c-text);margin-bottom:10px">⚙️ Tuỳ chỉnh nâng cao</div>
             <div class="grid-2">
-              <el-form-item label="Trình độ">
-                <el-select v-model="genForm.fitnessLevel" placeholder="Tự lấy từ Hồ sơ (BMI)" clearable style="width:100%">
+              <el-form-item label="Trình độ giáo án">
+                <el-select v-model="genForm.fitnessLevel" placeholder="Lấy từ Hồ sơ" clearable style="width:100%">
                   <el-option label="🌱 Mới bắt đầu" value="BEGINNER"/>
                   <el-option label="🔄 Trung bình" value="INTERMEDIATE"/>
                   <el-option label="⚡ Nâng cao" value="ADVANCED"/>
@@ -490,7 +487,7 @@
           </div>
           <div style="display:flex;gap:6px;align-items:center">
             <el-tag v-if="p.isActive" type="success" size="small">Đang chạy</el-tag>
-            <el-tag v-if="p.isAiGenerated" size="small">✨ AI</el-tag>
+            <el-tag v-if="p.isAiGenerated" size="small">Cá nhân hóa</el-tag>
           </div>
         </div>
       </div>
@@ -499,45 +496,7 @@
       </template>
     </el-dialog>
 
-    <el-dialog
-        v-model="scheduleSelectionDialog"
-        title="⚠️ CHỌN LẠI LỊCH TẬP CHUẨN"
-        width="480px"
-        align-center
-        :close-on-click-modal="false"
-        :close-on-press-escape="false"
-        :show-close="false"
-    >
-      <p style="color:var(--c-text2);font-size:0.9rem;margin-bottom:16px">
-        Hệ thống không thể xác định lịch tập chuẩn của bạn từ các buổi tập gần đây (có thể do bạn tập lệch ngày nhiều lần).
-        Vui lòng chọn lại 1 trong các lịch khuyến nghị dưới đây để hệ thống tiếp tục theo dõi đúng chu kỳ.
-      </p>
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <div
-            v-for="(option, idx) in scheduleOptionsList" :key="idx"
-            class="schedule-option-card"
-            :class="{selected: selectedScheduleIndex === idx}"
-            @click="selectedScheduleIndex = idx"
-        >
-          <div style="font-size:0.78rem;color:var(--c-text3);margin-bottom:6px">Lịch {{ scheduleLabel(idx) }}</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <el-tag v-for="d in option" :key="d" effect="plain" type="success">
-              {{ dowVietName(d) }}
-            </el-tag>
-          </div>
-        </div>
-      </div>
-      <template #footer>
-        <el-button
-            type="primary"
-            @click="confirmScheduleSelection"
-            :loading="confirmingSchedule"
-            :disabled="selectedScheduleIndex === null"
-        >
-          Xác nhận lịch tập này
-        </el-button>
-      </template>
-    </el-dialog>
+
   </div>
 </template>
 
@@ -578,10 +537,7 @@ const checkoutExercises = ref([])
 const baseWeightInput = ref(null)
 const savingWeight = ref(false)
 
-const scheduleSelectionDialog = ref(false)
-const scheduleOptionsList = ref([])
-const selectedScheduleIndex = ref(null)
-const confirmingSchedule = ref(false)
+
 
 const enduranceTest = ref(null)
 const loadingEnduranceTest = ref(false)
@@ -618,7 +574,7 @@ const reviewCache = reactive({ exerciseLogs: null, notes: '' })
 const reviewForm = reactive({ checkoutWeight: null, checkoutBodyFat: null, assessmentValue: null })
 
 const goals = [
-  { value: 'MUSCLE_GAIN', icon: '💪', label: 'Tăng cơ / Sức mạnh', desc: 'Yêu cầu 4-6 buổi/tuần', aiNote: 'ưu tiên bài tập compound nặng, tăng Sets, hạ Reps. Phân bổ cách ngày để phục hồi cơ.' },
+  { value: 'MUSCLE_GAIN', icon: '💪', label: 'Tăng cơ / Tăng cân', desc: 'Yêu cầu 4-6 buổi/tuần', aiNote: 'ưu tiên bài tập compound nặng, tăng Sets, hạ Reps. Phân bổ cách ngày để phục hồi cơ.' },
   { value: 'WEIGHT_LOSS', icon: '🔥', label: 'Giảm cân / Đốt mỡ', desc: 'Yêu cầu 4-6 buổi/tuần', aiNote: 'ưu tiên Cardio/HIIT, tăng lượng Reps, giảm thời gian nghỉ. Sắp xếp chu kỳ tập liên tục.' },
   { value: 'ENDURANCE', icon: '🏃', label: 'Tăng sức bền', desc: 'Yêu cầu 2-4 buổi/tuần', aiNote: 'chọn Cardio và Full Body thời gian dài, cường độ vừa, xen kẽ phục hồi tim mạch.' },
   { value: 'MAINTENANCE', icon: '⚖️', label: 'Duy trì thể hình', desc: 'Yêu cầu 3-5 buổi/tuần', aiNote: 'cân bằng đều giữa các nhóm cơ chính với cấu trúc Set/Rep tiêu chuẩn.' }
@@ -719,9 +675,7 @@ async function load() {
         }
       })
 
-      const planSessions = activeSessions.value.filter(s => s.planId === plan.value.id)
-      const needsSelection = planSessions.find(s => s.scheduleSelectionRequired)
-      checkScheduleSelection(needsSelection)
+
     }
   } catch (err) {
     console.error(err)
@@ -882,31 +836,32 @@ async function applyTemplate() {
   }
 }
 
-// ====================== BẮT ĐẦU TẬP (thay Check-in cũ) ======================
-// Bugfix: kiểm tra thứ tự TRƯỚC khi enroll (tạo Session). Nếu người dùng bấm Huỷ,
-// enroll() KHÔNG BAO GIỜ được gọi — coi như chưa bấm "Bắt đầu tập" gì cả, không có
-// Session nào tồn tại, không cần rollback.
 async function handleStartSession(day, dayNumber) {
   try {
-    const checkRes = await sessionAPI.checkOrder(day.id, plan.value.currentWeek)
-    const orderWarning = checkRes.data?.orderWarning
+    const today = dayjs().format('YYYY-MM-DD')
+    const checkRes = await sessionAPI.checkOrder(day.id, plan.value.currentWeek, today)
+    const { orderWarning, scheduleWarning, manaWarning } = checkRes.data || {}
 
-    if (orderWarning) {
+    const warnings = [orderWarning, scheduleWarning, manaWarning].filter(Boolean)
+
+    if (warnings.length > 0) {
+      const message = warnings.map(w => `• ${w}`).join('\n') + '\nTIẾP TỤC TẬP.'
       try {
         await ElMessageBox.confirm(
-          orderWarning,
-          '⚠️ Cảnh báo thứ tự',
-          { confirmButtonText: 'Tiếp tục', cancelButtonText: 'Huỷ', type: 'warning' }
+          message,
+          'LƯU Ý TRƯỚC KHI TẬP',
+          {
+            confirmButtonText: 'Tiếp tục tập',
+            cancelButtonText: 'Huỷ',
+            dangerouslyUseHTMLString: false,
+            customClass: 'pre-line-message'
+          }
         )
       } catch {
-        // Huỷ: chưa có gì được tạo -> không làm gì thêm, không gọi enroll, không reload cũng
-        // được vì UI chưa hề đổi trạng thái nào (session chưa tồn tại).
         return
       }
     }
 
-    // Chỉ tới đây mới thật sự tạo Session — sau khi đã xác nhận (hoặc không có cảnh báo)
-    const today = dayjs().format('YYYY-MM-DD')
     const nowTime = dayjs().format('HH:mm:ss')
     const isLast = (dayNumber === plan.value.sessionsPerWeek)
 
@@ -919,11 +874,6 @@ async function handleStartSession(day, dayNumber) {
     })
     const session = enrollRes.data
     if (!session?.id) throw new Error('Không lấy được session id')
-
-    if (session.dayMismatchWarning) {
-      ElMessage({ message: session.dayMismatchWarning, type: 'warning', duration: 8000 })
-    }
-    checkScheduleSelection(session)
 
     await load()
     openCheckOutDialog(day, dayNumber, session.id)
@@ -1002,20 +952,9 @@ async function submitCheckOut() {
       return
     }
 
-    if (resp.injuryRisk) {
-      ElMessageBox.alert(
-        'Bạn đã tập vượt quá thể lực hiện có. Nguy cơ chấn thương — hãy nghỉ ngơi trước khi tập tiếp!',
-        '⚠️ Cảnh báo chấn thương',
-        { type: 'warning' }
-      )
-    }
-    if (resp.dayMismatchWarning) {
-      ElMessage({ message: resp.dayMismatchWarning, type: 'warning', duration: 8000 })
-    }
-
     ElMessage.success('Hoàn thành buổi tập! 🎉')
     checkOutDialog.value = false
-    checkScheduleSelection(resp)
+
     await load()
   } catch (err) {
     ElMessage.error(err.response?.data?.message || 'Hoàn thành buổi tập thất bại')
@@ -1051,17 +990,9 @@ async function submitWeeklyReview() {
     const r = await sessionAPI.checkOut(checkoutSessionId.value, payload)
     const resp = r.data
 
-    if (resp.injuryRisk) {
-      ElMessageBox.alert(
-        'Bạn đã tập vượt quá thể lực hiện có. Nguy cơ chấn thương — hãy nghỉ ngơi trước khi tập tiếp!',
-        '⚠️ Cảnh báo chấn thương',
-        { type: 'warning' }
-      )
-    }
-
     ElMessage.success('Hoàn thành tuần tập! Giáo án đã được căn chỉnh 🎉')
     weeklyReviewDialog.value = false
-    checkScheduleSelection(resp)
+
     await load()
   } catch (err) {
     ElMessage.error(err.response?.data?.message || 'Hoàn thành Review thất bại')
@@ -1204,37 +1135,8 @@ function scheduleLabel(idx) {
   return String.fromCharCode(65 + idx)
 }
 
-function checkScheduleSelection(sessionObj) {
-  if (sessionObj?.scheduleSelectionRequired && sessionObj?.scheduleOptions?.length) {
-    scheduleOptionsList.value = sessionObj.scheduleOptions
-    selectedScheduleIndex.value = null
-    scheduleSelectionDialog.value = true
-    return true
-  }
-  return false
-}
 
-async function confirmScheduleSelection() {
-  if (selectedScheduleIndex.value === null) {
-    ElMessage.warning('Vui lòng chọn 1 lịch tập')
-    return
-  }
-  if (!plan.value?.id) return
 
-  confirmingSchedule.value = true
-  try {
-    const dayOfWeek = scheduleOptionsList.value[selectedScheduleIndex.value]
-    const r = await planAPI.confirmSchedule(plan.value.id, dayOfWeek)
-    plan.value = r.data
-    ElMessage.success('Đã lưu lịch tập chuẩn!')
-    scheduleSelectionDialog.value = false
-    await load()
-  } catch (err) {
-    ElMessage.error(err.response?.data?.message || 'Lưu lịch tập thất bại')
-  } finally {
-    confirmingSchedule.value = false
-  }
-}
 
 onMounted(load)
 </script>
@@ -1343,4 +1245,7 @@ onMounted(load)
 }
 .schedule-option-card:hover { border-color:var(--c-accent); }
 .schedule-option-card.selected { border-color:var(--c-accent); background:#FFF8F0; }
+:global(.pre-line-message .el-message-box__message) {
+  white-space: pre-line;
+}
 </style>
