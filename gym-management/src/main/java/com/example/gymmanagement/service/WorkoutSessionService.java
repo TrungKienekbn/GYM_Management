@@ -160,6 +160,9 @@ public class WorkoutSessionService {
             throw new RuntimeException("Vui lòng nhập dữ liệu cho bài tập!");
 
         WorkoutPlan plan = s.getWorkoutPlan();
+        // ── MỚI: khai báo sớm để dùng cho cả điều kiện Assessment bên dưới và
+        // rẽ nhánh advanceTemplatePlanWeek/adjustPlanAfterWeek phía sau (không đổi) ──
+        boolean isAiPlan = plan != null && Boolean.TRUE.equals(plan.getIsAiGenerated());
 
         boolean isLastCompletedSession = isLastCompletedSessionOfWeek(user.getId(), plan, s);
 
@@ -178,7 +181,9 @@ public class WorkoutSessionService {
         if (isLastCompletedSession) {
             if (req.getCheckoutWeight() == null)
                 throw new RuntimeException("Đây là buổi cuối tuần! Vui lòng nhập cân nặng hiện tại.");
-            if (plan != null && plan.getGoal() == Goal.ENDURANCE
+            // ── SỬA: chỉ bắt buộc Assessment cho giáo án AI. Admin có thể chọn
+            // Goal.ENDURANCE nhưng không có Target Tracking -> không có Assessment. ──
+            if (isAiPlan && plan.getGoal() == Goal.ENDURANCE
                     && (req.getAssessmentMetricType() == null || req.getAssessmentValue() == null)) {
                 throw new RuntimeException("Vui lòng nhập kết quả Assessment (mục tiêu Sức bền) trước khi hoàn thành tuần.");
             }
@@ -244,11 +249,11 @@ public class WorkoutSessionService {
         }
 
         boolean isTemplatePlan = plan != null && Boolean.FALSE.equals(plan.getIsAiGenerated());
-        boolean isAiPlan       = plan != null && Boolean.TRUE.equals(plan.getIsAiGenerated());
 
         if (isLastCompletedSession) {
 
-            if (plan != null && plan.getGoal() == Goal.ENDURANCE) {
+            // ── SỬA: chỉ áp dụng Assessment cho giáo án AI ──
+            if (isAiPlan && plan.getGoal() == Goal.ENDURANCE) {
                 applyAssessmentFromReview(user, req.getAssessmentMetricType(), req.getAssessmentValue());
             }
 

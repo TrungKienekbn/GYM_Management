@@ -45,26 +45,45 @@
             <div v-if="plan.estimatedWeeks != null" style="font-size:0.82rem;color:var(--c-text2);margin-bottom:6px">
               ⏱ Dự kiến ban đầu: <strong>{{ plan.estimatedWeeks }} tuần</strong>
               <span v-if="plan.durationWeeks !== plan.estimatedWeeks">
-                (hiện đã điều chỉnh còn <strong>{{ plan.durationWeeks }} tuần</strong>)
+                (hiện đã điều chỉnh thành <strong>{{ plan.durationWeeks }} tuần</strong>)
               </span>
             </div>
 
-            <div v-if="hasTarget(plan)" class="target-progress-box">
-              <div style="font-weight:700;margin-bottom:6px">🎯 Tiến độ mục tiêu</div>
-              <div style="font-size:0.85rem">
-                {{ targetBaselineText(plan) }} → {{ targetGoalText(plan) }}
+            <div class="target-food-row" :class="{ 'no-target': !hasTarget(plan) }">
+              <div v-if="hasTarget(plan)" class="target-progress-box">
+                <div style="font-weight:700;margin-bottom:6px">🎯 Tiến độ mục tiêu</div>
+                <div style="font-size:0.85rem">{{ targetBaselineText(plan) }} → {{ targetGoalText(plan) }}</div>
+                <div style="font-size:0.85rem;margin-top:2px">Hiện tại: <strong>{{ targetCurrentText(plan) }}</strong></div>
+                <el-tag v-if="plan.targetAchieved" type="success" size="small" style="margin-top:8px">✅ Đã đạt mục tiêu</el-tag>
               </div>
-              <div style="font-size:0.85rem;margin-top:2px">
-                Hiện tại: <strong>{{ targetCurrentText(plan) }}</strong>
+
+              <div class="food-suggest-box">
+                <div style="font-weight:700;margin-bottom:4px">🍽️ MÓN ĂN ĐỀ XUẤT</div>
+                <div style="font-size:0.78rem;color:var(--c-text2);margin-bottom:8px">
+                  Gợi ý dinh dưỡng phù hợp với mục tiêu: {{ goalLabel(foodGoalFor(plan.goal)) }}
+                </div>
+
+                <div v-if="loadingFoods" style="font-size:0.8rem;color:var(--c-text3)">Đang tải món ăn...</div>
+                <div v-else-if="foodError" style="font-size:0.8rem;color:var(--c-text3)">Không thể tải dữ liệu món ăn.</div>
+                <div v-else-if="!recommendedFoods.length" style="font-size:0.8rem;color:var(--c-text3)">
+                  Chưa có món ăn đề xuất cho mục tiêu này.
+                </div>
+                <div v-else class="food-suggest-list">
+                  <div v-for="f in recommendedFoods" :key="f.id" class="food-suggest-card">
+                    <img v-if="f.imageUrl" :src="f.imageUrl" class="food-suggest-img" alt="" />
+                    <div class="food-suggest-info">
+                      <div class="food-suggest-name">🍗 {{ f.name }}</div>
+                      <div class="food-suggest-meta">
+                        <span v-if="f.calories != null">🔥 {{ f.calories }} kcal</span>
+                        <span v-if="f.proteinGrams != null">🥩 Protein {{ f.proteinGrams }}g</span>
+                        <span v-if="f.fatGrams != null">🥑 Chất béo {{ f.fatGrams }}g</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <el-tag v-if="plan.targetAchieved" type="success" size="small" style="margin-top:8px">
-                ✅ Đã đạt mục tiêu
-              </el-tag>
             </div>
           </div>
-          <el-button type="primary" plain size="small" @click="openGoalDialog">
-            🔄 Đổi mục tiêu
-          </el-button>
         </div>
       </el-card>
 
@@ -397,7 +416,7 @@
         <el-input-number v-model="reviewForm.checkoutWeight" :min="30" :max="300" :precision="1" style="width:100%"/>
       </el-form-item>
 
-      <template v-if="plan?.goal === 'ENDURANCE'">
+<template v-if="plan?.isAiGenerated && plan?.goal === 'ENDURANCE'">
         <el-divider/>
         <div style="font-weight:700;color:var(--c-text);margin-bottom:10px">
           🏃 Bài test: {{ assessmentMetricLabel(plan.targetMetricType) }} *
@@ -502,7 +521,7 @@
 
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
-import { planAPI, sessionAPI, enduranceTestAPI } from '@/api'
+import { planAPI, sessionAPI, enduranceTestAPI, foodAPI } from '@/api'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import dayjs from 'dayjs'
 
@@ -537,7 +556,28 @@ const checkoutExercises = ref([])
 const baseWeightInput = ref(null)
 const savingWeight = ref(false)
 
+const recommendedFoods = ref([])
+const loadingFoods = ref(false)
+const foodError = ref(false)
 
+function foodGoalFor(goal) {
+  return goal === 'ENDURANCE' ? 'MAINTENANCE' : goal
+}
+
+async function loadRecommendedFoods() {
+  if (!plan.value?.goal) return
+  loadingFoods.value = true
+  foodError.value = false
+  try {
+    const res = await foodAPI.getAll({ goal: foodGoalFor(plan.value.goal) })
+    recommendedFoods.value = (res.data || []).slice(0, 3)
+  } catch (err) {
+    foodError.value = true
+    recommendedFoods.value = []
+  } finally {
+    loadingFoods.value = false
+  }
+}
 
 const enduranceTest = ref(null)
 const loadingEnduranceTest = ref(false)
@@ -653,6 +693,7 @@ async function load() {
     if (plan.value) {
       const progressRes = await sessionAPI.getWeekProgress(plan.value.id, plan.value.currentWeek)
       weekProgress.value = progressRes.data
+  loadRecommendedFoods()
 
       plan.value.planDays.forEach(day => {
         const standardSession = activeSessions.value.find(s =>
@@ -969,7 +1010,7 @@ async function submitWeeklyReview() {
     ElMessage.warning('Vui lòng nhập cân nặng hiện tại!')
     return
   }
-  if (plan.value?.goal === 'ENDURANCE' && reviewForm.assessmentValue == null) {
+  if (plan.value?.isAiGenerated && plan.value?.goal === 'ENDURANCE' && reviewForm.assessmentValue == null) {
     ElMessage.warning('Vui lòng nhập kết quả bài test!')
     return
   }
@@ -982,7 +1023,7 @@ async function submitWeeklyReview() {
       checkoutWeight: reviewForm.checkoutWeight,
       checkoutBodyFat: reviewForm.checkoutBodyFat
     }
-    if (plan.value?.goal === 'ENDURANCE') {
+if (plan.value?.isAiGenerated && plan.value?.goal === 'ENDURANCE') {
       payload.assessmentMetricType = plan.value.targetMetricType
       payload.assessmentValue = reviewForm.assessmentValue
     }
@@ -1049,7 +1090,7 @@ function goalLabel(g) {
     WEIGHT_LOSS: '🔥 Giảm cân',
     MUSCLE_GAIN: '💪 Tăng cơ',
     ENDURANCE: '🏃 Sức bền',
-    MAINTENANCE: '⚖️ Duy trì'
+    MAINTENANCE: '⚖️ Duy trì, Sức bền '
   }[g] || g
 }
 
@@ -1142,6 +1183,17 @@ onMounted(load)
 </script>
 
 <style scoped>
+.target-food-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px; }
+.target-food-row.no-target { grid-template-columns:1fr; }
+@media (max-width:700px) { .target-food-row { grid-template-columns:1fr; } }
+
+.food-suggest-box { background:#fff7ed; border:1px solid #fed7aa; padding:12px 14px; border-radius:8px; }
+.food-suggest-list { display:flex; flex-direction:column; gap:8px; max-height:150px; overflow-y:auto; }
+.food-suggest-card { display:flex; gap:8px; align-items:center; background:var(--c-card2); border-radius:6px; padding:6px 8px; }
+.food-suggest-img { width:36px; height:36px; object-fit:cover; border-radius:6px; flex-shrink:0; }
+.food-suggest-info { flex:1; min-width:0; }
+.food-suggest-name { font-size:0.8rem; font-weight:600; color:var(--c-text); }
+.food-suggest-meta { display:flex; gap:8px; flex-wrap:wrap; font-size:0.7rem; color:var(--c-text3); margin-top:2px; }
 .empty-plan {
   text-align:center; padding:80px 40px;
   background:var(--c-card); border-radius:var(--radius-lg); box-shadow:var(--shadow);
