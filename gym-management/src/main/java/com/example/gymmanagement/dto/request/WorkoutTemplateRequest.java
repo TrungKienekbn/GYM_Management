@@ -14,4 +14,6 @@ public class WorkoutTemplateRequest {
     private Integer durationWeeks;
     private Integer sessionsPerWeek;   // = days.size(), FE tự đồng bộ
     private List<TemplateDayRequest> days;
+
+    private Boolean isFitnessImprovement;
 }

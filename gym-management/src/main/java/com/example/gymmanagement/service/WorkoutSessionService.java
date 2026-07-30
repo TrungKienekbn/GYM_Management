@@ -248,7 +248,9 @@ public class WorkoutSessionService {
             }
         }
 
-        boolean isTemplatePlan = plan != null && Boolean.FALSE.equals(plan.getIsAiGenerated());
+        boolean isFitnessImprovementPlan = plan != null && Boolean.TRUE.equals(plan.getIsFitnessImprovement());
+        boolean isTemplatePlan = plan != null && Boolean.FALSE.equals(plan.getIsAiGenerated())
+                && !isFitnessImprovementPlan;
 
         if (isLastCompletedSession) {
 
@@ -274,7 +276,14 @@ public class WorkoutSessionService {
                     user.getId(), plan.getId(), s.getWeekNumber());
             adjustMuscleGroupWeights(plan, weekLogs);
 
-            if (isTemplatePlan) {
+            if (isFitnessImprovementPlan) {
+                try {
+                    workoutPlanService.checkFitnessImprovementProgress(plan, email);
+                } catch (Exception e) {
+                    notifService.sendToUser(user.getId(), "⚠️ Lưu ý",
+                            "Buổi tập đã hoàn thành nhưng kiểm tra tiến độ thể lực gặp sự cố. Vui lòng thử lại.", "SYSTEM");
+                }
+            } else if (isTemplatePlan) {
                 advanceTemplatePlanWeek(plan);
             } else if (isAiPlan) {
                 try {

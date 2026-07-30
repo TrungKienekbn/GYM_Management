@@ -53,7 +53,11 @@ export const planAPI = {
     getTemplates:    ()    => api.get('/workout-plans/templates'),
     selectTemplate:  (id)  => api.post(`/workout-plans/templates/${id}/select`),
     setBaseWeight: (planExerciseId, payload) => api.patch(`/workout-plans/plan-exercises/${planExerciseId}/base-weight`, payload),
-    suggestDays: (sessions) => api.get('/workout-plans/suggest-days', { params: { sessions } })
+    suggestDays: (sessions) => api.get('/workout-plans/suggest-days', { params: { sessions } }),
+    getFitnessImprovementTemplates: (sessions) =>
+        api.get('/workout-plans/fitness-improvement-templates', { params: { sessions } }),
+    startFitnessImprovement: (templateId) =>
+        api.post(`/workout-plans/fitness-improvement/${templateId}/start`)
 }
 
 // ── MỚI (Patch 6): Endurance Test ─────────────

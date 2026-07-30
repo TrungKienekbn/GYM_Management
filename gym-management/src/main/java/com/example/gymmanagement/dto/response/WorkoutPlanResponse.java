@@ -57,4 +57,9 @@ public class WorkoutPlanResponse {
 
     // ── MỚI (Patch 7): thời lượng ước tính ban đầu, cố định, dùng làm mẫu số %thời gian ──
     private Integer estimatedWeeks;
+
+    // ── MỚI: Giáo án nâng cao thể lực ──
+    private Long originalPlanId;
+    private Boolean isFitnessImprovement;
+    private Integer requiredMaxSessionManaCost;
 }

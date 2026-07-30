@@ -26,6 +26,24 @@ public class WorkoutPlanController {
         return ResponseEntity.ok(ApiResponse.success(planService.getAllTemplates(true)));
     }
 
+    // ── MỚI: Giáo án nâng cao thể lực ──
+
+    @GetMapping("/fitness-improvement-templates")
+    public ResponseEntity<ApiResponse<List<WorkoutPlanResponse>>> getFitnessImprovementTemplates(
+            @RequestParam Integer sessions) {
+        return ResponseEntity.ok(ApiResponse.success(
+                planService.getFitnessImprovementTemplates(sessions)));
+    }
+
+    @PostMapping("/fitness-improvement/{templateId}/start")
+    public ResponseEntity<ApiResponse<WorkoutPlanResponse>> startFitnessImprovementPlan(
+            @PathVariable Long templateId,
+            @AuthenticationPrincipal UserDetails ud) {
+        return ResponseEntity.ok(ApiResponse.success(
+                planService.startFitnessImprovementPlan(ud.getUsername(), templateId),
+                "Đã bắt đầu giáo án nâng cao thể lực"));
+    }
+
     @PostMapping("/templates/{id}/select")
     public ResponseEntity<ApiResponse<WorkoutPlanResponse>> selectTemplate(
             @PathVariable Long id,

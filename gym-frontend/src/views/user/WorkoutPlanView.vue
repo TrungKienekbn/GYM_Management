@@ -28,6 +28,7 @@
             <div class="display" style="font-size:1.6rem;color:var(--c-text)">{{ plan.planName }}</div>
             <div style="color:var(--c-text2);margin:4px 0 10px;font-size:0.875rem">{{ plan.description }}</div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+              <template v-if="!plan.isFitnessImprovement">
               <el-tag type="warning">{{ goalLabel(plan.goal) }}</el-tag>
               <el-tag type="info">{{ levelLabel(plan.targetLevel) }}</el-tag>
               <el-tag type="danger">Tuần {{ plan.currentWeek }} / {{ plan.durationWeeks }}</el-tag>
@@ -40,6 +41,10 @@
               <el-tag v-if="plan.bodyType" effect="plain">
                 🧍 Thể trạng: {{ bodyTypeLabel(plan.bodyType) }}
               </el-tag>
+                     </template>
+   <el-tag v-if="plan.isFitnessImprovement" type="danger" effect="dark">
+                  ⏸️ Đang tập giáo án nâng cao thể lực
+                </el-tag>
             </div>
 
             <div v-if="plan.estimatedWeeks != null" style="font-size:0.82rem;color:var(--c-text2);margin-bottom:6px">
@@ -90,6 +95,9 @@
       <div v-if="plan.weightAdjustmentNote" class="weight-adjustment-box">
         ⚖️ {{ plan.weightAdjustmentNote }}
       </div>
+      <div v-if="plan.isFitnessImprovement" class="fi-pause-box">
+      Giáo án sẽ tiếp tục khi chỉ số cơ thể , thể lực được cải thiện
+            </div>
 
       <el-card v-if="weekProgress" class="progress-panel" style="margin-bottom:24px;">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px">
@@ -135,7 +143,7 @@
         </div>
       </div>
 
-      <div v-if="plan.maxMana" class="mana-box">
+      <div v-if="plan.maxMana && !plan.isFitnessImprovement" class="mana-box">
         <div style="display:flex;justify-content:space-between;margin-bottom:6px">
           <span style="font-weight:700">⚡ Thể lực</span>
           <span style="font-weight:700">{{ plan.currentMana }}/{{ plan.maxMana }}</span>
@@ -365,6 +373,26 @@
       </template>
     </el-dialog>
 
+<!-- ===================== DIALOG GỢI Ý FITNESS IMPROVEMENT (MỚI) ===================== -->
+    <el-dialog
+        v-model="fitnessImprovementDialog"
+        title="💡 KHUYẾN NGHỊ NÂNG CAO THỂ LỰC"
+        width="480px"
+        align-center
+        :close-on-click-modal="false"
+    >
+      <p style="color:var(--c-text2);line-height:1.6">
+        Hiện tại mức độ sẵn sàng tập luyện cho giáo án này của bạn chưa đủ.
+        Chúng tôi khuyến nghị bạn tập <strong>Giáo án nâng cao thể lực</strong> trước —
+        giáo hiện tại sẽ tự động tiếp tục ngay khi bạn đủ điều kiện tập.
+      </p>
+      <template #footer>
+        <el-button @click="fitnessImprovementDialog=false">Để sau</el-button>
+        <el-button type="primary" :loading="startingFitnessImprovement" @click="startFitnessImprovementPlan">
+          Bắt đầu
+        </el-button>
+      </template>
+    </el-dialog>
     <!-- ===================== DIALOG CHECK-OUT (LẦN 1 — chỉ nhập kết quả bài tập) ===================== -->
     <el-dialog v-model="checkOutDialog" title="🏁 CHECKOUT BUỔI TẬP" width="520px" align-center :close-on-click-modal="false">
       <div style="margin-bottom:14px; font-weight:600; color:var(--c-text)">
@@ -579,6 +607,11 @@ async function loadRecommendedFoods() {
   }
 }
 
+// ── MỚI: Fitness Improvement Plan ──
+const fitnessImprovementDialog = ref(false)
+const startingFitnessImprovement = ref(false)
+const fiSessionsPerWeek = ref(null) // số buổi/tuần dùng để tra template FI tương ứng
+
 const enduranceTest = ref(null)
 const loadingEnduranceTest = ref(false)
 const enduranceTestForm = reactive({ pushupReps: null, plankSeconds: null, squatReps: null })
@@ -661,6 +694,48 @@ function handleGoalSelect(goalValue) {
     loadEnduranceTest().then(() => {
       showEnduranceTestForm.value = !enduranceTest.value
     })
+  }
+}
+
+// ── MỚI: Kiểm tra điều kiện gợi ý Fitness Improvement sau khi Generate AI Plan ──
+// requiredMaxSessionManaCost / maxMana >= 75% -> gợi ý người dùng tập giáo án nâng cao thể lực.
+function checkFitnessImprovementSuggestion(planData) {
+  if (!planData) return
+  const { requiredMaxSessionManaCost, maxMana, sessionsPerWeek } = planData
+  if (requiredMaxSessionManaCost != null && maxMana) {
+    const ratio = requiredMaxSessionManaCost / maxMana
+    if (ratio >= 0.75) {
+      fiSessionsPerWeek.value = sessionsPerWeek
+      fitnessImprovementDialog.value = true
+    }
+  }
+}
+
+// Bấm "Bắt đầu" trong popup: lấy template FI theo số buổi user đã chọn (data[0] — mỗi mức
+// buổi/tuần chỉ có đúng 1 template, nếu Backend trả List thì luôn lấy phần tử đầu tiên).
+async function startFitnessImprovementPlan() {
+  const sessions = fiSessionsPerWeek.value || plan.value?.sessionsPerWeek
+  if (!sessions) {
+    ElMessage.warning('Không xác định được số buổi tập/tuần')
+    return
+  }
+  startingFitnessImprovement.value = true
+  try {
+    const tplRes = await planAPI.getFitnessImprovementTemplates(sessions)
+    const template = (tplRes.data || [])[0]
+    if (!template) {
+      ElMessage.warning('Chưa có giáo án nâng cao thể lực phù hợp cho số buổi này')
+      return
+    }
+    const r = await planAPI.startFitnessImprovement(template.id)
+    plan.value = r.data
+    fitnessImprovementDialog.value = false
+    ElMessage.success('Đã bắt đầu giáo án nâng cao thể lực! 💪')
+    await load()
+  } catch (err) {
+    ElMessage.error(err.response?.data?.message || 'Không thể bắt đầu giáo án nâng cao thể lực')
+  } finally {
+    startingFitnessImprovement.value = false
   }
 }
 
@@ -788,7 +863,7 @@ async function loadTemplates() {
   loadingTemplates.value = true
   try {
     const res = await planAPI.getTemplates()
-    templates.value = res.data || []
+    templates.value = (res.data || []).filter(t => !t.isFitnessImprovement)
   } catch (e) {
     // im lặng
   } finally {
@@ -852,6 +927,7 @@ async function generateWithGoal() {
     ElMessage.success('Giáo án thích ứng đã khởi tạo thành công! 🎉')
     resetGenForm()
     await load()
+    checkFitnessImprovementSuggestion(r.data)
   } catch (err) {
     ElMessage.error(err.response?.data?.message || 'Tạo giáo án thất bại')
   } finally {
@@ -870,6 +946,7 @@ async function applyTemplate() {
     selectedTemplateId.value = null
     ElMessage.success('Đã áp dụng giáo án mẫu thành công! 🎉')
     await load()
+    checkFitnessImprovementSuggestion(r.data)
   } catch (err) {
     ElMessage.error(err.response?.data?.message || 'Áp dụng giáo án mẫu thất bại')
   } finally {
@@ -1299,5 +1376,9 @@ onMounted(load)
 .schedule-option-card.selected { border-color:var(--c-accent); background:#FFF8F0; }
 :global(.pre-line-message .el-message-box__message) {
   white-space: pre-line;
+}
+.fi-pause-box {
+  background:#fef2f2; color:#b91c1c; padding:12px 14px; border-radius:8px;
+  margin-bottom:20px; border:1px solid #fecaca; font-size:0.875rem;
 }
 </style>

@@ -11,4 +11,6 @@ public interface WorkoutPlanRepository extends JpaRepository<WorkoutPlan, Long> 
     List<WorkoutPlan> findByIsTemplateTrueAndIsActiveTrueOrderByCreatedAtDesc();
     List<WorkoutPlan> findByIsTemplateTrueOrderByCreatedAtDesc(); // admin xem cả inactive
 
+    List<WorkoutPlan> findByIsTemplateTrueAndIsFitnessImprovementTrueAndIsActiveTrueAndSessionsPerWeekOrderByCreatedAtDesc(
+            Integer sessionsPerWeek);
 }
