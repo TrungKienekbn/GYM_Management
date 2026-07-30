@@ -2,7 +2,7 @@
   <div class="fade-in">
 
     <div class="page-header">
-      <h2>GIÁO ÁN MẪU (ADMIN TẠO TAY)</h2>
+      <h2>GIÁO ÁN MẪU </h2>
 
       <div style="display:flex;gap:10px">
         <el-input

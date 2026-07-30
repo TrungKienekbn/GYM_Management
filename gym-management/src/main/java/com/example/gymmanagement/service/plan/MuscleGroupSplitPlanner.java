@@ -27,12 +27,21 @@ import java.util.*;
  * 4) Chia AdjustedQuota cho f buổi bằng Largest Remainder Method (mọi buổi trọng số
  *    bằng nhau): base = AdjustedQuota / f, remainder = AdjustedQuota % f; các buổi đầu
  *    tiên (theo thứ tự dayIndex xuất hiện) nhận thêm 1 cho tới khi hết remainder.
+ * 5) MỚI — Business Rule: mỗi ngày không được vượt quá MAX_EXERCISES_PER_GROUP_PER_DAY
+ *    bài/nhóm cơ. Nếu một ngày vượt ngưỡng sau bước 4, phần dư (overflow) được ưu tiên
+ *    chuyển sang các ngày khác CÙNG nhóm cơ đó đang có ÍT bài nhất trước (không phải
+ *    theo thứ tự dayIndex). Nếu mọi ngày đã đạt ngưỡng thì overflow bị bỏ. Không tạo
+ *    ngày mới, không thêm nhóm cơ vào ngày vốn không có, không đổi split/frequency/LRM.
  */
 public final class MuscleGroupSplitPlanner {
 
     private MuscleGroupSplitPlanner() {}
 
     private static final int T_MAX = 4;
+
+    // ── Business Rule: giới hạn cứng số bài/1 nhóm cơ/1 ngày. Không hardcode số 3
+    // rải rác trong thuật toán — chỉ khai báo duy nhất ở đây. ──
+    private static final int MAX_EXERCISES_PER_GROUP_PER_DAY = 3;
 
     // ── Nhóm cơ theo từng buổi trong tuần, tra theo (Goal, sessionsPerWeek) ──
     // Mỗi phần tử ngoài cùng = 1 buổi (dayIndex theo thứ tự), giá trị = các nhóm cơ của buổi đó.
@@ -180,7 +189,10 @@ public final class MuscleGroupSplitPlanner {
             List<Integer> days = e.getValue();
             int f = days.size();
             int adjustedQuota = (f == 1) ? Math.min(baseQuota, T_MAX) : baseQuota;
-            perGroupPerDay.put(e.getKey(), largestRemainderDistribute(adjustedQuota, days));
+            Map<Integer, Integer> distributed = largestRemainderDistribute(adjustedQuota, days);
+            // ── MỚI: cap về MAX_EXERCISES_PER_GROUP_PER_DAY, ưu tiên chuyển bài dư sang
+            // ngày khác cùng nhóm cơ đang có ít bài nhất trước khi bỏ hẳn ──
+            perGroupPerDay.put(e.getKey(), capAndRedistribute(distributed, days));
         }
 
         List<Map<MuscleGroup, Integer>> result = new ArrayList<>();
@@ -205,6 +217,47 @@ public final class MuscleGroupSplitPlanner {
             dist.put(days.get(i), count);
         }
         return dist;
+    }
+
+    /**
+     * Ép mỗi ngày trong "days" không vượt quá MAX_EXERCISES_PER_GROUP_PER_DAY.
+     * Overflow được ưu tiên chuyển sang ngày ĐANG CÓ ÍT BÀI NHẤT trước (không phải
+     * theo thứ tự dayIndex). Nếu nhiều ngày cùng mức thấp nhất, giữ nguyên thứ tự
+     * xuất hiện ban đầu trong "days" (stable sort). Chỉ khi mọi ngày đã chạm ngưỡng
+     * thì overflow mới bị bỏ. Không tạo ngày mới, không thêm nhóm cơ vào ngày vốn
+     * không có (chỉ thao tác trong "days").
+     */
+    private static Map<Integer, Integer> capAndRedistribute(Map<Integer, Integer> dist, List<Integer> days) {
+        Map<Integer, Integer> result = new LinkedHashMap<>(dist);
+
+        int overflow = 0;
+        for (Integer d : days) {
+            int q = result.get(d);
+            if (q > MAX_EXERCISES_PER_GROUP_PER_DAY) {
+                overflow += q - MAX_EXERCISES_PER_GROUP_PER_DAY;
+                result.put(d, MAX_EXERCISES_PER_GROUP_PER_DAY);
+            }
+        }
+
+        if (overflow > 0) {
+            // Sắp xếp các ngày theo quota hiện tại TĂNG DẦN (ít bài nhất ưu tiên nhận trước).
+            // List.sort là stable -> giữ nguyên thứ tự gốc khi quota bằng nhau.
+            List<Integer> byAscendingQuota = new ArrayList<>(days);
+            byAscendingQuota.sort(Comparator.comparingInt(result::get));
+
+            for (Integer d : byAscendingQuota) {
+                if (overflow <= 0) break;
+                int q = result.get(d);
+                int capacity = MAX_EXERCISES_PER_GROUP_PER_DAY - q;
+                if (capacity > 0) {
+                    int transfer = Math.min(capacity, overflow);
+                    result.put(d, q + transfer);
+                    overflow -= transfer;
+                }
+            }
+        }
+        // overflow còn lại (nếu có) bị bỏ — không tạo ngày mới, không random ở bước này
+        return result;
     }
 
     private static List<List<MuscleGroup>> dayGroupsFor(Goal goal, int sessions) {
