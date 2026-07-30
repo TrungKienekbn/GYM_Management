@@ -113,4 +113,15 @@ public class WorkoutPlan {
         if (createdAt == null) createdAt = LocalDateTime.now();
         if (currentWeek == null) currentWeek = 1;
     }
+
+    // ── MỚI: Giáo án nâng cao thể lực (Fitness Improvement) ──
+    private Long originalPlanId;
+
+    @Builder.Default
+    private Boolean isFitnessImprovement = false;
+
+    // ── MỚI: Snapshot Mana Cost của buổi tập nặng nhất trong giáo án AI,
+// tính 1 lần lúc Generate. Dùng để so sánh khi checkout FI Plan,
+// KHÔNG cần đọc lại WorkoutPlanDay/Exercise mỗi tuần. ──
+    private Integer requiredMaxSessionManaCost;
 }

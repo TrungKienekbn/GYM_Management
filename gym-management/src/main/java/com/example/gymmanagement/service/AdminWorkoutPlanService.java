@@ -88,6 +88,10 @@ public class AdminWorkoutPlanService {
                 .difficultyAdjustment(plan.getDifficultyAdjustment())
                 .setsAdjustment(plan.getSetsAdjustment())
                 .repsAdjustment(plan.getRepsAdjustment())
+                // ── MỚI ──
+                .originalPlanId(plan.getOriginalPlanId())
+                .isFitnessImprovement(plan.getIsFitnessImprovement())
+                .requiredMaxSessionManaCost(plan.getRequiredMaxSessionManaCost())
                 .build();
     }
 }

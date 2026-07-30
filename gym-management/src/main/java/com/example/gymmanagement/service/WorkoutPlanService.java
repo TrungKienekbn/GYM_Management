@@ -33,7 +33,7 @@ public class WorkoutPlanService {
     // ── MỚI (Patch 7) ──
     private final EnduranceTestRepository enduranceTestRepo;
     private final EstimatedWeeksCalculator estimatedWeeksCalculator;
-
+    private final ManaService manaService; // MỚI — cần cho computeMaxSessionManaCost()
     private static final int FREE_PLAN_LIMIT_PER_MONTH = 1;
 
     private void checkPlanGenerationLimit(User user) {
@@ -186,6 +186,9 @@ public class WorkoutPlanService {
         List<WorkoutPlanDay> days = buildPlanDaysNew(plan, goal, level, fsLevel, bodyType, daysPerWeek, profile, fs);
         dayRepo.saveAll(days);
         plan.setPlanDays(days);
+
+        plan.setRequiredMaxSessionManaCost(computeMaxSessionManaCost(days));
+        planRepo.save(plan);
 
         return toPlanResponse(plan, profile);
     }
@@ -407,6 +410,7 @@ public class WorkoutPlanService {
                 .isActive(true)
                 .isAiGenerated(false)
                 .isTemplate(true)
+                .isFitnessImprovement(Boolean.TRUE.equals(req.getIsFitnessImprovement()))
                 .build();
         planRepo.save(plan);
 
@@ -433,6 +437,7 @@ public class WorkoutPlanService {
         plan.setTargetLevel(req.getTargetLevel());
         plan.setDurationWeeks(req.getDurationWeeks());
         plan.setSessionsPerWeek(req.getDays().size());
+        plan.setIsFitnessImprovement(Boolean.TRUE.equals(req.getIsFitnessImprovement())); // MỚI
 
         List<WorkoutPlanDay> oldDays = dayRepo.findByWorkoutPlanIdOrderByDayOfWeek(plan.getId());
         if (oldDays != null && !oldDays.isEmpty()) {
@@ -458,6 +463,16 @@ public class WorkoutPlanService {
         }).collect(Collectors.toList());
     }
 
+    public List<WorkoutPlanResponse> getFitnessImprovementTemplates(Integer sessionsPerWeek) {
+        List<WorkoutPlan> templates = planRepo
+                .findByIsTemplateTrueAndIsFitnessImprovementTrueAndIsActiveTrueAndSessionsPerWeekOrderByCreatedAtDesc(
+                        sessionsPerWeek);
+        return templates.stream().map(p -> {
+            p.setPlanDays(dayRepo.findByWorkoutPlanIdOrderByDayOfWeek(p.getId()));
+            return toPlanResponse(p, null);
+        }).collect(Collectors.toList());
+    }
+
     @Transactional
     public void deleteTemplate(Long templateId) {
         WorkoutPlan plan = planRepo.findById(templateId)
@@ -467,6 +482,150 @@ public class WorkoutPlanService {
         }
         plan.setIsActive(false);
         planRepo.save(plan);
+    }
+
+    @Transactional
+    public WorkoutPlanResponse startFitnessImprovementPlan(String email, Long templateId) {
+        User user = getUser(email);
+
+        WorkoutPlan originalPlan = planRepo.findByUserIdAndIsActiveTrue(user.getId())
+                .orElseThrow(() -> new RuntimeException(
+                        "Bạn cần có giáo án đang có hiệu lực để chuyển sang giáo án nâng cao thể lực"));
+
+// ── SỬA: mở rộng cho cả AI Plan và Admin Plan (đã cá nhân hóa qua selectTemplate()).
+// Chỉ chặn Fitness Improvement Plan (không lồng FI trong FI) và Template gốc
+// (chưa từng được cá nhân hóa cho user cụ thể). ──
+        if (Boolean.TRUE.equals(originalPlan.getIsFitnessImprovement())
+                || Boolean.TRUE.equals(originalPlan.getIsTemplate())) {
+            throw new RuntimeException("Giáo án hiện tại không thể chuyển sang giáo án nâng cao thể lực");
+        }
+
+        WorkoutPlan template = planRepo.findById(templateId)
+                .orElseThrow(() -> new RuntimeException("Template not found"));
+        if (!Boolean.TRUE.equals(template.getIsTemplate())
+                || !Boolean.TRUE.equals(template.getIsFitnessImprovement())) {
+            throw new RuntimeException("Plan này không phải Template giáo án nâng cao thể lực");
+        }
+
+        // ── Tính bù snapshot cho AI Plan cũ (tạo trước khi có requiredMaxSessionManaCost) ──
+        if (originalPlan.getRequiredMaxSessionManaCost() == null) {
+            List<WorkoutPlanDay> originalDays = dayRepo.findByWorkoutPlanIdOrderByDayOfWeek(originalPlan.getId());
+            originalPlan.setRequiredMaxSessionManaCost(computeMaxSessionManaCost(originalDays));
+            planRepo.save(originalPlan);
+        }
+
+        List<WorkoutPlanDay> templateDays = dayRepo.findByWorkoutPlanIdOrderByDayOfWeek(template.getId());
+        UserProfile profile = profileRepo.findByUserId(user.getId()).orElse(null);
+
+        double fs = (profile != null && profile.getAge() != null
+                && profile.getHeight() != null && profile.getWeight() != null)
+                ? fitnessCalculator.calculateFS(profile.getAge(), profile.getHeight(),
+                profile.getWeight(), profile.getGender())
+                : 60.0;
+        FitnessCalculator.FsLevel fsLevel = fitnessCalculator.getFsLevel(fs);
+        FitnessCalculator.BodyType bodyType = (profile != null)
+                ? fitnessCalculator.classifyBodyType(profile.getHeight(), profile.getWeight(),
+                profile.getBmi(), profile.getGender(), profile.getBodyFatPercentage())
+                : FitnessCalculator.BodyType.CAN_DOI;
+        int maxMana = (int) Math.round(fs * 2);
+
+        // ── Goal/Level LẤY TỪ AI PLAN GỐC — không lấy từ Template ──
+        Goal originalGoal = originalPlan.getGoal();
+        FitnessLevel originalLevel = originalPlan.getTargetLevel();
+
+        pauseActivePlan(user.getId());
+
+        WorkoutPlan fiPlan = WorkoutPlan.builder()
+                .user(user)
+                .planName(template.getPlanName())
+                .description(template.getDescription())
+                .goal(originalGoal)
+                .targetLevel(originalLevel)
+                .durationWeeks(template.getDurationWeeks())
+                .sessionsPerWeek(template.getSessionsPerWeek())
+                .currentWeek(1)
+                .startingBmi(profile != null ? profile.getBmi() : null)
+                .startingWeight(profile != null ? profile.getWeight() : null)
+                .isActive(true)
+                .isAiGenerated(false)
+                .isTemplate(false)
+                .isFitnessImprovement(true)
+                .originalPlanId(originalPlan.getId())
+                .fitnessScore((int) Math.round(fs))
+                .fitnessLevel(fsLevel)
+                .bodyType(bodyType)
+                .maxMana(maxMana)
+                .currentMana(maxMana)
+                .build();
+        planRepo.save(fiPlan);
+
+        List<WorkoutPlanDay> copiedDays = new ArrayList<>();
+        for (WorkoutPlanDay srcDay : templateDays) {
+            WorkoutPlanDay newDay = WorkoutPlanDay.builder()
+                    .workoutPlan(fiPlan)
+                    .dayOfWeek(srcDay.getDayOfWeek())
+                    .dayName(srcDay.getDayName())
+                    .build();
+
+            List<WorkoutPlanExercise> copiedExercises = new ArrayList<>();
+            if (srcDay.getExercises() != null) {
+                for (WorkoutPlanExercise srcEx : srcDay.getExercises()) {
+                    copiedExercises.add(personalizeTemplateExercise(newDay, srcEx, originalGoal,
+                            originalLevel, fsLevel, bodyType, fs, profile, true));
+                }
+            }
+            newDay.setExercises(copiedExercises);
+            copiedDays.add(newDay);
+        }
+
+        List<WorkoutPlanDay> savedDays = dayRepo.saveAll(copiedDays);
+        fiPlan.setPlanDays(savedDays);
+
+        return toPlanResponse(fiPlan, profile);
+    }
+
+    /** Gọi sau checkout buổi cuối tuần của FI Plan. Nếu đủ thể lực -> Resume AI Plan
+     *  (chỉ đổi isActive + đồng bộ fitnessScore/fitnessLevel/maxMana, KHÔNG đụng
+     *  currentWeek/weekStartDate/WorkoutSession). Nếu chưa đủ -> tăng currentWeek của FI Plan. */
+    @Transactional
+    public void checkFitnessImprovementProgress(WorkoutPlan fiPlan, String email) {
+        User user = getUser(email);
+        UserProfile profile = profileRepo.findByUserId(user.getId()).orElse(null);
+
+        double fs = (profile != null && profile.getAge() != null
+                && profile.getHeight() != null && profile.getWeight() != null)
+                ? fitnessCalculator.calculateFS(profile.getAge(), profile.getHeight(),
+                profile.getWeight(), profile.getGender())
+                : 60.0;
+        int newMaxMana = (int) Math.round(fs * 2);
+
+        WorkoutPlan originalPlan = planRepo.findById(fiPlan.getOriginalPlanId())
+                .orElseThrow(() -> new RuntimeException(
+                        "Không tìm thấy giáo án AI gốc, id=" + fiPlan.getOriginalPlanId()));
+
+        int required = originalPlan.getRequiredMaxSessionManaCost() != null
+                ? originalPlan.getRequiredMaxSessionManaCost() : 0;
+
+        boolean enough = required <= newMaxMana * 0.75;
+
+        if (enough) {
+            fiPlan.setIsCompleted(true);
+            fiPlan.setIsActive(false);
+            planRepo.save(fiPlan);
+
+            // ── Resume AI Plan: đồng bộ snapshot thể lực mới nhất, KHÔNG đụng
+            // currentWeek/weekStartDate/currentMana (currentMana để ManaService tự regen). ──
+            FitnessCalculator.FsLevel fsLevel = fitnessCalculator.getFsLevel(fs);
+            originalPlan.setFitnessScore((int) Math.round(fs));
+            originalPlan.setFitnessLevel(fsLevel);
+            originalPlan.setMaxMana(newMaxMana);
+            originalPlan.setIsActive(true);
+            planRepo.save(originalPlan);
+        } else {
+            int nextWeek = (fiPlan.getCurrentWeek() != null ? fiPlan.getCurrentWeek() : 1) + 1;
+            fiPlan.setCurrentWeek(nextWeek);
+            planRepo.save(fiPlan);
+        }
     }
 
     @Transactional
@@ -531,9 +690,8 @@ public class WorkoutPlanService {
             List<WorkoutPlanExercise> copiedExercises = new ArrayList<>();
             if (srcDay.getExercises() != null) {
                 for (WorkoutPlanExercise srcEx : srcDay.getExercises()) {
-                    // ── MỚI: cá nhân hoá theo đúng logic AI, GIỮ NGUYÊN exercise/order/notes ──
                     copiedExercises.add(personalizeTemplateExercise(newDay, srcEx, template.getGoal(),
-                            template.getTargetLevel(), fsLevel, bodyType, fs, profile));
+                            template.getTargetLevel(), fsLevel, bodyType, fs, profile, false));
                 }
             }
             newDay.setExercises(copiedExercises);
@@ -542,6 +700,11 @@ public class WorkoutPlanService {
 
         List<WorkoutPlanDay> savedDays = dayRepo.saveAll(copiedDays);
         newPlan.setPlanDays(savedDays);
+
+        // ── MỚI: tính RequiredMaxSessionManaCost SAU KHI đã cá nhân hóa (Sets/Reps/Duration/Weight),
+// tái dùng đúng computeMaxSessionManaCost() đang dùng cho AI Plan — KHÔNG viết công thức mới ──
+        newPlan.setRequiredMaxSessionManaCost(computeMaxSessionManaCost(savedDays));
+        planRepo.save(newPlan);
 
         return toPlanResponse(newPlan, profile);
     }
@@ -555,16 +718,28 @@ public class WorkoutPlanService {
                                                             Goal goal, FitnessLevel level,
                                                             FitnessCalculator.FsLevel fsLevel,
                                                             FitnessCalculator.BodyType bodyType,
-                                                            double fs, UserProfile profile) {
+                                                            double fs, UserProfile profile,
+                                                            boolean isFitnessImprovement) {
         var srResult = fitnessCalculator.resolveFinalSetsReps(fsLevel, goal, bodyType);
         int finalSets = srResult.sets();
         int finalReps = srResult.reps();
 
         Exercise ex = srcEx.getExercise();
 
-        Integer newReps = srcEx.getReps() != null ? finalReps : null;
-        Integer newDuration = srcEx.getDurationSeconds() != null
-                ? adjustDuration(srcEx.getDurationSeconds(), level) : null;
+        // ── FI Plan: điều kiện theo Exercise catalog (giống AI Plan).
+        // Template thường: giữ nguyên điều kiện theo dữ liệu Admin cấu hình. ──
+        Integer newReps;
+        Integer newDuration;
+        if (isFitnessImprovement) {
+            newReps = ex.getDefaultReps() != null ? finalReps : null;
+            newDuration = ex.getDefaultDurationSeconds() != null
+                    ? adjustDuration(ex.getDefaultDurationSeconds(), level) : null;
+        } else {
+            newReps = srcEx.getReps() != null ? finalReps : null;
+            newDuration = srcEx.getDurationSeconds() != null
+                    ? adjustDuration(srcEx.getDurationSeconds(), level) : null;
+        }
+
         Integer newRest = calcRest(srcEx.getRestSeconds(), goal);
 
         Double recommendedWeightKg = computeRecommendedWeightKg(
@@ -979,6 +1154,9 @@ public class WorkoutPlanService {
                 .targetCurrentValue(liveTargetCurrentValue)
                 .targetAchieved(plan.getTargetAchieved())
                 .estimatedWeeks(plan.getEstimatedWeeks())
+                .originalPlanId(plan.getOriginalPlanId())
+                .isFitnessImprovement(plan.getIsFitnessImprovement())
+                .requiredMaxSessionManaCost(plan.getRequiredMaxSessionManaCost())
                 .build();
     }
 
@@ -1071,5 +1249,32 @@ public class WorkoutPlanService {
 
     public WorkoutPlanResponse buildPlanResponse(WorkoutPlan plan) {
         return toPlanResponse(plan, null);
+    }
+
+    /** Tính Mana Cost lớn nhất trong các buổi tập của 1 giáo án — dùng estimateSessionCost()
+     *  đã có sẵn trong ManaService (đang dùng cho computeManaWarning() ở WorkoutSessionService). */
+    private int computeMaxSessionManaCost(List<WorkoutPlanDay> days) {
+        int max = 0;
+        if (days == null) return max;
+        for (WorkoutPlanDay day : days) {
+            List<Integer> costs = day.getExercises() == null
+                    ? Collections.emptyList()
+                    : day.getExercises().stream()
+                    .map(pe -> pe.getExercise() != null ? pe.getExercise().getStaminaCost() : null)
+                    .collect(Collectors.toList());
+            int cost = manaService.estimateSessionCost(costs);
+            if (cost > max) max = cost;
+        }
+        return max;
+    }
+
+    /** Pause plan đang active — CHỈ đổi isActive, không đụng WorkoutSession,
+     *  currentWeek, weekStartDate, mana hay bất kỳ dữ liệu nào khác.
+     *  Không dùng deactivateAndCleanOldPlan() vì hàm đó xóa WorkoutSession. */
+    private void pauseActivePlan(Long userId) {
+        planRepo.findByUserIdAndIsActiveTrue(userId).ifPresent(oldPlan -> {
+            oldPlan.setIsActive(false);
+            planRepo.save(oldPlan);
+        });
     }
 }

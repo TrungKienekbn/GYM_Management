@@ -5,6 +5,16 @@
     </div>
 
     <template v-else>
+      <!-- ── MỚI: banner Fitness Improvement ── -->
+      <el-card v-if="plan && plan.isFitnessImprovement" style="margin-bottom:24px;border-left:4px solid #dc2626">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <el-tag type="danger" effect="dark">⏸️ Đang tập giáo án nâng cao thể lực</el-tag>
+          <span style="font-size:0.85rem;color:var(--c-text2)">
+            Giáo án đang được tạm dừng và sẽ tự động tiếp tục khi đủ thể lực.
+          </span>
+        </div>
+      </el-card>
+
       <!-- ===================== KHỐI LƯỢNG % HOÀN THÀNH TUẦN NÀY (không đổi) ===================== -->
       <el-card style="margin-bottom:24px">
         <template #header>

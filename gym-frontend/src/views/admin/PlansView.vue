@@ -18,6 +18,14 @@
       </div>
     </div>
 
+    <el-card style="margin-bottom:20px">
+      <el-radio-group v-model="categoryFilter">
+        <el-radio-button label="">Tất cả</el-radio-button>
+        <el-radio-button label="ADMIN">📋 Giáo án Admin</el-radio-button>
+        <el-radio-button label="FI">💪 Giáo án nâng cao thể lực</el-radio-button>
+      </el-radio-group>
+    </el-card>
+
     <div v-if="loading" style="padding:40px 0">
       <el-skeleton :rows="5" animated />
     </div>
@@ -27,12 +35,20 @@
         <el-table-column label="ID" prop="id" width="70" />
         <el-table-column label="Tên giáo án" prop="planName" />
         <el-table-column label="Mục tiêu">
-          <template #default="{row}">{{ goalLabel(row.goal) }}</template>
-        </el-table-column>
-        <el-table-column label="Trình độ">
-          <template #default="{row}">{{ levelLabel(row.targetLevel) }}</template>
-        </el-table-column>
-        <el-table-column label="Số tuần" prop="durationWeeks" width="90" />
+                  <template #default="{row}">
+                    <span v-if="!row.isFitnessImprovement">{{ goalLabel(row.goal) }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="Trình độ">
+                  <template #default="{row}">
+                    <span v-if="!row.isFitnessImprovement">{{ levelLabel(row.targetLevel) }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="Số tuần" width="90">
+                  <template #default="{row}">
+                    <span v-if="!row.isFitnessImprovement">{{ row.durationWeeks }}</span>
+                  </template>
+                </el-table-column>
         <el-table-column label="Buổi/tuần" prop="sessionsPerWeek" width="100" />
         <el-table-column label="Ngày tạo" width="120">
           <template #default="{row}">{{ row.createdAt?.substring(0,10) }}</template>
@@ -68,7 +84,7 @@
             <el-input v-model="form.planName" placeholder="VD: Tăng cơ toàn thân 8 tuần" />
           </el-form-item>
 
-          <el-form-item label="Mục tiêu" required>
+          <el-form-item label="Mục tiêu" required v-if="!form.isFitnessImprovement">
             <el-select v-model="form.goal" style="width:100%">
               <el-option label="🔥 Giảm cân" value="WEIGHT_LOSS" />
               <el-option label="💪 Tăng cơ" value="MUSCLE_GAIN" />
@@ -84,7 +100,7 @@
         </el-form-item>
 
         <div class="grid-3">
-          <el-form-item label="Trình độ" required>
+          <el-form-item label="Trình độ" required v-if="!form.isFitnessImprovement">
             <el-select v-model="form.targetLevel" style="width:100%">
               <el-option label="Beginner" value="BEGINNER" />
               <el-option label="Intermediate" value="INTERMEDIATE" />
@@ -92,7 +108,7 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="Số tuần" required>
+          <el-form-item label="Số tuần" required v-if="!form.isFitnessImprovement">
             <el-input-number v-model="form.durationWeeks" :min="1" :max="52" style="width:100%" />
           </el-form-item>
 
@@ -105,7 +121,13 @@
             />
           </el-form-item>
         </div>
-
+        <!-- ── MỚI: Segmented Control loại giáo án mẫu ── -->
+                        <el-form-item label="Loại giáo án mẫu">
+                          <el-radio-group v-model="form.isFitnessImprovement">
+                            <el-radio-button :label="false">Giáo án Admin</el-radio-button>
+                            <el-radio-button :label="true">Giáo án cải thiện cơ thể</el-radio-button>
+                          </el-radio-group>
+                        </el-form-item>
         <el-divider />
 
         <div style="font-weight:700;color:var(--c-text);margin-bottom:12px">
@@ -144,7 +166,7 @@
                     </el-option>
                   </el-select>
 
-                  <div v-if="ex.exerciseId" class="ex-params-grid">
+                         <div v-if="ex.exerciseId && !form.isFitnessImprovement" class="ex-params-grid">
                     <el-input-number v-model="ex.sets" :min="1" :max="10" size="small" placeholder="Sets" />
                     <el-input-number v-model="ex.reps" :min="0" :max="100" size="small" placeholder="Reps" />
                     <el-input-number v-model="ex.restSeconds" :min="0" :max="300" :step="5" size="small" placeholder="Nghỉ(s)" />
@@ -187,7 +209,7 @@ const exercises = ref([])
 const loading = ref(false)
 const saving = ref(false)
 const search = ref('')
-
+const categoryFilter = ref('')
 const dialogVisible = ref(false)
 const editing = ref(false)
 const editingId = ref(null)
@@ -218,12 +240,24 @@ const form = ref({
   targetLevel: 'BEGINNER',
   durationWeeks: 6,
   sessionsPerWeek: 3,
+  isFitnessImprovement: false, // ── MỚI ──
   days: [blankDay(1), blankDay(3), blankDay(5)]
 })
 
 const filtered = computed(() => {
-  if (!search.value) return plans.value
-  return plans.value.filter(p => p.planName?.toLowerCase().includes(search.value.toLowerCase()))
+  let list = plans.value
+
+  if (categoryFilter.value === 'ADMIN') {
+    list = list.filter(p => p.isTemplate === true && !p.isFitnessImprovement)
+  } else if (categoryFilter.value === 'FI') {
+    list = list.filter(p => p.isTemplate === true && p.isFitnessImprovement === true)
+  }
+
+  if (search.value) {
+    list = list.filter(p => p.planName?.toLowerCase().includes(search.value.toLowerCase()))
+  }
+
+  return list
 })
 
 function syncDayColumns(n) {
@@ -280,6 +314,7 @@ function openCreate() {
     targetLevel: 'BEGINNER',
     durationWeeks: 6,
     sessionsPerWeek: 3,
+    isFitnessImprovement: false, // ── MỚI ──
     days: [blankDay(1), blankDay(3), blankDay(5)]
   }
   dialogVisible.value = true
@@ -309,6 +344,7 @@ function openEdit(plan) {
     targetLevel: plan.targetLevel,
     durationWeeks: plan.durationWeeks,
     sessionsPerWeek: days.length || plan.sessionsPerWeek,
+    isFitnessImprovement: !!plan.isFitnessImprovement, // ── MỚI ──
     days: days.length ? days : [blankDay(1)]
   }
 
@@ -338,6 +374,7 @@ async function save() {
     targetLevel: form.value.targetLevel,
     durationWeeks: form.value.durationWeeks,
     sessionsPerWeek: form.value.days.length,
+    isFitnessImprovement: form.value.isFitnessImprovement, // ── MỚI ──
     days: form.value.days.map(d => ({
       dayOfWeek: d.dayOfWeek,
       dayName: d.dayName,
@@ -345,10 +382,12 @@ async function save() {
           .filter(e => e.exerciseId)
           .map((e, idx) => ({
             exerciseId: e.exerciseId,
-            sets: e.sets,
-            reps: e.reps,
-            durationSeconds: e.durationSeconds,
-            restSeconds: e.restSeconds,
+            // ── MỚI: khi là Fitness Improvement Template, Admin chỉ chọn bài tập,
+            // không nhập Set/Rep/Duration/Rest -> gửi null, tránh gửi giá trị mặc định vô nghĩa
+            sets: form.value.isFitnessImprovement ? null : e.sets,
+            reps: form.value.isFitnessImprovement ? null : e.reps,
+            durationSeconds: form.value.isFitnessImprovement ? null : e.durationSeconds,
+            restSeconds: form.value.isFitnessImprovement ? null : e.restSeconds,
             orderIndex: idx + 1,
             notes: e.notes
           }))
