@@ -59,6 +59,7 @@ public class FoodController {
                 .imageUrl(req.getImageUrl())
                 .suitableGoals(joinGoals(req.getSuitableGoals()))
                 .isActive(true)
+                .weightGrams(req.getWeightGrams())
                 .build();
         return ResponseEntity.ok(ApiResponse.success(foodRepository.save(food), "Đã thêm món ăn!"));
     }
@@ -76,6 +77,7 @@ public class FoodController {
         if (req.getInstructions()  != null) food.setInstructions(req.getInstructions());
         if (req.getImageUrl()      != null) food.setImageUrl(req.getImageUrl());
         if (req.getSuitableGoals() != null) food.setSuitableGoals(joinGoals(req.getSuitableGoals()));
+        if (req.getWeightGrams() != null) food.setWeightGrams(req.getWeightGrams());
         return ResponseEntity.ok(ApiResponse.success(foodRepository.save(food), "Đã cập nhật món ăn!"));
     }
 

@@ -20,12 +20,13 @@ public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final ExerciseRepository exerciseRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-
+    private final SystemConfigRepository systemConfigRepository;
     @Override
     public void run(String... args) {
         initRoles();
         initAdminUser();
         initExercises();
+        initSystemConfigs();
         log.info("Data initialization complete.");
     }
 
@@ -267,5 +268,72 @@ public class DataInitializer implements CommandLineRunner {
             exerciseRepository.saveAll(exercises);
             log.info("Exercises initialized: {} bài tập với chỉ số benefit", exercises.size());
         }
+    }
+    private void initSystemConfigs() {
+        if (systemConfigRepository.count() > 0) return;
+
+        systemConfigRepository.saveAll(List.of(
+                SystemConfig.builder().configKey("FS_WEIGHT_AGE").configValue(0.4).category("Fitness Score")
+                        .description("Trọng số điểm TUỔI trong công thức tính Fitness Score. " +
+                                "FS = S_tuổi × trọng_số_tuổi + S_cân_nặng × trọng_số_cân_nặng. " +
+                                "Tổng 2 trọng số (tuổi + cân nặng) nên = 1.0.").build(),
+
+                SystemConfig.builder().configKey("FS_WEIGHT_WEIGHT").configValue(0.6).category("Fitness Score")
+                        .description("Trọng số điểm CÂN NẶNG trong công thức tính Fitness Score. " +
+                                "Cân nặng ảnh hưởng nhiều hơn tuổi vì phản ánh trực tiếp thể trạng hiện tại.").build(),
+
+                SystemConfig.builder().configKey("MANA_MAX_MULTIPLIER").configValue(2.0).category("Mana")
+                        .description("Hệ số nhân để tính Mana (thể lực) tối đa từ Fitness Score. " +
+                                "Công thức: maxMana = round(FS × hệ_số_này). VD: FS=70 -> maxMana=140.").build(),
+
+                SystemConfig.builder().configKey("MANA_REGEN_RATE_1_DAY").configValue(0.75).category("Mana")
+                        .description("Tỷ lệ % Mana được hồi lại khi user nghỉ ĐÚNG 1 ngày rồi tập lại. " +
+                                "VD: 0.75 = hồi 75% maxMana. Nếu nghỉ >= 2 ngày thì hồi đầy (100%), " +
+                                "nghỉ 0 ngày (tập nhiều buổi/ngày) thì không hồi thêm.").build(),
+
+                SystemConfig.builder().configKey("MANA_ENOUGH_THRESHOLD").configValue(0.75).category("Mana")
+                        .description("Ngưỡng % Mana tối đa mới được coi là 'đủ sức' để hệ thống tự động " +
+                                "hoàn thành giáo án 'cải thiện thể lực' và chuyển user sang giáo án chính thức mới.").build(),
+
+                SystemConfig.builder().configKey("STAMINA_COST_DEFAULT").configValue(10.0).category("Mana")
+                        .description("Chi phí thể lực (stamina) MẶC ĐỊNH cho 1 bài tập, dùng khi bài tập đó " +
+                                "chưa được admin thiết lập staminaCost riêng trong phần Quản lý bài tập.").build(),
+
+                SystemConfig.builder().configKey("FREE_PLAN_LIMIT_PER_MONTH").configValue(1.0).category("Giáo án")
+                        .description("Số giáo án tối đa mà user dùng gói MIỄN PHÍ (không phải VIP) " +
+                                "được phép tạo mới trong 1 tháng.").build(),
+
+                SystemConfig.builder().configKey("PROGRESS_TOLERANCE_PERCENT").configValue(5.0).category("Giáo án")
+                        .description("Dung sai % chênh lệch giữa 'tiến độ mục tiêu' và 'tiến độ thời gian đã dùng'. " +
+                                "Nếu vượt ngưỡng này, hệ thống tự rút ngắn hoặc gia hạn thêm 1 tuần cho giáo án.").build(),
+
+                SystemConfig.builder().configKey("MIN_DURATION_WEEKS").configValue(1.0).category("Giáo án")
+                        .description("Số tuần TỐI THIỂU của 1 giáo án, dùng để chặn khi hệ thống tự rút ngắn thời lượng.").build(),
+
+                SystemConfig.builder().configKey("MAX_DURATION_WEEKS").configValue(50.0).category("Giáo án")
+                        .description("Số tuần TỐI ĐA của 1 giáo án. Khi chạm ngưỡng này mà chưa đạt mục tiêu, " +
+                                "giáo án sẽ tự kết thúc và nhắc user tham khảo huấn luyện viên.").build(),
+
+                SystemConfig.builder().configKey("ACHIEVEMENT_THRESHOLD").configValue(0.95).category("Giáo án")
+                        .description("Tỷ lệ % hoàn thành khoảng cách từ baseline đến mục tiêu để hệ thống coi là " +
+                                "'đã đạt mục tiêu'. VD: 0.95 = đạt 95% quãng đường từ điểm xuất phát đến mục tiêu là được tính đạt.").build(),
+
+                SystemConfig.builder().configKey("REST_MULTIPLIER_MUSCLE_GAIN").configValue(1.3).category("Giáo án")
+                        .description("Hệ số nhân thời gian NGHỈ giữa các set cho mục tiêu Tăng cơ. " +
+                                "> 1.0 nghĩa là nghỉ LÂU HƠN bình thường để cơ bắp phục hồi sức mạnh trước set tiếp theo.").build(),
+
+                SystemConfig.builder().configKey("REST_MULTIPLIER_WEIGHT_LOSS").configValue(0.7).category("Giáo án")
+                        .description("Hệ số nhân thời gian NGHỈ giữa các set cho mục tiêu Giảm cân. " +
+                                "< 1.0 nghĩa là nghỉ NGẮN HƠN bình thường để giữ nhịp tim cao, đốt nhiều calo hơn.").build(),
+
+                SystemConfig.builder().configKey("EXERCISE_DURATION_BEGINNER").configValue(0.7).category("Giáo án")
+                        .description("Hệ số nhân thời lượng thực hiện bài tập (giây) cho người trình độ MỚI BẮT ĐẦU. " +
+                                "< 1.0 nghĩa là rút ngắn thời gian giữ tư thế/thực hiện so với mức chuẩn.").build(),
+
+                SystemConfig.builder().configKey("EXERCISE_DURATION_ADVANCED").configValue(1.3).category("Giáo án")
+                        .description("Hệ số nhân thời lượng thực hiện bài tập (giây) cho người trình độ NÂNG CAO. " +
+                                "> 1.0 nghĩa là tăng thời gian giữ tư thế/thực hiện so với mức chuẩn.").build()
+        ));
+        log.info("System configs initialized.");
     }
 }

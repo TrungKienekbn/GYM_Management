@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class FitnessCalculatorTest {
 
-    private final FitnessCalculator calculator = new FitnessCalculator();
+    private final FitnessCalculator calculator = new FitnessCalculator(new SystemConfigService(null));
 
     // ============================================================
     // 1. classifyBodyType — các case biên từng bị rơi vào default CAN_DOI

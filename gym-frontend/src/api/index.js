@@ -215,3 +215,8 @@ export const adminAPI = {
     broadcast:          (data)       => api.post('/admin/notifications/broadcast', data),
     sendToUser:         (uid, data)  => api.post(`/admin/notifications/user/${uid}`, data)
 }
+// ── System Configs (Công thức hệ thống) ───────
+export const systemConfigAPI = {
+    getAll:  ()          => api.get('/admin/system-configs'),
+    update:  (key, data) => api.put(`/admin/system-configs/${key}`, data)
+}

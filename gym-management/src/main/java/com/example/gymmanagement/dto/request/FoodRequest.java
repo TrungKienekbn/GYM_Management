@@ -13,6 +13,7 @@ public class FoodRequest {
     private String ingredients;
     private String instructions;
     private String imageUrl;
+    private Double weightGrams;
 
     // ["WEIGHT_LOSS","MUSCLE_GAIN","MAINTENANCE"]
     private List<String> suitableGoals;

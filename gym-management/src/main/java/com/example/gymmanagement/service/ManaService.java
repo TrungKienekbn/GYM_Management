@@ -26,9 +26,8 @@ import java.time.temporal.ChronoUnit;
 @RequiredArgsConstructor
 public class ManaService {
 
-    private static final double NEXT_DAY_REGEN_RATE = 0.75;
-
     private final WorkoutPlanRepository planRepo;
+    private final SystemConfigService systemConfigService;
 
     @Transactional
     public void applyRegen(WorkoutPlan plan) {
@@ -47,7 +46,8 @@ public class ManaService {
             if (gap >= 2) {
                 plan.setCurrentMana(plan.getMaxMana());
             } else if (gap == 1) {
-                int regen = (int) Math.round(plan.getMaxMana() * NEXT_DAY_REGEN_RATE);
+                double regenRate = systemConfigService.get("MANA_REGEN_RATE_1_DAY", 0.75);
+                int regen = (int) Math.round(plan.getMaxMana() * regenRate);
                 int cur = plan.getCurrentMana() != null ? plan.getCurrentMana() : 0;
                 plan.setCurrentMana(Math.min(plan.getMaxMana(), cur + regen));
             }
@@ -84,7 +84,8 @@ public class ManaService {
      * trung bình 15-25/bài.
      */
     public int estimateSessionCost(java.util.List<Integer> staminaCosts) {
-        return staminaCosts.stream().mapToInt(c -> c != null ? c : 10).sum();
+        int defaultCost = (int) systemConfigService.get("STAMINA_COST_DEFAULT", 10.0);
+        return staminaCosts.stream().mapToInt(c -> c != null ? c : defaultCost).sum();
     }
 
     /** Mana hiện có SAU KHI đã cộng hồi phục theo ngày nghỉ, dùng để so sánh ở checkIn. */

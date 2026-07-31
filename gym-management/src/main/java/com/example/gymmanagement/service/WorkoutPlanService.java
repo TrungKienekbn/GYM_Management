@@ -33,7 +33,8 @@ public class WorkoutPlanService {
     // ── MỚI (Patch 7) ──
     private final EnduranceTestRepository enduranceTestRepo;
     private final EstimatedWeeksCalculator estimatedWeeksCalculator;
-    private final ManaService manaService; // MỚI — cần cho computeMaxSessionManaCost()
+    private final ManaService manaService;
+    private final SystemConfigService systemConfigService;   // MỚI
     private static final int FREE_PLAN_LIMIT_PER_MONTH = 1;
 
     private void checkPlanGenerationLimit(User user) {
@@ -48,7 +49,8 @@ public class WorkoutPlanService {
                 .filter(p -> p.getCreatedAt() != null && !p.getCreatedAt().toLocalDate().isBefore(monthStart))
                 .count();
 
-        if (countThisMonth >= FREE_PLAN_LIMIT_PER_MONTH) {
+        int freeLimit = (int) systemConfigService.get("FREE_PLAN_LIMIT_PER_MONTH", 1.0);
+        if (countThisMonth >= freeLimit) {
             throw new RuntimeException("Gói Free chỉ được tạo/đổi giáo án " + FREE_PLAN_LIMIT_PER_MONTH +
                     " lần/tháng. Nâng cấp lên gói VIP để tạo giáo án không giới hạn.");
         }
@@ -158,7 +160,8 @@ public class WorkoutPlanService {
 
         deactivateAndCleanOldPlan(user.getId());
 
-        int maxMana = (int) Math.round(fs * 2);
+        double manaMultiplier = systemConfigService.get("MANA_MAX_MULTIPLIER", 2.0);
+        int maxMana = (int) Math.round(fs * manaMultiplier);
 
         WorkoutPlan plan = WorkoutPlan.builder()
                 .user(user)
@@ -293,17 +296,21 @@ public class WorkoutPlanService {
                         double gap = percentGoal - percentTime;
 
                         int newDuration = plan.getDurationWeeks();
-                        if (gap > PROGRESS_TOLERANCE_PERCENT) {
+                        double tolerance = systemConfigService.get("PROGRESS_TOLERANCE_PERCENT", 5.0);
+                        int minWeeks = (int) systemConfigService.get("MIN_DURATION_WEEKS", 1.0);
+                        int maxWeeks = (int) systemConfigService.get("MAX_DURATION_WEEKS", 50.0);
+
+                        if (gap > tolerance) {
                             newDuration -= 1;
                             note = "🚀 Tiến độ nhanh hơn dự kiến. Đã rút ngắn 1 tuần.";
-                        } else if (gap < -PROGRESS_TOLERANCE_PERCENT) {
+                        } else if (gap < -tolerance) {
                             newDuration += 1;
                             note = "🐢 Tiến độ chậm hơn dự kiến. Đã gia hạn thêm 1 tuần.";
                         }
-                        newDuration = Math.max(MIN_DURATION_WEEKS, Math.min(MAX_DURATION_WEEKS, newDuration));
+                        newDuration = Math.max(minWeeks, Math.min(maxWeeks, newDuration));
                         plan.setDurationWeeks(newDuration);
 
-                        if (newDuration >= MAX_DURATION_WEEKS) {
+                        if (newDuration >= maxWeeks) {
                             plan.setIsCompleted(true);
                             plan.setIsActive(false);
                             endPlanNow = true;
@@ -356,9 +363,10 @@ public class WorkoutPlanService {
      *  WEIGHT_LOSS, ENDURANCE dùng chung công thức baseline + (goal-baseline)×95%,
      *  đạt khi current >= threshold). WEIGHT_LOSS đảo chiều. MAINTENANCE không áp dụng. */
     private Boolean checkAchieved(Goal goal, double baseline, double goalVal, double current) {
+        double threshold = systemConfigService.get("ACHIEVEMENT_THRESHOLD", 0.95);
         return switch (goal) {
-            case MUSCLE_GAIN, ENDURANCE -> current >= (baseline + (goalVal - baseline) * 0.95);
-            case WEIGHT_LOSS -> current <= (baseline - (baseline - goalVal) * 0.95);
+            case MUSCLE_GAIN, ENDURANCE -> current >= (baseline + (goalVal - baseline) * threshold);
+            case WEIGHT_LOSS -> current <= (baseline - (baseline - goalVal) * threshold);
             default -> null;
         };
     }
@@ -527,7 +535,8 @@ public class WorkoutPlanService {
                 ? fitnessCalculator.classifyBodyType(profile.getHeight(), profile.getWeight(),
                 profile.getBmi(), profile.getGender(), profile.getBodyFatPercentage())
                 : FitnessCalculator.BodyType.CAN_DOI;
-        int maxMana = (int) Math.round(fs * 2);
+        double manaMultiplier = systemConfigService.get("MANA_MAX_MULTIPLIER", 2.0);
+        int maxMana = (int) Math.round(fs * manaMultiplier);
 
         // ── Goal/Level LẤY TỪ AI PLAN GỐC — không lấy từ Template ──
         Goal originalGoal = originalPlan.getGoal();
@@ -597,7 +606,8 @@ public class WorkoutPlanService {
                 ? fitnessCalculator.calculateFS(profile.getAge(), profile.getHeight(),
                 profile.getWeight(), profile.getGender())
                 : 60.0;
-        int newMaxMana = (int) Math.round(fs * 2);
+        double manaMultiplier = systemConfigService.get("MANA_MAX_MULTIPLIER", 2.0);
+        int newMaxMana = (int) Math.round(fs * manaMultiplier);
 
         WorkoutPlan originalPlan = planRepo.findById(fiPlan.getOriginalPlanId())
                 .orElseThrow(() -> new RuntimeException(
@@ -606,7 +616,8 @@ public class WorkoutPlanService {
         int required = originalPlan.getRequiredMaxSessionManaCost() != null
                 ? originalPlan.getRequiredMaxSessionManaCost() : 0;
 
-        boolean enough = required <= newMaxMana * 0.75;
+        double enoughThreshold = systemConfigService.get("MANA_ENOUGH_THRESHOLD", 0.75);
+        boolean enough = required <= newMaxMana * enoughThreshold;
 
         if (enough) {
             fiPlan.setIsCompleted(true);
@@ -652,7 +663,8 @@ public class WorkoutPlanService {
                 ? fitnessCalculator.classifyBodyType(profile.getHeight(), profile.getWeight(),
                 profile.getBmi(), profile.getGender(), profile.getBodyFatPercentage())
                 : FitnessCalculator.BodyType.CAN_DOI;
-        int maxMana = (int) Math.round(fs * 2);
+        double manaMultiplier = systemConfigService.get("MANA_MAX_MULTIPLIER", 2.0);
+        int maxMana = (int) Math.round(fs * manaMultiplier);
 
         deactivateAndCleanOldPlan(user.getId());
 
@@ -1051,8 +1063,8 @@ public class WorkoutPlanService {
 
     private int adjustDuration(int base, FitnessLevel lv) {
         return switch (lv) {
-            case BEGINNER -> (int) (base * 0.7);
-            case ADVANCED -> (int) (base * 1.3);
+            case BEGINNER -> (int) (base * systemConfigService.get("EXERCISE_DURATION_BEGINNER", 0.7));
+            case ADVANCED -> (int) (base * systemConfigService.get("EXERCISE_DURATION_ADVANCED", 1.3));
             default -> base;
         };
     }
@@ -1060,8 +1072,8 @@ public class WorkoutPlanService {
     private int calcRest(Integer base, Goal goal) {
         if (base == null) base = 60;
         return switch (goal) {
-            case MUSCLE_GAIN -> (int) (base * 1.3);
-            case WEIGHT_LOSS -> (int) (base * 0.7);
+            case MUSCLE_GAIN -> (int) (base * systemConfigService.get("REST_MULTIPLIER_MUSCLE_GAIN", 1.3));
+            case WEIGHT_LOSS -> (int) (base * systemConfigService.get("REST_MULTIPLIER_WEIGHT_LOSS", 0.7));
             default -> base;
         };
     }

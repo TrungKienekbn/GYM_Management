@@ -83,6 +83,9 @@
                         <span v-if="f.proteinGrams != null">🥩 Protein {{ f.proteinGrams }}g</span>
                         <span v-if="f.fatGrams != null">🥑 Chất béo {{ f.fatGrams }}g</span>
                       </div>
+                      <div v-if="f.weightGrams" style="font-size:0.68rem;color:var(--c-text3);margin-top:2px">
+                        📦 {{ f.weightGrams }}g/phần · {{ f.caloriesPerKg }} kcal/kg
+                      </div>
                     </div>
                   </div>
                 </div>

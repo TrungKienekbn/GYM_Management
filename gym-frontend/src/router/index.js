@@ -220,6 +220,12 @@ const router = createRouter({
                     name: 'AdminNotify',
                     component: () =>
                         import('@/views/admin/NotifyView.vue')
+                },
+                {
+                    path: 'system-configs',
+                    name: 'AdminSystemConfigs',
+                    component: () =>
+                        import('@/views/admin/SystemConfigAdmin.vue')
                 }
             ]
         },

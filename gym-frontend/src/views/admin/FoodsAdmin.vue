@@ -25,6 +25,18 @@
         <el-table-column label="Chất béo" width="90" align="center">
           <template #default="{row}">{{ row.fatGrams ?? 0 }}g</template>
         </el-table-column>
+        <el-table-column label="Khối lượng" width="100" align="center">
+          <template #default="{row}">{{ row.weightGrams ? row.weightGrams + 'g' : '—' }}</template>
+        </el-table-column>
+        <el-table-column label="Trên 1kg" width="140" align="center">
+          <template #default="{row}">
+            <div v-if="row.weightGrams" style="font-size:0.72rem;line-height:1.5;text-align:left">
+              🔥 {{ row.caloriesPerKg ?? 0 }} kcal<br/>
+              🥩 {{ row.proteinPerKg ?? 0 }}g · 🥑 {{ row.fatPerKg ?? 0 }}g
+            </div>
+            <span v-else style="color:var(--c-text3)">—</span>
+          </template>
+        </el-table-column>
         <el-table-column label="Phù hợp mục tiêu" min-width="220">
           <template #default="{row}">
             <span v-for="g in row.suitableGoalsList" :key="g" class="badge" :class="goalBadge(g)" style="margin-right:6px">
@@ -49,7 +61,7 @@
           <el-input v-model="form.name" placeholder="VD: Ức gà áp chảo sốt chanh"/>
         </el-form-item>
 
-        <div class="grid-3">
+        <div class="grid-4">
           <el-form-item label="Calo (kcal)">
             <el-input-number v-model="form.calories" :min="0" :max="5000" style="width:100%"/>
           </el-form-item>
@@ -59,6 +71,13 @@
           <el-form-item label="Chất béo (g)">
             <el-input-number v-model="form.fatGrams" :min="0" :max="500" :step="0.5" style="width:100%"/>
           </el-form-item>
+          <el-form-item label="Khối lượng (g)">
+            <el-input-number v-model="form.weightGrams" :min="0" :max="5000" :step="10" style="width:100%"
+                              placeholder="VD: 250"/>
+          </el-form-item>
+        </div>
+        <div v-if="previewPerKg" style="font-size:0.78rem;color:var(--c-text2);margin:-8px 0 14px">
+          → Quy đổi trên 1kg: 🔥 {{ previewPerKg.cal }} kcal · 🥩 {{ previewPerKg.pro }}g protein · 🥑 {{ previewPerKg.fat }}g béo
         </div>
 
         <el-form-item label="Phù hợp cho mục tiêu">
@@ -93,7 +112,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { foodAPI } from '@/api'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search } from '@element-plus/icons-vue'
@@ -105,11 +124,21 @@ const formDialog   = ref(false)
 const editId       = ref(null)
 
 const defaultForm = () => ({
-  name:'', calories:0, proteinGrams:0, fatGrams:0,
+  name:'', calories:0, proteinGrams:0, fatGrams:0, weightGrams:null,
   ingredients:'', instructions:'', imageUrl:'',
   suitableGoals: []
 })
 const form = reactive(defaultForm())
+
+const previewPerKg = computed(() => {
+  if (!form.weightGrams || form.weightGrams <= 0) return null
+  const k = 1000 / form.weightGrams
+  return {
+    cal: Math.round((form.calories || 0) * k),
+    pro: Math.round((form.proteinGrams || 0) * k * 10) / 10,
+    fat: Math.round((form.fatGrams || 0) * k * 10) / 10
+  }
+})
 
 async function load() {
   loading.value = true
@@ -130,6 +159,7 @@ function openEdit(row) {
   Object.assign(form, {
     name: row.name, calories: row.calories ?? 0,
     proteinGrams: row.proteinGrams ?? 0, fatGrams: row.fatGrams ?? 0,
+    weightGrams: row.weightGrams ?? null,
     ingredients: row.ingredients || '', instructions: row.instructions || '',
     imageUrl: row.imageUrl || '',
     suitableGoals: [...(row.suitableGoalsList || [])]

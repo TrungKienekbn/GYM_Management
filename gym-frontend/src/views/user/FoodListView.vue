@@ -36,6 +36,9 @@
             <span>🥩 {{ f.proteinGrams ?? 0 }}g</span>
             <span>🥑 {{ f.fatGrams ?? 0 }}g</span>
           </div>
+          <div v-if="f.weightGrams" class="food-perkg">
+            📦 {{ f.weightGrams }}g · trên 1kg: {{ f.caloriesPerKg }} kcal
+          </div>
           <div class="food-goals">
             <span v-for="g in f.suitableGoalsList" :key="g" class="badge" :class="goalBadge(g)">
               {{ goalLabel(g) }}
@@ -64,6 +67,12 @@
             <div class="value">{{ selected.fatGrams ?? 0 }}</div>
             <div class="sub">gram</div>
           </div>
+        </div>
+
+        <div v-if="selected.weightGrams" class="perkg-box">
+          📦 Khẩu phần: <strong>{{ selected.weightGrams }}g</strong> —
+          quy đổi trên 1kg: 🔥 {{ selected.caloriesPerKg }} kcal ·
+          🥩 {{ selected.proteinPerKg }}g protein · 🥑 {{ selected.fatPerKg }}g béo
         </div>
 
         <h4 style="margin-bottom:6px">🧂 Nguyên liệu</h4>
@@ -115,5 +124,8 @@ onMounted(load)
 }
 .food-name { font-size:1rem; margin-bottom:8px; }
 .food-macros { display:flex; gap:10px; font-size:0.8rem; color:var(--c-text2); margin-bottom:8px; flex-wrap:wrap; }
+.food-perkg { font-size:0.72rem; color:var(--c-text3); margin-bottom:6px; }
 .food-goals { display:flex; gap:6px; flex-wrap:wrap; }
+.perkg-box  { font-size:0.82rem; color:var(--c-text2); background:var(--c-card2);
+              padding:10px 14px; border-radius:8px; margin-bottom:16px; }
 </style>

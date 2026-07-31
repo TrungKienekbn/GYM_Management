@@ -6,10 +6,13 @@ import com.example.gymmanagement.service.setrep.SetRepModels;
 import com.example.gymmanagement.service.setrep.SetRepModels.LoadHint;
 import com.example.gymmanagement.service.setrep.SetRepModels.SetRepResult;
 import com.example.gymmanagement.service.setrep.TrainingZone;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class FitnessCalculator {
+    private final SystemConfigService systemConfigService;
     public enum FsLevel { EXCELLENT, GOOD, AVERAGE, WEAK }
 
     public enum BodyType {
@@ -22,7 +25,9 @@ public class FitnessCalculator {
         if (age == null || height == null || weight == null) return 60.0;
         double sTuoi = calcSTuoi(age);
         double sCannang = calcSCannang(height, weight, gender);
-        double fs = sTuoi * 0.4 + sCannang * 0.6;
+        double wAge = systemConfigService.get("FS_WEIGHT_AGE", 0.4);
+        double wWeight = systemConfigService.get("FS_WEIGHT_WEIGHT", 0.6);
+        double fs = sTuoi * wAge + sCannang * wWeight;
         return clamp(fs, 0, 100);
     }
 
