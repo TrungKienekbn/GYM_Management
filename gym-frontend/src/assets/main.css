@@ -42,9 +42,9 @@
 
   --transition:  0.2s ease;
 
-  --font-display: 'Bebas Neue', sans-serif;
-  --font-mono:    'Space Mono', monospace;
-  --font-body:    'DM Sans', sans-serif;
+  --font-display: "Times New Roman", Times, serif;
+  --font-mono:    "Times New Roman", Times, serif;
+  --font-body:    "Times New Roman", Times, serif;
 }
 
 /* RESET */

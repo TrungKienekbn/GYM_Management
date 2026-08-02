@@ -26,7 +26,7 @@
 
       <div style="text-align:center;color:var(--c-text2);font-size:0.875rem;margin-top:20px">
         Chưa có tài khoản? <router-link to="/register" style="color:var(--c-accent);font-weight:600">Đăng ký ngay</router-link>
-      </div>
+      </div>s
 
       <div class="demo-box">
         <div style="font-size:0.72rem;font-weight:700;color:var(--c-text3);letter-spacing:0.1em;margin-bottom:4px">DEMO</div>
