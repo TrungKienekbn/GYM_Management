@@ -27,6 +27,7 @@ public class PetService {
     private final WorkoutSessionRepository sessionRepo;
 
     private static final int MAX_TIER_COUNT = 30; // vượt mốc 30 giữ nguyên bậc cao nhất, không tăng thêm
+    private final UserCosmeticOwnershipRepository ownershipRepo;
 
     @Transactional
     public PetResponse recalculate(String email) {
@@ -129,6 +130,54 @@ public class PetService {
         return Math.min(missed / 5, 6);
     }
 
+    @Transactional
+    public PetResponse equip(String email, String cosmeticCode) {
+        User user = userRepo.findByEmail(email).orElseThrow();
+        CosmeticItem item = CosmeticItem.fromCode(cosmeticCode);
+
+        boolean owned = item.isFree() || ownershipRepo.existsByUserIdAndCosmeticCode(user.getId(), item.name());
+        if (!owned) throw new RuntimeException("Bạn chưa sở hữu trang phục này");
+
+        PetProfile pet = petRepo.findByUserId(user.getId())
+                .orElseThrow(() -> new RuntimeException("Pet chưa được khởi tạo, hãy vào trang Buổi tập trước"));
+
+        switch (item.getSlot()) {
+            case SHIRT -> pet.setEquippedShirt(item.name());
+            case PANTS -> pet.setEquippedPants(item.name());
+            case HAIR  -> pet.setEquippedHair(item.name());
+        }
+        petRepo.save(pet);
+        return toResponse(pet);
+    }
+
+    public List<CosmeticItemResponse> getCatalog(String email) {
+        User user = userRepo.findByEmail(email).orElseThrow();
+        PetProfile pet = petRepo.findByUserId(user.getId()).orElse(null);
+
+        java.util.Set<String> owned = ownershipRepo.findByUserId(user.getId()).stream()
+                .map(UserCosmeticOwnership::getCosmeticCode)
+                .collect(java.util.stream.Collectors.toSet());
+
+        return java.util.Arrays.stream(CosmeticItem.values()).map(item -> {
+            boolean isOwned = item.isFree() || owned.contains(item.name());
+            String equippedCode = pet == null ? null : switch (item.getSlot()) {
+                case SHIRT -> pet.getEquippedShirt();
+                case PANTS -> pet.getEquippedPants();
+                case HAIR  -> pet.getEquippedHair();
+            };
+            return CosmeticItemResponse.builder()
+                    .code(item.name())
+                    .slot(item.getSlot())
+                    .displayName(item.getDisplayName())
+                    .colorHex(item.getColorHex())
+                    .price(item.isFree() ? 0 : CosmeticItem.PRICE)
+                    .free(item.isFree())
+                    .owned(isOwned)
+                    .equipped(item.name().equals(equippedCode))
+                    .build();
+        }).collect(java.util.stream.Collectors.toList());
+    }
+
     private PetResponse toResponse(PetProfile p) {
         return PetResponse.builder()
                 .stage(p.getStage())
@@ -136,6 +185,9 @@ public class PetService {
                 .missedStreak(p.getMissedStreak())
                 .auraTier(p.getAuraTier())
                 .webCount(p.getWebCount())
+                .shirtColor(CosmeticItem.fromCode(p.getEquippedShirt()).getColorHex())
+                .pantsColor(CosmeticItem.fromCode(p.getEquippedPants()).getColorHex())
+                .hairColor(CosmeticItem.fromCode(p.getEquippedHair()).getColorHex())
                 .build();
     }
 }

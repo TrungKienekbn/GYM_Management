@@ -61,4 +61,13 @@ public class PetProfile implements Persistable<Long> {
     @PostLoad
     @PostPersist
     void markNotNew() { this.isNew = false; }
+
+    @Builder.Default
+    private String equippedShirt = "SHIRT_ORANGE";
+
+    @Builder.Default
+    private String equippedPants = "PANTS_ORANGE";
+
+    @Builder.Default
+    private String equippedHair = "HAIR_YELLOW";
 }

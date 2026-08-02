@@ -32,6 +32,7 @@ public class InvoiceService {
     private final MembershipService membershipService;
     private final BankQrService bankQrService;
     private final NotificationService notificationService;
+    private final com.example.gymmanagement.pet.UserCosmeticOwnershipRepository userCosmeticOwnershipRepository;
 
     @Transactional
     public InvoiceResponse createInvoice(String email, CreateInvoiceRequest request) {
@@ -44,19 +45,36 @@ public class InvoiceService {
                             "). Vui lòng thanh toán hoặc hủy hóa đơn đó trước khi tạo hóa đơn mới.");
                 });
 
-        double price = membershipService.getPrice(request.getMembershipType());
-
-        Invoice invoice = Invoice.builder()
-                .user(user)
-                .membershipType(request.getMembershipType())
-                .price(price)
-                .status(PaymentStatus.PENDING)
-                .build();
+        Invoice invoice;
+        if (request.getCosmeticItemCode() != null) {
+            com.example.gymmanagement.pet.CosmeticItem item =
+                    com.example.gymmanagement.pet.CosmeticItem.fromCode(request.getCosmeticItemCode());
+            if (item.isFree()) {
+                throw new RuntimeException("Trang phục này miễn phí, không cần thanh toán");
+            }
+            if (userCosmeticOwnershipRepository.existsByUserIdAndCosmeticCode(user.getId(), item.name())) {
+                throw new RuntimeException("Bạn đã sở hữu trang phục này");
+            }
+            invoice = Invoice.builder()
+                    .user(user)
+                    .invoiceType(com.example.gymmanagement.pet.InvoiceType.COSMETIC)
+                    .cosmeticItemCode(item.name())
+                    .price((double) com.example.gymmanagement.pet.CosmeticItem.PRICE)
+                    .status(PaymentStatus.PENDING)
+                    .build();
+        } else {
+            double price = membershipService.getPrice(request.getMembershipType());
+            invoice = Invoice.builder()
+                    .user(user)
+                    .invoiceType(com.example.gymmanagement.pet.InvoiceType.MEMBERSHIP)
+                    .membershipType(request.getMembershipType())
+                    .price(price)
+                    .status(PaymentStatus.PENDING)
+                    .build();
+        }
         invoice = invoiceRepository.save(invoice);
-
         return generateQr(invoice);
     }
-
     private InvoiceResponse generateQr(Invoice invoice) {
         long amount = Math.round(invoice.getPrice());
 
@@ -146,16 +164,28 @@ public class InvoiceService {
         invoice.setResultMessage(content);
         invoice.setPaidAt(LocalDateTime.now());
 
-        Membership membership = membershipService.activatePaidMembership(
-                invoice.getUser(), invoice.getMembershipType(), referenceCode, "BANK_TRANSFER");
-        invoice.setMembership(membership);
-        invoiceRepository.save(invoice);
-
-        notificationService.sendToUser(invoice.getUser().getId(),
-                "Thanh toán thành công",
-                "Hóa đơn #" + invoice.getId() + " đã thanh toán thành công. Gói " +
-                        invoice.getMembershipType() + " đã được kích hoạt.",
-                "SYSTEM");
+        if (invoice.getInvoiceType() == com.example.gymmanagement.pet.InvoiceType.COSMETIC) {
+            userCosmeticOwnershipRepository.save(
+                    com.example.gymmanagement.pet.UserCosmeticOwnership.builder()
+                            .userId(invoice.getUser().getId())
+                            .cosmeticCode(invoice.getCosmeticItemCode())
+                            .build());
+            invoiceRepository.save(invoice);
+            notificationService.sendToUser(invoice.getUser().getId(),
+                    "Thanh toán thành công",
+                    "Hóa đơn #" + invoice.getId() + " đã thanh toán thành công. Trang phục đã được mở khóa.",
+                    "SYSTEM");
+        } else {
+            Membership membership = membershipService.activatePaidMembership(
+                    invoice.getUser(), invoice.getMembershipType(), referenceCode, "BANK_TRANSFER");
+            invoice.setMembership(membership);
+            invoiceRepository.save(invoice);
+            notificationService.sendToUser(invoice.getUser().getId(),
+                    "Thanh toán thành công",
+                    "Hóa đơn #" + invoice.getId() + " đã thanh toán thành công. Gói " +
+                            invoice.getMembershipType() + " đã được kích hoạt.",
+                    "SYSTEM");
+        }
     }
 
     private Invoice findInvoiceByContent(String content) {

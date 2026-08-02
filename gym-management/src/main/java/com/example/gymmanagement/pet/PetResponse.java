@@ -12,4 +12,8 @@ public class PetResponse {
     private Integer missedStreak;
     private AuraTier auraTier;
     private Integer webCount;
+
+    private String shirtColor;
+    private String pantsColor;
+    private String hairColor;
 }

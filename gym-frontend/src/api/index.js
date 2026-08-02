@@ -106,8 +106,15 @@ export const membershipAPI = {
     purchase:       (data) => api.post('/memberships', data),
     confirmPayment: (id, txId) => api.post(`/memberships/${id}/confirm-payment`, { transactionId: txId })
 }
+export const petCosmeticAPI = {
+    getCatalog: ()     => api.get('/pet/cosmetics'),
+    equip:      (code) => api.post(`/pet/cosmetics/${code}/equip`)
+}
+
+// thêm method mới bên cạnh create() cũ trong invoiceAPI:
 export const invoiceAPI = {
-    create:        (membershipType) => api.post('/invoices', { membershipType }),
+    create:         (membershipType)     => api.post('/invoices', { membershipType }),
+    createCosmetic: (cosmeticItemCode)   => api.post('/invoices', { cosmeticItemCode }),
     getAll:        ()   => api.get('/invoices'),
     getOne:        (id) => api.get(`/invoices/${id}`),
     regenerateQr:  (id) => api.post(`/invoices/${id}/regenerate-qr`),

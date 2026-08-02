@@ -12,18 +12,22 @@ Widget hiển thị pet chạy trái <-> phải trong khung "pet-stage".
 - Pet tự lật mặt (quay đầu) đúng lúc đổi hướng chạy, đồng bộ với mốc
   48%-50% trong keyframes.
 
+CẬP NHẬT COSMETIC: click vào .pet-stage mở PetSkinShopDialog. Màu
+áo/quần/tóc lấy từ pet.shirtColor/pantsColor/hairColor (BE trả về)
+và truyền xuống PetSprite. Sau khi equip, dialog emit lại pet mới
+-> cập nhật reactive state -> đổi màu ngay, không reload.
+
 VỊ TRÍ ĐẶT FILE: src/components/pet/PetWidget.vue (ghi đè file cũ)
-CÁC FILE LIÊN QUAN (giữ nguyên, không cần sửa):
-  - src/components/pet/PetSprite.vue
-  - src/components/pet/AuraEffect.vue
-  - src/components/pet/SpiderWebOverlay.vue
+CÁC FILE LIÊN QUAN:
+  - src/components/pet/PetSprite.vue      (đã sửa: nhận màu qua props)
+  - src/components/pet/AuraEffect.vue     (giữ nguyên)
+  - src/components/pet/SpiderWebOverlay.vue (giữ nguyên)
+  - src/components/pet/PetSkinShopDialog.vue (mới)
 ============================================================
 -->
 
-
-
 <template>
-  <div class="pet-stage">
+  <div class="pet-stage" @click="showShop = true" title="Bấm để đổi trang phục">
     <!-- Mạng nhện: cố định quanh khung màn hình, KHÔNG di chuyển theo pet -->
     <SpiderWebOverlay :count="pet.webCount" class="stage-web" />
 
@@ -35,10 +39,23 @@ CÁC FILE LIÊN QUAN (giữ nguyên, không cần sửa):
     <!-- Pet: chạy trái <-> phải, tự lật mặt theo hướng di chuyển -->
     <div class="pet-track">
       <div class="pet-layer-wrap" :class="{ 'is-facing-left': facingLeft }">
-        <PetSprite :stage="pet.stage" :leg-frame="legFrame" class="layer-pet" />
+        <PetSprite
+          :stage="pet.stage"
+          :leg-frame="legFrame"
+          :shirt-color="pet.shirtColor"
+          :pants-color="pet.pantsColor"
+          :hair-color="pet.hairColor"
+          class="layer-pet"
+        />
       </div>
     </div>
   </div>
+
+  <PetSkinShopDialog
+    v-model="showShop"
+    @equipped="onEquipped"
+    @click.stop
+  />
 </template>
 
 <script setup>
@@ -47,17 +64,22 @@ import { petAPI } from '@/api'
 import PetSprite from './PetSprite.vue'
 import AuraEffect from './AuraEffect.vue'
 import SpiderWebOverlay from './SpiderWebOverlay.vue'
+import PetSkinShopDialog from './PetSkinShopDialog.vue'
 
 const pet = reactive({
   stage: 'AVERAGE',
   currentStreak: 0,
   missedStreak: 0,
   auraTier: 'NONE',
-  webCount: 0
+  webCount: 0,
+  shirtColor: '#E8641E',
+  pantsColor: '#B84A12',
+  hairColor: '#F5C400'
 })
 
 const legFrame = ref('a')
 const facingLeft = ref(false)
+const showShop = ref(false)
 
 let legTimer
 let cycleTimer
@@ -75,6 +97,11 @@ async function loadPet() {
   } catch (e) {
     console.error('Load pet failed', e)
   }
+}
+
+// Nhận PetResponse mới nhất từ dialog sau khi equip -> đổi màu ngay tại chỗ
+function onEquipped(updatedPet) {
+  Object.assign(pet, updatedPet)
 }
 
 // Mỗi vòng chạy: bắt đầu quay mặt phải (facingLeft=false),
@@ -110,6 +137,7 @@ onUnmounted(() => {
   min-height: 260px;
   overflow: visible; /* để aura + pet tràn ra ngoài không bị cắt */
   background: transparent;
+  cursor: pointer; /* gợi ý có thể click để mở shop */
 }
 
 /* ---------- Mạng nhện: cố định theo khung màn hình ---------- */

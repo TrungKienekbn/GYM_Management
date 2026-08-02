@@ -6,4 +6,5 @@ import lombok.*;
 @Data @NoArgsConstructor @AllArgsConstructor
 public class CreateInvoiceRequest {
     private MembershipType membershipType;
+    private String cosmeticItemCode;
 }

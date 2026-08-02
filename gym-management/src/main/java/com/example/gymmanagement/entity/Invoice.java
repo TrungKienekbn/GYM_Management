@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import com.example.gymmanagement.pet.InvoiceType;
 
 @Entity
 @Table(name = "invoices")
@@ -61,4 +62,10 @@ public class Invoice {
         if (createdAt == null) createdAt = LocalDateTime.now();
         if (regenerateCount == null) regenerateCount = 0;
     }
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private InvoiceType invoiceType = InvoiceType.MEMBERSHIP;
+
+    private String cosmeticItemCode; // tên enum CosmeticItem, chỉ dùng khi invoiceType = COSMETIC
 }

@@ -105,10 +105,13 @@
       <!-- ===================== THỐNG KÊ CÁC BUỔI TẬP (MỚI) ===================== -->
       <el-card style="margin-top:24px" v-if="plan">
         <template #header>
-          <span style="font-weight:700">📋 THỐNG KÊ CÁC BUỔI TẬP</span>
+          <span style="font-weight:700">📋 THỐNG KÊ CÁC BUỔI TẬP{{ buoiStatsTitleSuffix }}</span>
         </template>
 
-        <div class="buoi-stats-list">
+        <div v-if="!hasSelectedWeekData" class="empty-state" style="padding:16px">
+          Chưa có dữ liệu của tuần này.
+        </div>
+        <div v-else class="buoi-stats-list">
           <div v-for="b in buoiStats" :key="b.buoiNumber" class="buoi-stat-item">
             <div class="buoi-stat-row" @click="toggleExpand(b.buoiNumber)">
               <div class="buoi-stat-main">
@@ -149,12 +152,60 @@
           </div>
         </div>
       </el-card>
+            <!-- ===================== THỐNG KÊ THEO THỜI GIAN (MỚI) ===================== -->
+            <el-card style="margin-top:24px" v-if="plan">
+              <template #header>
+                <span style="font-weight:700">📈 THỐNG KÊ THEO THỜI GIAN (tỉ lệ hoàn thành trung bình)</span>
+              </template>
+
+              <el-radio-group v-model="timeViewMode" size="small" style="margin-bottom:16px">
+                <el-radio-button label="week">Theo tuần</el-radio-button>
+                <el-radio-button label="month">Theo tháng</el-radio-button>
+              </el-radio-group>
+
+              <div class="time-stats-scroll">
+                <template v-if="timeViewMode === 'week'">
+                  <div v-if="!weekStatsData.length" class="empty-state" style="padding:16px">
+                    Chưa có tuần nào được ghi nhận.
+                  </div>
+                  <div v-for="w in weekStatsData" :key="'w-'+w.weekNumber"
+                       class="time-stat-item"
+                       :class="{ 'time-stat-selected': w.weekNumber === effectiveWeekNumber }"
+                       :ref="w.isCurrent ? setCurrentStatRef : undefined"
+                       @click="selectWeek(w.weekNumber)">
+                    <div class="time-stat-label">Tuần {{ w.weekNumber }}</div>
+                    <div class="time-stat-bar-track">
+                      <div class="time-stat-bar-fill" :class="w.isCurrent ? 'bar-current' : 'bar-completed'"
+                           :style="{ height: (w.avgRate != null ? Math.min(w.avgRate,100) : 0) + '%' }"></div>
+                    </div>
+                    <div class="time-stat-percent">{{ w.avgRate != null ? Math.round(w.avgRate) + '%' : '--' }}</div>
+                    <div v-if="w.isCurrent" class="time-stat-tag">(đang tập)</div>
+                  </div>
+                </template>
+
+                <template v-else>
+                  <div v-if="!monthStatsData.length" class="empty-state" style="padding:16px">
+                    Chưa có tháng nào được ghi nhận.
+                  </div>
+                  <div v-for="m in monthStatsData" :key="'m-'+m.key"
+                       class="time-stat-item" :ref="m.isCurrent ? setCurrentStatRef : undefined">
+                    <div class="time-stat-label">Tháng {{ m.label }}</div>
+                    <div class="time-stat-bar-track">
+                      <div class="time-stat-bar-fill" :class="m.isCurrent ? 'bar-current' : 'bar-completed'"
+                           :style="{ height: (m.avgRate != null ? Math.min(m.avgRate,100) : 0) + '%' }"></div>
+                    </div>
+                    <div class="time-stat-percent">{{ m.avgRate != null ? Math.round(m.avgRate) + '%' : '--' }}</div>
+                    <div v-if="m.isCurrent" class="time-stat-tag">(đang tập)</div>
+                  </div>
+                </template>
+              </div>
+            </el-card>
     </template>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { Chart, registerables } from 'chart.js'
 import { planAPI, sessionAPI, foodAPI } from '@/api'
 import { ArrowDown } from '@element-plus/icons-vue'
@@ -277,6 +328,99 @@ async function loadRecommendedFoods() {
   }
 }
 
+// ═══════════════════ MỚI: THỐNG KÊ THEO THỜI GIAN (Tuần / Tháng) ═══════════════════
+const timeViewMode = ref('week') // 'week' | 'month'
+const currentTimeStatRef = ref(null)
+
+function setCurrentStatRef(el) {
+  if (el) currentTimeStatRef.value = el
+}
+
+function scrollToCurrentStat() {
+  nextTick(() => {
+    if (currentTimeStatRef.value && currentTimeStatRef.value.scrollIntoView) {
+      currentTimeStatRef.value.scrollIntoView({ behavior: 'smooth', inline: 'end', block: 'nearest' })
+    }
+  })
+}
+
+watch(timeViewMode, () => {
+  currentTimeStatRef.value = null
+  scrollToCurrentStat()
+})
+
+const selectedWeekNumber = ref(null) // null = chưa chọn -> dùng tuần hiện tại
+
+function selectWeek(weekNumber) {
+  selectedWeekNumber.value = weekNumber
+}
+
+// Tuần đang được xem trong "📋 Thống kê các buổi tập"
+const effectiveWeekNumber = computed(() => {
+  return selectedWeekNumber.value != null ? selectedWeekNumber.value : plan.value?.currentWeek
+})
+
+const buoiStatsTitleSuffix = computed(() => {
+  if (!plan.value || effectiveWeekNumber.value == null) return ''
+  return effectiveWeekNumber.value === plan.value.currentWeek
+      ? ' - Tuần hiện tại'
+      : ` - Tuần ${effectiveWeekNumber.value}`
+})
+
+const hasSelectedWeekData = computed(() => {
+  if (!plan.value || effectiveWeekNumber.value == null) return false
+  return allSessions.value.some(s => s.planId === plan.value.id && s.weekNumber === effectiveWeekNumber.value)
+})
+
+
+// Theo tuần — CHỈ tính trên giáo án đang active hiện tại (planId trùng plan.value.id).
+// weekNumber là tương đối theo từng giáo án nên không được gộp giáo án khác vào.
+const weekStatsData = computed(() => {
+  if (!plan.value) return []
+  const planId = plan.value.id
+  const currentWeek = plan.value.currentWeek
+  const byWeek = {}
+
+  allSessions.value.forEach(s => {
+    if (s.planId !== planId || s.weekNumber == null) return
+    if (!byWeek[s.weekNumber]) byWeek[s.weekNumber] = []
+    byWeek[s.weekNumber].push(s)
+  })
+
+  return Object.keys(byWeek).map(Number).sort((a, b) => a - b).map(w => {
+    const sessions = byWeek[w]
+    const completed = sessions.filter(s => s.status === 'COMPLETED' && s.completionRate != null)
+    const avgRate = completed.length
+        ? completed.reduce((sum, s) => sum + s.completionRate, 0) / completed.length
+        : null
+    return { weekNumber: w, avgRate, isCurrent: w === currentWeek }
+  })
+})
+
+// Theo tháng — TOÀN BỘ lịch sử (mọi giáo án), nhóm theo tháng dương lịch thật (session.sessionDate).
+const monthStatsData = computed(() => {
+  const byMonth = {}
+
+  allSessions.value.forEach(s => {
+    if (!s.sessionDate) return
+    const d = dayjs(s.sessionDate)
+    const key = d.format('YYYY-MM')
+    if (!byMonth[key]) byMonth[key] = { sessions: [], month: d.month() + 1, year: d.year() }
+    byMonth[key].sessions.push(s)
+  })
+
+  const nowKey = dayjs().format('YYYY-MM')
+
+  return Object.keys(byMonth).sort().map(key => {
+    const group = byMonth[key]
+    const completed = group.sessions.filter(s => s.status === 'COMPLETED' && s.completionRate != null)
+    const avgRate = completed.length
+        ? completed.reduce((sum, s) => sum + s.completionRate, 0) / completed.length
+        : null
+    return { key, label: `${group.month}/${group.year}`, avgRate, isCurrent: key === nowKey }
+  })
+})
+
 // ═══════════════════ MỚI: THỐNG KÊ CÁC BUỔI TẬP ═══════════════════
 const expandedMap = ref({})
 function toggleExpand(buoiNumber) {
@@ -288,6 +432,17 @@ function rateBadgeClass(rate) {
   if (rate >= 90) return 'badge-high'
   if (rate >= 60) return 'badge-mid'
   return 'badge-low'
+}
+
+// MỚI — dùng riêng cho "📋 Thống kê các buổi tập", lọc theo tuần được chọn.
+// Khác findSessionForBuoi gốc (vốn cố định theo plan.currentWeek, phục vụ biểu đồ
+// "Khối lượng % hoàn thành tuần này" — KHÔNG đổi hàm đó).
+function findSessionForBuoiInSelectedWeek(planDay) {
+  const weekNum = effectiveWeekNumber.value
+  const planId  = plan.value?.id
+  return allSessions.value.find(s =>
+      s.planId === planId && s.weekNumber === weekNum && s.dayName === planDay.dayName
+  )
 }
 
 // So sánh 1 bài tập: yêu cầu (sets × reps hoặc sets × durationSeconds) vs thực tế (log)
@@ -317,7 +472,7 @@ const buoiStats = computed(() => {
 
   return planDays.map((planDay, idx) => {
     const buoiNumber = idx + 1
-    const session = findSessionForBuoi(planDay)
+    const session = findSessionForBuoiInSelectedWeek(planDay)
     const totalExercises = (planDay.exercises || []).length
 
     if (!session || session.status !== 'COMPLETED') {
@@ -396,6 +551,7 @@ async function load() {
   } finally {
     loading.value = false
     nextTick(drawVolumeChart)
+    scrollToCurrentStat()
   }
 }
 
@@ -441,6 +597,23 @@ onMounted(load)
 .food-suggest-info { flex:1; min-width:0; }
 .food-suggest-name { font-size:0.85rem; font-weight:600; color:var(--c-text); }
 .food-suggest-meta { display:flex; gap:10px; flex-wrap:wrap; font-size:0.72rem; color:var(--c-text3); margin-top:3px; }
+
+/* ── Thống kê theo thời gian ── */
+.time-stats-scroll { display:flex; gap:14px; overflow-x:auto; padding:10px 4px 14px; }
+
+.time-stat-item { flex:0 0 auto; width:64px; display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer; border-radius:8px; padding:4px; transition:background .15s; }
+.time-stat-item:hover { background:var(--c-card2); }
+.time-stat-selected { background:#FFF8F0; outline:2px solid var(--c-accent); }
+.time-stat-label { font-size:0.75rem; font-weight:700; color:var(--c-text); white-space:nowrap; }
+.time-stat-bar-track {
+  width:28px; height:120px; background:#f1f5f9; border-radius:6px;
+  display:flex; align-items:flex-end; overflow:hidden;
+}
+.time-stat-bar-fill { width:100%; border-radius:6px; transition:height .3s; }
+.bar-completed { background:#22c55e; }
+.bar-current   { background:#1565C0; }
+.time-stat-percent { font-size:0.78rem; font-weight:700; color:var(--c-text); }
+.time-stat-tag { font-size:0.68rem; color:#1565C0; font-weight:600; }
 
 /* ── Thống kê các buổi tập ── */
 .buoi-stats-list { display:flex; flex-direction:column; gap:8px; }
