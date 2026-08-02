@@ -11,7 +11,9 @@ const router = createRouter({
         // ─────────────────────────────────────────
         {
             path: '/',
-            redirect: '/login'
+            name: 'Home',
+            component: () => import('@/views/HomeView.vue'),
+            meta: { guest: true, allowAuthenticated: true }
         },
 
         {
@@ -283,7 +285,7 @@ router.beforeEach((to, from, next) => {
     // ─────────────────────────────────────────
     // Guest route
     // ─────────────────────────────────────────
-    if (to.meta.guest) {
+    if (to.meta.guest && !to.meta.allowAuthenticated) {
 
         const valid = auth.checkToken()
 

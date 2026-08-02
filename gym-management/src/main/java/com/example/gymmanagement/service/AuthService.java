@@ -2,6 +2,7 @@ package com.example.gymmanagement.service;
 
 import com.example.gymmanagement.dto.request.LoginRequest;
 import com.example.gymmanagement.dto.request.RegisterRequest;
+import com.example.gymmanagement.dto.request.PhoneLast4LoginRequest;
 import com.example.gymmanagement.dto.response.AuthResponse;
 import com.example.gymmanagement.entity.Role;
 import com.example.gymmanagement.entity.User;
@@ -84,6 +85,21 @@ public class AuthService {
                 .email(user.getEmail())
                 .emailVerified(user.getEmailVerified())
                 .build();
+    }
+
+    public AuthResponse loginWithPhoneLast4(PhoneLast4LoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Email không tồn tại"));
+        String phone = user.getPhone() == null ? "" : user.getPhone().replaceAll("\\D", "");
+        String last4 = request.getLastFourDigits() == null ? "" : request.getLastFourDigits().trim();
+        if (!last4.matches("\\d{4}") || phone.length() < 4 || !phone.endsWith(last4)) {
+            throw new RuntimeException("4 số cuối điện thoại không đúng");
+        }
+        if (!Boolean.TRUE.equals(user.getStatus())) throw new RuntimeException("Tài khoản đã bị khóa");
+        String token = jwtService.generateToken(user.getEmail());
+        return AuthResponse.builder().token(token).role(user.getRole().getRoleName())
+                .userId(user.getId()).fullName(user.getFullName()).email(user.getEmail())
+                .emailVerified(user.getEmailVerified()).build();
     }
 
     public String verifyEmail(String token) {

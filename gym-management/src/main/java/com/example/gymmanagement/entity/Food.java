@@ -20,23 +20,23 @@ public class Food {
     private Integer calories;      // kcal
     private Double proteinGrams;   // g
     private Double fatGrams;       // g
-    private Double weightGrams;    // khối lượng khẩu phần món ăn này, tính bằng gram — dùng để quy đổi "trên mỗi kg"
+    private Double weightGrams;    // khối lượng một khẩu phần, gram
 
-    // Tự tính "trên mỗi 1kg" từ số liệu khẩu phần — không lưu DB, chỉ trả JSON cho FE.
+    // Chuẩn hóa về 100 g để dễ so sánh giữa các món (USDA FoodData Central dùng giá trị/100 g).
     @Transient
-    public Double getCaloriesPerKg() {
+    public Double getCaloriesPer100g() {
         if (weightGrams == null || weightGrams <= 0 || calories == null) return null;
-        return Math.round((calories / weightGrams) * 1000 * 100) / 100.0;
+        return Math.round((calories / weightGrams) * 100 * 10) / 10.0;
     }
     @Transient
-    public Double getProteinPerKg() {
+    public Double getProteinPer100g() {
         if (weightGrams == null || weightGrams <= 0 || proteinGrams == null) return null;
-        return Math.round((proteinGrams / weightGrams) * 1000 * 100) / 100.0;
+        return Math.round((proteinGrams / weightGrams) * 100 * 10) / 10.0;
     }
     @Transient
-    public Double getFatPerKg() {
+    public Double getFatPer100g() {
         if (weightGrams == null || weightGrams <= 0 || fatGrams == null) return null;
-        return Math.round((fatGrams / weightGrams) * 1000 * 100) / 100.0;
+        return Math.round((fatGrams / weightGrams) * 100 * 10) / 10.0;
     }
 
     @Lob

@@ -19,7 +19,7 @@ api.interceptors.response.use(
         if (err.response?.status === 401) {
             sessionStorage.clear()
             window.location.href = '/login'
-        } else if (err.response?.status !== 404) {
+        } else if (err.response?.status !== 404 && !err.config?.silentError) {
             ElMessage.error(msg)
         }
         return Promise.reject(err)
@@ -32,6 +32,7 @@ export default api
 export const authAPI = {
     register: (data) => api.post('/auth/register', data),
     login:    (data) => api.post('/auth/login', data),
+    loginWithPhone: (data) => api.post('/auth/login-phone-last4', data),
     verify:   (token) => api.get(`/auth/verify-email?token=${token}`)
 }
 
@@ -46,7 +47,7 @@ export const profileAPI = {
 export const planAPI = {
     generate:          ()     => api.post('/workout-plans/generate'),
     generateWithGoal: (data) => api.post('/workout-plans/generate-with-goal', data),
-    getActive:    ()     => api.get('/workout-plans/active'),
+    getActive:    ()     => api.get('/workout-plans/active', { silentError: true }),
     getAll:       ()     => api.get('/workout-plans'),
     createCustom: (data) => api.post('/workout-plans', data),
     adjustWeek:   (id, data) => api.post(`/workout-plans/${id}/adjust-week`, data),
@@ -94,7 +95,7 @@ export const petAPI = {
 // ── Progress ──────────────────────────────────
 export const progressAPI = {
     getAll:   ()       => api.get('/progress'),
-    getLatest:()       => api.get('/progress/latest'),
+    getLatest:()       => api.get('/progress/latest', { silentError: true }),
     add:      (data)   => api.post('/progress', data),
     update:   (id, d)  => api.put(`/progress/${id}`, d)
 }
@@ -102,7 +103,7 @@ export const progressAPI = {
 // ── Memberships ───────────────────────────────
 export const membershipAPI = {
     getAll:         ()     => api.get('/memberships'),
-    getActive:      ()     => api.get('/memberships/active'),
+    getActive:      ()     => api.get('/memberships/active', { silentError: true }),
     purchase:       (data) => api.post('/memberships', data),
     confirmPayment: (id, txId) => api.post(`/memberships/${id}/confirm-payment`, { transactionId: txId })
 }
@@ -129,6 +130,7 @@ export const exerciseAPI = {
     create:   (data)   => api.post('/exercises', data),
     update:   (id, d)  => api.put(`/exercises/${id}`, d),
     delete:   (id)     => api.delete(`/exercises/${id}`)
+    ,restore: (id)     => api.patch(`/exercises/${id}/restore`)
 }
 // ── Foods (Món ăn) ────────────────────────────
 export const foodAPI = {

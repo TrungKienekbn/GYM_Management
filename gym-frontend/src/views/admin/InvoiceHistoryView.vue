@@ -45,7 +45,7 @@
         <el-table-column label="ID" prop="id" width="60" align="center"/>
         <el-table-column label="Khách hàng" prop="userName" min-width="140"/>
         <el-table-column label="Email" prop="userEmail" min-width="190"/>
-        <el-table-column label="Gói" prop="membershipType" width="90" align="center"/>
+        <el-table-column label="Sản phẩm" min-width="130" align="center"><template #default="{row}">{{ row.invoiceType === 'COSMETIC' ? row.cosmeticItemName : 'Gói ' + row.membershipType }}</template></el-table-column>
         <el-table-column label="Giá (đ)" width="120" align="right">
           <template #default="{row}">{{ Number(row.price).toLocaleString() }}</template>
         </el-table-column>

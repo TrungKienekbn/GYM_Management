@@ -32,7 +32,7 @@
 
     <div v-else>
       <el-table :data="filtered" stripe>
-        <el-table-column label="ID" prop="id" width="70" />
+        <el-table-column label="STT" type="index" width="65" />
         <el-table-column label="Tên giáo án" prop="planName" />
         <el-table-column label="Mục tiêu">
                   <template #default="{row}">
@@ -95,7 +95,7 @@
           </el-form-item>
         </div>
 
-        <el-form-item label="Mô tả">
+        <el-form-item label="Mô tả / Ghi chú giáo án">
           <el-input type="textarea" v-model="form.description" rows="2" />
         </el-form-item>
 
@@ -166,11 +166,22 @@
                     </el-option>
                   </el-select>
 
-                         <div v-if="ex.exerciseId && !form.isFitnessImprovement" class="ex-params-grid">
+                  <div v-if="ex.exerciseId && !form.isFitnessImprovement" class="ex-params-grid">
                     <el-input-number v-model="ex.sets" :min="1" :max="10" size="small" placeholder="Sets" />
                     <el-input-number v-model="ex.reps" :min="0" :max="100" size="small" placeholder="Reps" />
                     <el-input-number v-model="ex.restSeconds" :min="0" :max="300" :step="5" size="small" placeholder="Nghỉ(s)" />
                   </div>
+
+                  <el-input
+                      v-if="ex.exerciseId"
+                      v-model="ex.notes"
+                      type="textarea"
+                      :rows="2"
+                      maxlength="300"
+                      show-word-limit
+                      placeholder="Ghi chú cho bài tập: kỹ thuật, mức tạ, lưu ý..."
+                      style="margin-top:8px"
+                  />
 
                   <div style="display:flex;justify-content:flex-end;margin-top:4px" v-if="ex.exerciseId">
                     <el-button type="danger" link size="small" @click="day.exercises.splice(eIdx,1)">Xóa bài</el-button>

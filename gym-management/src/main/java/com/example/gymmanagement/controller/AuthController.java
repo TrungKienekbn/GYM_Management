@@ -2,6 +2,7 @@ package com.example.gymmanagement.controller;
 
 import com.example.gymmanagement.dto.request.LoginRequest;
 import com.example.gymmanagement.dto.request.RegisterRequest;
+import com.example.gymmanagement.dto.request.PhoneLast4LoginRequest;
 import com.example.gymmanagement.dto.response.ApiResponse;
 import com.example.gymmanagement.dto.response.AuthResponse;
 import com.example.gymmanagement.service.AuthService;
@@ -24,6 +25,11 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponse>> login(@RequestBody LoginRequest request) {
         return ResponseEntity.ok(ApiResponse.success(authService.login(request), "Login successful"));
+    }
+
+    @PostMapping("/login-phone-last4")
+    public ResponseEntity<ApiResponse<AuthResponse>> loginWithPhoneLast4(@RequestBody PhoneLast4LoginRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(authService.loginWithPhoneLast4(request), "Xác minh thành công"));
     }
 
     @GetMapping("/verify-email")

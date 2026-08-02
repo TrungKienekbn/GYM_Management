@@ -5,6 +5,7 @@ import com.example.gymmanagement.enums.PaymentStatus;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import com.example.gymmanagement.pet.InvoiceType;
 
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class InvoiceResponse {
@@ -13,6 +14,9 @@ public class InvoiceResponse {
     private String userName;
     private String userEmail;
     private MembershipType membershipType;
+    private InvoiceType invoiceType;
+    private String cosmeticItemCode;
+    private String cosmeticItemName;
     private Double price;
     private Long membershipId;
     private PaymentStatus status;

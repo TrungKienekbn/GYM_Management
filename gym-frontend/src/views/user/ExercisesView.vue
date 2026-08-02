@@ -68,13 +68,19 @@
         <el-descriptions-item label="Nghỉ">{{ sel.restSeconds || '--' }}s</el-descriptions-item>
         <el-descriptions-item label="Động tác" :span="2">{{ sel.description || 'Chưa có chi tiết động tác' }}</el-descriptions-item>
       </el-descriptions>
+      <template #footer>
+        <el-button @click="detailDialog=false">Đóng</el-button>
+        <el-button type="primary" @click="addToExtraSession">➕ Thêm vào buổi tập phụ</el-button>
+      </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { exerciseAPI } from '@/api'
+import { exerciseAPI, membershipAPI } from '@/api'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { useRouter } from 'vue-router'
 
 const exercises    = ref([])
 const loading      = ref(true)
@@ -83,6 +89,8 @@ const filterDiff   = ref('')
 const search       = ref('')
 const sel          = ref(null)
 const detailDialog = ref(false)
+const isVip = ref(false)
+const router = useRouter()
 
 const muscles = [
   { v:'CHEST', l:'💪 Ngực' }, { v:'BACK', l:'🔙 Lưng' },
@@ -110,6 +118,21 @@ async function load() {
 
 function open(ex) { sel.value = ex; detailDialog.value = true }
 
+function addToExtraSession() {
+  let list = []
+  try { list = JSON.parse(localStorage.getItem('gym-extra-exercises') || '[]') } catch {}
+  if (list.some(ex => ex.id === sel.value.id)) { ElMessage.info('Bài tập này đã có trong buổi tập phụ'); return }
+  if (!isVip.value && list.length >= 2) {
+    ElMessageBox.confirm('Gói thường chỉ được chọn tối đa 2 bài cho buổi tập phụ. Nâng cấp VIP để thêm không giới hạn.', 'TÍNH NĂNG VIP', { confirmButtonText:'Xem gói VIP', cancelButtonText:'Để sau', type:'warning' })
+      .then(() => router.push('/app/membership')).catch(() => {})
+    return
+  }
+  list.push(sel.value)
+  localStorage.setItem('gym-extra-exercises', JSON.stringify(list))
+  ElMessage.success(`Đã thêm ${sel.value.name} vào buổi tập phụ`)
+  detailDialog.value = false
+}
+
 function youtubeEmbed(url) {
   if (!url) return ''
   // Convert watch?v=ID or youtu.be/ID to embed
@@ -121,7 +144,10 @@ function muscleLabel(m) { return muscles.find(x=>x.v===m)?.l || m }
 function diffLabel(d) { return { EASY:'Dễ', MEDIUM:'Trung bình', HARD:'Khó' }[d] || d }
 function diffBadge(d) { return { EASY:'badge-success', MEDIUM:'badge-warning', HARD:'badge-danger' }[d] || '' }
 
-onMounted(load)
+onMounted(async () => {
+  try { const r = await membershipAPI.getActive(); isVip.value = r.data?.membershipType === 'VIP' && r.data?.paymentStatus === 'PAID' } catch { isVip.value = false }
+  load()
+})
 </script>
 
 <style scoped>

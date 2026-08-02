@@ -38,11 +38,7 @@
       <div class="pkg-card">
         <div class="pkg-type display">FREE</div>
         <div class="pkg-price"><span class="accent">0</span> <span style="font-size:0.8rem;color:var(--c-text2)">đ - mãi mãi</span></div>
-        <ul class="pkg-features">
-          <li v-for="f in freeFeatures" :key="f">✓ {{ f }}</li>
-          <li class="limited">⚠ Giáo án: chỉ đổi 1 lần/tháng</li>
-          <li class="limited">⚠ Dinh dưỡng: gợi ý cơ bản</li>
-        </ul>
+        <ul class="pkg-features"><li v-for="f in freeFeatures" :key="f.text" :class="{limited:f.limited}">{{ f.icon }} {{ f.text }}</li></ul>
         <el-button style="width:100%;margin-top:auto" disabled>
           {{ active && active.membershipType === 'FREE' ? '✓ Gói hiện tại' : 'Gói mặc định' }}
         </el-button>
@@ -53,11 +49,7 @@
         <div class="pkg-badge">DUY NHẤT TRẢ PHÍ</div>
         <div class="pkg-type display">VIP 👑</div>
         <div class="pkg-price"><span class="accent">{{ vipPrice.toLocaleString() }}</span> <span style="font-size:0.8rem;color:var(--c-text2)">đ / tháng</span></div>
-        <ul class="pkg-features">
-          <li v-for="f in vipFeatures" :key="f">✓ {{ f }}</li>
-          <li class="highlight">⭐ Giáo án: KHÔNG GIỚI HẠN số lần đổi/tháng</li>
-          <li class="highlight">⭐ Dinh dưỡng: cá nhân hóa chi tiết (nhiều lựa chọn món + lưu ý riêng)</li>
-        </ul>
+        <ul class="pkg-features"><li v-for="f in vipFeatures" :key="f" class="highlight">✓ {{ f }}</li></ul>
         <el-button type="primary" style="width:100%;margin-top:auto"
                    :disabled="active && active.membershipType==='VIP'"
                    @click="purchaseDialog=true">
@@ -92,7 +84,7 @@
     <!-- Purchase Dialog - chỉ có 1 gói duy nhất để mua (VIP) -->
     <el-dialog v-model="purchaseDialog" title="NÂNG CẤP LÊN GÓI VIP" width="420px" align-center>
       <p style="color:var(--c-text2);font-size:0.85rem;margin-bottom:12px">
-        Gói VIP: giáo án tập không giới hạn số lần đổi/tháng + thực đơn dinh dưỡng cá nhân hóa chi tiết.
+        VIP mở khóa điều chỉnh giáo án tự động mỗi tuần, bài tập phụ không giới hạn và toàn bộ lịch sử thống kê.
       </p>
       <el-form-item label="Phương thức thanh toán" style="margin-top:8px">
         <el-select v-model="paymentMethod" style="width:100%">
@@ -129,8 +121,21 @@ const paymentMethod  = ref('MOMO')
 
 const vipPrice = 299000
 
-const freeFeatures = ['Tập không giới hạn', 'Theo dõi tiến độ', 'Thư viện bài tập']
-const vipFeatures  = ['Tất cả tính năng gói Free', 'Dashboard đầy đủ']
+const freeFeatures = [
+  { icon:'✓', text:'Tạo hoặc đổi giáo án 1 lần/tháng' },
+  { icon:'✓', text:'Thư viện bài tập và dinh dưỡng cơ bản' },
+  { icon:'✓', text:'Theo dõi tiến độ 4 tuần gần nhất' },
+  { icon:'⚠', text:'Buổi tập phụ tối đa 2 bài', limited:true },
+  { icon:'⚠', text:'Chuyển tuần nhưng giữ nguyên mức bài', limited:true }
+]
+const vipFeatures  = [
+  'Tất cả tính năng của gói thường',
+  'Tạo và đổi giáo án không giới hạn',
+  'Tự động điều chỉnh giáo án sau mỗi tuần',
+  'Buổi tập phụ không giới hạn bài',
+  'Xem toàn bộ lịch sử và thống kê dài hạn',
+  'Huy hiệu VIP và truy cập đầy đủ Dashboard'
+]
 
 const daysPercent = computed(() => {
   if (!active.value) return 0

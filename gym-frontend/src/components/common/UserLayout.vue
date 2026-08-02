@@ -30,7 +30,7 @@
           <div class="user-avatar">{{ initials }}</div>
           <div class="user-meta">
             <div class="user-name">{{ auth.user?.fullName }}</div>
-            <div class="user-role">Member</div>
+            <div class="user-role">{{ isVip ? '👑 Thành viên VIP' : 'Gói thường' }}</div>
           </div>
         </div>
         <el-button text @click="auth.logout(); router.push('/login')" class="logout-btn">
@@ -47,11 +47,12 @@
         </el-button>
         <div class="topbar-title display">{{ pageTitle }}</div>
         <div style="flex:1"/>
+        <el-button v-if="!isVip" class="upgrade-topbar" size="small" @click="router.push('/app/membership')">👑 Nâng cấp VIP</el-button>
         <NotificationBell/>
       </header>
 
       <div v-if="pendingInvoice && !route.path.startsWith('/app/payment')" class="pending-payment-banner">
-        <span>⏳ Bạn có hóa đơn <strong>#{{ pendingInvoice.id }}</strong> ({{ pendingInvoice.membershipType }} - {{ formatMoney(pendingInvoice.price) }}) đang chờ thanh toán</span>
+        <span>⏳ Bạn có hóa đơn <strong>#{{ pendingInvoice.id }}</strong> ({{ pendingProductName }} - {{ formatMoney(pendingInvoice.price) }}) đang chờ thanh toán</span>
         <el-button size="small" type="primary" @click="goContinuePayment">Tiếp tục thanh toán</el-button>
       </div>
 
@@ -84,6 +85,9 @@ const initials  = computed(() => (auth.user?.fullName || 'U').split(' ').map(w=>
 
 // ── Hóa đơn đang chờ thanh toán (hiện banner ở mọi trang trừ trang thanh toán) ──
 const pendingInvoice = ref(null)
+const pendingProductName = computed(() => pendingInvoice.value?.invoiceType === 'COSMETIC'
+  ? pendingInvoice.value?.cosmeticItemName || 'Trang phục'
+  : `Gói ${pendingInvoice.value?.membershipType || ''}`)
 
 async function checkPendingInvoice() {
   try {
@@ -146,7 +150,7 @@ function notifyNewAdminMessage(s) {
 onMounted(async () => {
   try {
     const res = await membershipAPI.getActive()
-    isVip.value = res.data?.membershipType === 'VIP'
+    isVip.value = res.data?.membershipType === 'VIP' && res.data?.paymentStatus === 'PAID' && (!res.data?.endDate || new Date(res.data.endDate) >= new Date(new Date().toDateString()))
   } catch { isVip.value = false }
   pollSupport()
   supportTimer = setInterval(pollSupport, 5000)
@@ -224,6 +228,7 @@ const pageTitle = computed(() => titles[route.path] || 'GymPro')
 }
 .toggle-btn { color:var(--c-text-inv2) !important; }
 .topbar-title { font-size:1.1rem; color:var(--c-text-inv); letter-spacing:0.08em; }
+.upgrade-topbar{border-color:#f5c518!important;background:#f5c518!important;color:#3b2507!important;font-weight:700}
 
 .pending-payment-banner {
   display:flex; align-items:center; justify-content:space-between; gap:12px;

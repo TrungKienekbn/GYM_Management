@@ -30,6 +30,7 @@ public class WorkoutPlanService {
     private final FitnessCalculator fitnessCalculator;
     private final WorkoutPlanExerciseRepository planExerciseRepo;
     private final MembershipRepository membershipRepo;
+    private final MembershipService membershipService;
     // ── MỚI (Patch 7) ──
     private final EnduranceTestRepository enduranceTestRepo;
     private final EstimatedWeeksCalculator estimatedWeeksCalculator;
@@ -201,8 +202,8 @@ public class WorkoutPlanService {
     // ─────────────────────────────────────────────────────────
     public WorkoutPlanResponse getActivePlan(String email) {
         User user = getUser(email);
-        WorkoutPlan plan = planRepo.findByUserIdAndIsActiveTrue(user.getId())
-                .orElseThrow(() -> new RuntimeException("Chưa có giáo án active."));
+        WorkoutPlan plan = planRepo.findByUserIdAndIsActiveTrue(user.getId()).orElse(null);
+        if (plan == null) return null;
         plan.setPlanDays(dayRepo.findByWorkoutPlanIdOrderByDayOfWeek(plan.getId()));
         UserProfile profile = profileRepo.findByUserId(user.getId()).orElse(null);
         return toPlanResponse(plan, profile);
@@ -235,6 +236,9 @@ public class WorkoutPlanService {
     public WorkoutPlanResponse adjustPlanAfterWeek(Long planId, String email,
                                                    Double newWeight, Double newBodyFat) {
         User user = getUser(email);
+        if (!membershipService.isVip(user)) {
+            throw new RuntimeException("Tự động điều chỉnh giáo án theo tuần là quyền VIP. Vui lòng nâng cấp để sử dụng.");
+        }
         WorkoutPlan plan = planRepo.findById(planId)
                 .orElseThrow(() -> new RuntimeException("Plan not found"));
 
@@ -335,6 +339,23 @@ public class WorkoutPlanService {
                 profileRepo.findByUserId(user.getId()).orElse(null));
         if (note != null) resp.setScheduleNote(note);
         return resp;
+    }
+
+    @Transactional
+    public WorkoutPlanResponse advancePlanWeekWithoutAdjustment(Long planId, String email) {
+        User user = getUser(email);
+        WorkoutPlan plan = planRepo.findById(planId)
+                .orElseThrow(() -> new RuntimeException("Plan not found"));
+        if (plan.getUser() != null && !plan.getUser().getId().equals(user.getId()))
+            throw new RuntimeException("Access denied");
+        int nextWeek = (plan.getCurrentWeek() != null ? plan.getCurrentWeek() : 1) + 1;
+        plan.setCurrentWeek(nextWeek);
+        if (plan.getDurationWeeks() != null && nextWeek > plan.getDurationWeeks()) {
+            plan.setIsCompleted(true);
+            plan.setIsActive(false);
+        }
+        plan.setPlanDays(dayRepo.findByWorkoutPlanIdOrderByDayOfWeek(planId));
+        return toPlanResponse(planRepo.save(plan), profileRepo.findByUserId(user.getId()).orElse(null));
     }
 
     /** Lấy giá trị "current" theo Goal — MUSCLE_GAIN/WEIGHT_LOSS/MAINTENANCE dùng newWeight

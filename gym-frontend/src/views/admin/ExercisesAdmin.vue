@@ -6,8 +6,9 @@
     </div>
 
     <el-card>
-      <el-table :data="exercises" v-loading="loading" stripe>
-        <el-table-column label="ID"   prop="id"   width="55" align="center"/>
+      <div class="exercise-filters"><el-input v-model="keyword" placeholder="Tìm tên bài tập..." clearable/><el-select v-model="muscleFilter" placeholder="Nhóm cơ" clearable><el-option v-for="m in muscles" :key="m" :value="m"/></el-select><el-select v-model="activeFilter" placeholder="Trạng thái" clearable><el-option label="Active" :value="true"/><el-option label="Đã ẩn" :value="false"/></el-select></div>
+      <el-table :data="pagedExercises" v-loading="loading" stripe>
+        <el-table-column label="STT" width="60" align="center"><template #default="{ $index }">{{ (page - 1) * pageSize + $index + 1 }}</template></el-table-column>
         <el-table-column label="Tên"  prop="name" min-width="150"/>
         <el-table-column label="Nhóm cơ" prop="muscleGroup" width="110"/>
         <el-table-column label="Độ khó" width="110" align="center">
@@ -52,10 +53,12 @@
         <el-table-column label="Thao tác" width="130" align="center" fixed="right">
           <template #default="{row}">
             <el-button size="small" @click="openEdit(row)">Sửa</el-button>
-            <el-button size="small" type="danger" plain @click="remove(row.id)">Ẩn</el-button>
+            <el-button v-if="row.isActive" size="small" type="danger" plain @click="remove(row.id)">Ẩn</el-button>
+            <el-button v-else size="small" type="success" plain @click="restore(row.id)">Khôi phục</el-button>
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination v-if="filteredExercises.length" v-model:current-page="page" v-model:page-size="pageSize" :total="filteredExercises.length" :page-sizes="[5,10,20]" layout="total, sizes, prev, pager, next" style="margin-top:18px;justify-content:flex-end"/>
     </el-card>
 
     <!-- Add/Edit Dialog -->
@@ -156,7 +159,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { exerciseAPI } from '@/api'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
@@ -165,6 +168,9 @@ const loading    = ref(true)
 const formDialog = ref(false)
 const editId     = ref(null)
 const muscles    = ['CHEST','BACK','SHOULDERS','ARMS','LEGS','CORE','CARDIO','FULL_BODY']
+const keyword = ref(''), muscleFilter = ref(''), activeFilter = ref(null), page = ref(1), pageSize = ref(10)
+const filteredExercises = computed(() => exercises.value.filter(e => (!keyword.value || e.name?.toLowerCase().includes(keyword.value.toLowerCase())) && (!muscleFilter.value || e.muscleGroup === muscleFilter.value) && (activeFilter.value === null || e.isActive === activeFilter.value)))
+const pagedExercises = computed(() => filteredExercises.value.slice((page.value-1)*pageSize.value,page.value*pageSize.value))
 
 const defaultForm = () => ({
   name:'', description:'', muscleGroup:'CHEST', difficulty:'MEDIUM',
@@ -177,7 +183,7 @@ const form = reactive(defaultForm())
 
 async function load() {
   loading.value = true
-  try { const r = await exerciseAPI.getAll(); exercises.value = r.data || [] }
+  try { const r = await exerciseAPI.getAll({ includeInactive:true }); exercises.value = r.data || [] }
   finally { loading.value = false }
 }
 
@@ -217,6 +223,7 @@ async function remove(id) {
   await ElMessageBox.confirm('Ẩn bài tập này?', 'Xác nhận', { type:'warning' })
   await exerciseAPI.delete(id); ElMessage.success('Đã ẩn bài tập'); load()
 }
+async function restore(id) { await exerciseAPI.restore(id); ElMessage.success('Đã khôi phục bài tập'); load() }
 
 function scoreColor(v) {
   if (!v && v !== 0) return 'var(--c-text3)'
@@ -250,4 +257,5 @@ onMounted(load)
   background:#fffbeb; border:1px solid #fde68a; border-radius:var(--radius-lg);
   padding:14px; margin-top:14px;
 }
+.exercise-filters{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;margin-bottom:16px}@media(max-width:700px){.exercise-filters{grid-template-columns:1fr}}
 </style>

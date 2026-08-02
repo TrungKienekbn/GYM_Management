@@ -84,7 +84,7 @@
                         <span v-if="f.fatGrams != null">🥑 Chất béo {{ f.fatGrams }}g</span>
                       </div>
                       <div v-if="f.weightGrams" style="font-size:0.68rem;color:var(--c-text3);margin-top:2px">
-                        📦 {{ f.weightGrams }}g/phần · {{ f.caloriesPerKg }} kcal/kg
+                        📦 {{ f.weightGrams }}g/phần · {{ f.caloriesPer100g }} kcal/100g
                       </div>
                     </div>
                   </div>
@@ -97,6 +97,10 @@
 
       <div v-if="plan.weightAdjustmentNote" class="weight-adjustment-box">
         ⚖️ {{ plan.weightAdjustmentNote }}
+      </div>
+      <div v-if="!isVip && plan.isAiGenerated" class="vip-plan-lock">
+        <div><b>🔒 Tự động điều chỉnh giáo án mỗi tuần dành cho VIP</b><span>Gói thường vẫn chuyển tuần và giữ nguyên mức bài tập hiện tại.</span></div>
+        <router-link to="/app/membership"><el-button type="warning" size="small">Nâng cấp VIP</el-button></router-link>
       </div>
       <div v-if="plan.isFitnessImprovement" class="fi-pause-box">
       Giáo án sẽ tiếp tục khi chỉ số cơ thể , thể lực được cải thiện
@@ -211,6 +215,14 @@
           </div>
         </el-card>
       </div>
+
+      <el-card class="extra-session-card">
+        <div class="extra-session-head"><div><strong>➕ Buổi tập phụ <el-tag v-if="!isVip" size="small" type="warning">Gói thường: 2 bài</el-tag><el-tag v-else size="small" type="warning" effect="dark">👑 Không giới hạn</el-tag></strong><p>Chọn bài yêu thích từ thư viện. Buổi phụ không làm thay đổi thứ tự giáo án chính.</p></div><router-link to="/app/exercises"><el-button type="primary" plain>Chọn bài tập thêm</el-button></router-link></div>
+        <div v-if="extraExercises.length" class="extra-exercises">
+          <div v-for="ex in extraExercises" :key="ex.id" class="extra-exercise-row"><div><b>{{ ex.name }}</b><span>{{ muscleLabel(ex.muscleGroup) }} · {{ ex.defaultSets }}×{{ ex.defaultReps || ex.defaultDurationSeconds + 's' }}</span></div><el-button type="danger" link @click="removeExtraExercise(ex.id)">Xóa</el-button></div>
+        </div>
+        <el-empty v-else description="Chưa chọn bài tập phụ" :image-size="55" />
+      </el-card>
     </template>
 
     <!-- ===================== DIALOG TẠO GIÁO ÁN ===================== -->
@@ -397,7 +409,7 @@
       </template>
     </el-dialog>
     <!-- ===================== DIALOG CHECK-OUT (LẦN 1 — chỉ nhập kết quả bài tập) ===================== -->
-    <el-dialog v-model="checkOutDialog" title="🏁 CHECKOUT BUỔI TẬP" width="520px" align-center :close-on-click-modal="false">
+    <el-dialog v-model="checkOutDialog" title="🏁 CHECKOUT BUỔI TẬP" width="520px" align-center :close-on-click-modal="false" @closed="resetCheckoutSelection">
       <div style="margin-bottom:14px; font-weight:600; color:var(--c-text)">
         Buổi {{ selectedDayNumber }} - Tuần {{ plan?.currentWeek }}
       </div>
@@ -552,7 +564,7 @@
 
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
-import { planAPI, sessionAPI, enduranceTestAPI, foodAPI } from '@/api'
+import { planAPI, sessionAPI, enduranceTestAPI, foodAPI, membershipAPI } from '@/api'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import dayjs from 'dayjs'
 
@@ -570,6 +582,8 @@ const goalDialog = ref(false)
 const allPlansDialog = ref(false)
 const exDetailDialog = ref(false)
 const checkOutDialog = ref(false)
+const extraExercises = ref([])
+const isVip = ref(false)
 const weeklyReviewDialog = ref(false)
 
 const selEx = ref(null)
@@ -959,6 +973,11 @@ async function applyTemplate() {
 
 async function handleStartSession(day, dayNumber) {
   try {
+    const activeDay = plan.value?.planDays?.find(d => d.sessionStatus === 'SCHEDULED' && d.sessionId !== day.sessionId)
+    if (activeDay) {
+      ElMessage.warning('Bạn đang có một buổi chưa checkout. Hãy hoàn thành buổi đó trước khi bắt đầu buổi khác.')
+      return
+    }
     const today = dayjs().format('YYYY-MM-DD')
     const checkRes = await sessionAPI.checkOrder(day.id, plan.value.currentWeek, today)
     const { orderWarning, scheduleWarning, manaWarning } = checkRes.data || {}
@@ -1015,6 +1034,15 @@ function openCheckOutDialog(day, dayNumber, sessionId) {
   })
   coForm.notes = ''
   checkOutDialog.value = true
+}
+
+function resetCheckoutSelection() {
+  if (weeklyReviewDialog.value) return
+  checkoutSessionId.value = null
+  selectedDayNumber.value = null
+  checkoutExercises.value = []
+  coForm.logs = {}
+  coForm.notes = ''
 }
 
 function plannedText(ex) {
@@ -1097,6 +1125,13 @@ async function submitWeeklyReview() {
 
   submittingReview.value = true
   try {
+    try {
+      await ElMessageBox.confirm(
+        `Bạn đã hoàn thành tuần ${plan.value?.currentWeek}. Xác nhận lưu kết quả và chuyển sang tuần ${(plan.value?.currentWeek || 0) + 1}?`,
+        'XÁC NHẬN CHUYỂN TUẦN',
+        { type:'warning', confirmButtonText:'Đồng ý chuyển tuần', cancelButtonText:'Chưa chuyển' }
+      )
+    } catch { return }
     const payload = {
       notes: reviewCache.notes,
       exerciseLogs: reviewCache.exerciseLogs,
@@ -1111,7 +1146,7 @@ if (plan.value?.isAiGenerated && plan.value?.goal === 'ENDURANCE') {
     const r = await sessionAPI.checkOut(checkoutSessionId.value, payload)
     const resp = r.data
 
-    ElMessage.success('Hoàn thành tuần tập! Giáo án đã được căn chỉnh 🎉')
+    ElMessage.success(isVip.value ? 'Hoàn thành tuần tập! Giáo án VIP đã được căn chỉnh 🎉' : 'Hoàn thành tuần tập! Đã chuyển tuần với mức bài tập hiện tại.')
     weeklyReviewDialog.value = false
 
     await load()
@@ -1134,6 +1169,14 @@ function cancelWeeklyReview() {
 // ====================== UTILITY FUNCTIONS ======================
 function fmtDate(d) {
   return d ? dayjs(d).format('DD/MM/YYYY') : ''
+}
+
+function loadExtraExercises() {
+  try { extraExercises.value = JSON.parse(localStorage.getItem('gym-extra-exercises') || '[]') } catch { extraExercises.value = [] }
+}
+function removeExtraExercise(id) {
+  extraExercises.value = extraExercises.value.filter(ex => ex.id !== id)
+  localStorage.setItem('gym-extra-exercises', JSON.stringify(extraExercises.value))
 }
 
 function openExDetail(ex) {
@@ -1259,7 +1302,10 @@ function scheduleLabel(idx) {
 
 
 
-onMounted(load)
+onMounted(async () => {
+  try { const r = await membershipAPI.getActive(); isVip.value = r.data?.membershipType === 'VIP' && r.data?.paymentStatus === 'PAID' } catch { isVip.value = false }
+  loadExtraExercises(); load()
+})
 </script>
 
 <style scoped>
@@ -1332,6 +1378,8 @@ onMounted(load)
 .completed-zone { background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; font-weight: 500; text-align: center; padding: 6px; border-radius: 4px; font-size: 0.85rem; }
 
 .days-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; margin-top:16px; }
+.extra-session-card{margin-top:20px}.extra-session-head{display:flex;align-items:center;justify-content:space-between;gap:20px}.extra-session-card p{font-size:.84rem;color:var(--c-text2);margin-top:5px}.extra-exercises{display:grid;gap:8px;margin-top:16px}.extra-exercise-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--c-card2);border-radius:8px}.extra-exercise-row span{display:block;font-size:.76rem;color:var(--c-text3);margin-top:3px}@media(max-width:650px){.extra-session-head{align-items:flex-start;flex-direction:column}}
+.vip-plan-lock{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px 16px;margin-bottom:16px;border:1px solid #e7bd52;background:#fff8dc;border-radius:10px;color:#6b4b00}.vip-plan-lock span{display:block;font-size:.8rem;margin-top:3px}@media(max-width:650px){.vip-plan-lock{align-items:flex-start;flex-direction:column}}
 .session-completed { border-top: 3px solid #16a34a; }
 .exercise-list { display:flex; flex-direction:column; gap:6px; }
 .ex-row {

@@ -25,19 +25,13 @@
       </div>
     </div>
 
-    <!-- Thanh toán -->
-    <div v-if="paymentInvoice" class="payment-box">
-      <p>Quét mã để thanh toán {{ paymentInvoice.price.toLocaleString() }}đ</p>
-      <img :src="paymentInvoice.qrCodeUrl" width="200" />
-      <p class="hint">Đang chờ xác nhận thanh toán...</p>
-      <el-button text @click="cancelPurchase">Hủy</el-button>
-    </div>
   </el-dialog>
 </template>
 
 <script setup>
-import { ref, computed, watch, onUnmounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { petCosmeticAPI, invoiceAPI } from '@/api'
+import { useRouter } from 'vue-router'
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
@@ -48,8 +42,7 @@ const emit = defineEmits(['update:modelValue', 'equipped'])
 const activeTab = ref('SHIRT')
 const items = ref([])
 const loading = ref(false)
-const paymentInvoice = ref(null)
-let pollTimer = null
+const router = useRouter()
 
 const filteredItems = computed(() => items.value.filter(i => i.slot === activeTab.value))
 
@@ -71,30 +64,11 @@ async function equip(code) {
 
 async function startPurchase(item) {
   const r = await invoiceAPI.createCosmetic(item.code)
-  paymentInvoice.value = r.data
-  pollTimer = setInterval(async () => {
-    const check = await invoiceAPI.getOne(paymentInvoice.value.id)
-    if (check.data.status === 'PAID') {
-      clearInterval(pollTimer)
-      paymentInvoice.value = null
-      await loadCatalog()
-    } else if (['EXPIRED', 'CANCELLED', 'FAILED'].includes(check.data.status)) {
-      clearInterval(pollTimer)
-      paymentInvoice.value = null
-    }
-  }, 3000)
-}
-
-async function cancelPurchase() {
-  if (paymentInvoice.value) {
-    await invoiceAPI.cancel(paymentInvoice.value.id).catch(() => {})
-  }
-  clearInterval(pollTimer)
-  paymentInvoice.value = null
+  emit('update:modelValue', false)
+  router.push(`/app/payment/${r.data.id}`)
 }
 
 watch(() => props.modelValue, v => { if (v) loadCatalog() })
-onUnmounted(() => clearInterval(pollTimer))
 </script>
 
 <style scoped>
@@ -102,6 +76,4 @@ onUnmounted(() => clearInterval(pollTimer))
 .swatch { width: 20px; height: 20px; border-radius: 4px; display: inline-block; border: 1px solid #ddd; }
 .name { flex: 1; }
 .price { font-size: 0.85rem; color: #888; }
-.payment-box { text-align: center; margin-top: 16px; border-top: 1px solid #eee; padding-top: 16px; }
-.hint { font-size: 0.8rem; color: #999; }
 </style>

@@ -11,8 +11,8 @@
         <hr class="divider" />
 
         <div class="info-row">
-          <span>Gói tập:</span>
-          <span class="pkg-name">{{ invoiceData.membershipType }}</span>
+          <span>{{ isCosmetic ? 'Trang phục:' : 'Gói tập:' }}</span>
+          <span class="pkg-name">{{ productName }}</span>
         </div>
         <div class="info-row">
           <span>Số tiền:</span>
@@ -24,8 +24,8 @@
         </div>
 
         <div v-if="invoiceData.status === 'PAID'" class="invoice-success-box">
-          <p class="success-alert">🎉 Thanh toán thành công! Gói tập đã được kích hoạt.</p>
-          <button @click="goBack" class="btn-secondary">Quay lại trang Gói tập</button>
+          <p class="success-alert">🎉 {{ isCosmetic ? 'Thanh toán thành công! Trang phục đã được mở khóa.' : 'Thanh toán thành công! Gói tập đã được kích hoạt.' }}</p>
+          <button @click="goBack" class="btn-secondary">{{ isCosmetic ? 'Quay lại và thay trang phục' : 'Quay lại trang Gói tập' }}</button>
         </div>
 
         <div v-else-if="invoiceData.status === 'EXPIRED'" class="invoice-expired-box">
@@ -37,7 +37,7 @@
           <div class="countdown-box">
             <span>Thời gian còn lại để quét mã: <strong class="time-countdown">{{ countdownText }}</strong></span>
           </div>
-          <button @click="cancelPayment" class="btn-cancel">Hủy thanh toán & Giữ nguyên gói cũ</button>
+          <button @click="cancelPayment" class="btn-cancel">{{ isCosmetic ? 'Hủy thanh toán trang phục' : 'Hủy thanh toán & Giữ nguyên gói cũ' }}</button>
         </div>
 
         <div v-else-if="invoiceData.status === 'FAILED'" class="invoice-expired-box">
@@ -115,6 +115,8 @@ watch(
 );
 
 const qrImageSrc = computed(() => qrDataUrl.value || invoiceData.value?.qrCodeUrl || '');
+const isCosmetic = computed(() => invoiceData.value?.invoiceType === 'COSMETIC');
+const productName = computed(() => isCosmetic.value ? invoiceData.value?.cosmeticItemName : invoiceData.value?.membershipType);
 
 const fetchInvoice = async () => {
   try {
@@ -158,7 +160,7 @@ const startCheckingStatus = () => {
         clearInterval(statusInterval);
         clearInterval(timer);
         invoiceData.value = latest;
-        ElMessage.success('Thanh toán thành công! Gói tập đã được kích hoạt.');
+        ElMessage.success(isCosmetic.value ? 'Thanh toán thành công! Trang phục đã được mở khóa.' : 'Thanh toán thành công! Gói tập đã được kích hoạt.');
       } else if (latest.status === 'EXPIRED' || latest.status === 'FAILED') {
         clearInterval(statusInterval);
         clearInterval(timer);
@@ -174,8 +176,8 @@ const cancelPayment = async () => {
   try {
     await ElMessageBox.confirm('Bạn có chắc chắn muốn hủy thanh toán hóa đơn này?', 'Xác nhận', { type: 'warning' });
     await invoiceAPI.cancel(invoiceData.value.id);
-    ElMessage.success('Đã hủy thanh toán. Gói tập cũ của bạn được giữ nguyên.');
-    router.push('/app/membership');
+    ElMessage.success(isCosmetic.value ? 'Đã hủy thanh toán trang phục.' : 'Đã hủy thanh toán. Gói tập cũ của bạn được giữ nguyên.');
+    goBack();
   } catch (e) {
     if (e !== 'cancel') ElMessage.error('Có lỗi xảy ra khi hủy hóa đơn.');
   }
@@ -193,7 +195,7 @@ const reCreateQR = async () => {
   }
 };
 
-const goBack = () => router.push('/app/membership');
+const goBack = () => router.push(isCosmetic.value ? '/app/dashboard' : '/app/membership');
 const formatMoney = (val) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
 const formatDate = (str) => new Date(str).toLocaleString('vi-VN');
 const getStatusText = (status) => {

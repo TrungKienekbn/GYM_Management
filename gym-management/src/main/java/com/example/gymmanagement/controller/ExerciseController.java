@@ -23,9 +23,12 @@ public class ExerciseController {
     @GetMapping
     public ResponseEntity<ApiResponse<List<Exercise>>> getAll(
             @RequestParam(required = false) String muscleGroup,
-            @RequestParam(required = false) String difficulty) {
+            @RequestParam(required = false) String difficulty,
+            @RequestParam(defaultValue = "false") boolean includeInactive) {
         List<Exercise> list;
-        if (muscleGroup != null && difficulty != null) {
+        if (includeInactive) {
+            list = exerciseRepository.findAll();
+        } else if (muscleGroup != null && difficulty != null) {
             list = exerciseRepository.findByMuscleGroupAndDifficultyAndIsActiveTrue(
                     MuscleGroup.valueOf(muscleGroup.toUpperCase()),
                     Difficulty.valueOf(difficulty.toUpperCase()));
@@ -105,5 +108,13 @@ public class ExerciseController {
         ex.setIsActive(false);
         exerciseRepository.save(ex);
         return ResponseEntity.ok(ApiResponse.success(null, "Đã ẩn bài tập"));
+    }
+
+    @PatchMapping("/{id}/restore")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<ApiResponse<Exercise>> restore(@PathVariable Long id) {
+        Exercise ex = exerciseRepository.findById(id).orElseThrow(() -> new RuntimeException("Exercise not found"));
+        ex.setIsActive(true);
+        return ResponseEntity.ok(ApiResponse.success(exerciseRepository.save(ex), "Đã khôi phục bài tập"));
     }
 }

@@ -40,6 +40,20 @@ public class MembershipService {
         return DURATIONS_MONTHS.getOrDefault(type, 1);
     }
 
+    public boolean isVip(User user) {
+        LocalDate today = LocalDate.now();
+        return membershipRepository.findByUserIdAndIsActiveTrue(user.getId())
+                .filter(m -> m.getMembershipType() == MembershipType.VIP)
+                .filter(m -> m.getPaymentStatus() == PaymentStatus.PAID)
+                .filter(m -> m.getEndDate() == null || !m.getEndDate().isBefore(today))
+                .isPresent();
+    }
+
+    public boolean isVip(String email) {
+        return isVip(userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found")));
+    }
+
     /**
      * Dùng bởi InvoiceService: khi SePay webhook xác nhận PAID, tạo thẳng 1 Membership
      * ở trạng thái PAID/active (khác với purchase() cũ luôn tạo PENDING).
@@ -137,7 +151,7 @@ public class MembershipService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return membershipRepository.findByUserIdAndIsActiveTrue(user.getId())
                 .map(this::buildResponse)
-                .orElseThrow(() -> new RuntimeException("No active membership found"));
+                .orElse(null);
     }
 
     // Admin methods

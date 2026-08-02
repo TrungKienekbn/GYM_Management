@@ -14,7 +14,7 @@
 
     <el-card>
       <el-table :data="foods" v-loading="loading" stripe>
-        <el-table-column label="ID" prop="id" width="55" align="center"/>
+        <el-table-column label="STT" type="index" width="60" align="center"/>
         <el-table-column label="Tên món" prop="name" min-width="160"/>
         <el-table-column label="Calo" width="90" align="center">
           <template #default="{row}">{{ row.calories ?? 0 }} kcal</template>
@@ -28,11 +28,11 @@
         <el-table-column label="Khối lượng" width="100" align="center">
           <template #default="{row}">{{ row.weightGrams ? row.weightGrams + 'g' : '—' }}</template>
         </el-table-column>
-        <el-table-column label="Trên 1kg" width="140" align="center">
+        <el-table-column label="Trên 100g" width="150" align="center">
           <template #default="{row}">
             <div v-if="row.weightGrams" style="font-size:0.72rem;line-height:1.5;text-align:left">
-              🔥 {{ row.caloriesPerKg ?? 0 }} kcal<br/>
-              🥩 {{ row.proteinPerKg ?? 0 }}g · 🥑 {{ row.fatPerKg ?? 0 }}g
+              🔥 {{ row.caloriesPer100g ?? 0 }} kcal<br/>
+              🥩 {{ row.proteinPer100g ?? 0 }}g · 🥑 {{ row.fatPer100g ?? 0 }}g
             </div>
             <span v-else style="color:var(--c-text3)">—</span>
           </template>
@@ -62,22 +62,22 @@
         </el-form-item>
 
         <div class="grid-4">
-          <el-form-item label="Calo (kcal)">
+          <el-form-item label="Calo / khẩu phần (kcal)">
             <el-input-number v-model="form.calories" :min="0" :max="5000" style="width:100%"/>
           </el-form-item>
-          <el-form-item label="Protein (g)">
+          <el-form-item label="Protein / khẩu phần (g)">
             <el-input-number v-model="form.proteinGrams" :min="0" :max="500" :step="0.5" style="width:100%"/>
           </el-form-item>
-          <el-form-item label="Chất béo (g)">
+          <el-form-item label="Chất béo / khẩu phần (g)">
             <el-input-number v-model="form.fatGrams" :min="0" :max="500" :step="0.5" style="width:100%"/>
           </el-form-item>
-          <el-form-item label="Khối lượng (g)">
-            <el-input-number v-model="form.weightGrams" :min="0" :max="5000" :step="10" style="width:100%"
-                              placeholder="VD: 250"/>
+          <el-form-item label="Khối lượng 1 khẩu phần (g)">
+            <el-input-number v-model="form.weightGrams" :min="1" :max="5000" :step="10" style="width:100%" placeholder="VD: 250"/>
           </el-form-item>
         </div>
-        <div v-if="previewPerKg" style="font-size:0.78rem;color:var(--c-text2);margin:-8px 0 14px">
-          → Quy đổi trên 1kg: 🔥 {{ previewPerKg.cal }} kcal · 🥩 {{ previewPerKg.pro }}g protein · 🥑 {{ previewPerKg.fat }}g béo
+        <div v-if="previewPer100g" class="nutrition-preview">
+          <b>Quy đổi chuẩn trên 100g:</b> 🔥 {{ previewPer100g.cal }} kcal · 🥩 {{ previewPer100g.pro }}g protein · 🥑 {{ previewPer100g.fat }}g béo
+          <small>Số liệu nhập phía trên là cho toàn bộ một khẩu phần.</small>
         </div>
 
         <el-form-item label="Phù hợp cho mục tiêu">
@@ -130,9 +130,9 @@ const defaultForm = () => ({
 })
 const form = reactive(defaultForm())
 
-const previewPerKg = computed(() => {
+const previewPer100g = computed(() => {
   if (!form.weightGrams || form.weightGrams <= 0) return null
-  const k = 1000 / form.weightGrams
+  const k = 100 / form.weightGrams
   return {
     cal: Math.round((form.calories || 0) * k),
     pro: Math.round((form.proteinGrams || 0) * k * 10) / 10,
@@ -184,3 +184,5 @@ function goalBadge(g) { return { WEIGHT_LOSS:'badge-danger', MUSCLE_GAIN:'badge-
 
 onMounted(load)
 </script>
+
+<style scoped>.nutrition-preview{font-size:.78rem;color:var(--c-text2);margin:-8px 0 14px;padding:10px 12px;background:#fff8dc;border:1px solid #ead08b;border-radius:8px}.nutrition-preview small{display:block;color:var(--c-text3);margin-top:4px}</style>

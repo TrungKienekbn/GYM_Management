@@ -165,11 +165,14 @@ public class InvoiceService {
         invoice.setPaidAt(LocalDateTime.now());
 
         if (invoice.getInvoiceType() == com.example.gymmanagement.pet.InvoiceType.COSMETIC) {
-            userCosmeticOwnershipRepository.save(
-                    com.example.gymmanagement.pet.UserCosmeticOwnership.builder()
-                            .userId(invoice.getUser().getId())
-                            .cosmeticCode(invoice.getCosmeticItemCode())
-                            .build());
+            if (!userCosmeticOwnershipRepository.existsByUserIdAndCosmeticCode(
+                    invoice.getUser().getId(), invoice.getCosmeticItemCode())) {
+                userCosmeticOwnershipRepository.save(
+                        com.example.gymmanagement.pet.UserCosmeticOwnership.builder()
+                                .userId(invoice.getUser().getId())
+                                .cosmeticCode(invoice.getCosmeticItemCode())
+                                .build());
+            }
             invoiceRepository.save(invoice);
             notificationService.sendToUser(invoice.getUser().getId(),
                     "Thanh toán thành công",
@@ -212,9 +215,12 @@ public class InvoiceService {
         for (Invoice invoice : overdue) {
             invoice.setStatus(PaymentStatus.EXPIRED);
             invoiceRepository.save(invoice);
+            String productName = invoice.getInvoiceType() == com.example.gymmanagement.pet.InvoiceType.COSMETIC
+                    ? com.example.gymmanagement.pet.CosmeticItem.fromCode(invoice.getCosmeticItemCode()).getDisplayName()
+                    : "Gói " + invoice.getMembershipType();
             notificationService.sendToUser(invoice.getUser().getId(),
                     "Hóa đơn hết hạn thanh toán",
-                    "Hóa đơn #" + invoice.getId() + " (" + invoice.getMembershipType() +
+                    "Hóa đơn #" + invoice.getId() + " (" + productName +
                             ") đã quá 5 phút chưa thanh toán. Bấm vào hóa đơn để tạo lại mã QR.",
                     "SYSTEM");
         }
@@ -255,12 +261,21 @@ public class InvoiceService {
         if (invoice.getStatus() == PaymentStatus.PENDING && invoice.getExpiresAt() != null) {
             secondsRemaining = Math.max(0, Duration.between(LocalDateTime.now(), invoice.getExpiresAt()).getSeconds());
         }
+        String cosmeticName = null;
+        if (invoice.getInvoiceType() == com.example.gymmanagement.pet.InvoiceType.COSMETIC
+                && invoice.getCosmeticItemCode() != null) {
+            cosmeticName = com.example.gymmanagement.pet.CosmeticItem
+                    .fromCode(invoice.getCosmeticItemCode()).getDisplayName();
+        }
         return InvoiceResponse.builder()
                 .id(invoice.getId())
                 .userId(invoice.getUser().getId())
                 .userName(invoice.getUser().getFullName())
                 .userEmail(invoice.getUser().getEmail())
                 .membershipType(invoice.getMembershipType())
+                .invoiceType(invoice.getInvoiceType())
+                .cosmeticItemCode(invoice.getCosmeticItemCode())
+                .cosmeticItemName(cosmeticName)
                 .price(invoice.getPrice())
                 .membershipId(invoice.getMembership() != null ? invoice.getMembership().getId() : null)
                 .status(invoice.getStatus())

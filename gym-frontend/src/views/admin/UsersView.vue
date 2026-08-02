@@ -4,12 +4,14 @@
       <h2>QUẢN LÝ NGƯỜI DÙNG</h2>
       <div style="display:flex;gap:8px">
         <el-input v-model="search" placeholder="Tìm tên / email..." prefix-icon="Search" style="width:260px" clearable/>
+        <el-select v-model="roleFilter" placeholder="Vai trò" clearable style="width:130px"><el-option label="User" value="ROLE_USER"/><el-option label="Admin" value="ROLE_ADMIN"/></el-select>
+        <el-select v-model="statusFilter" placeholder="Trạng thái" clearable style="width:130px"><el-option label="Active" :value="true"/><el-option label="Khóa" :value="false"/></el-select>
         <el-tag type="info" style="height:32px;line-height:30px">{{ filtered.length }} user</el-tag>
       </div>
     </div>
 
     <el-table :data="filtered" v-loading="loading" stripe>
-      <el-table-column label="ID" prop="id" width="60" align="center"/>
+      <el-table-column label="STT" type="index" width="60" align="center"/>
       <el-table-column label="Họ tên" prop="fullName" min-width="150"/>
       <el-table-column label="Email" prop="email" min-width="200"/>
       <el-table-column label="SĐT" prop="phone" width="120"/>
@@ -110,6 +112,8 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 const users        = ref([])
 const loading      = ref(true)
 const search       = ref('')
+const roleFilter   = ref('')
+const statusFilter = ref(null)
 const detailDialog = ref(false)
 const resetDialog  = ref(false)
 const detailUser   = ref(null)
@@ -118,9 +122,8 @@ const resetTarget  = ref(null)
 const newPw        = ref('')
 
 const filtered = computed(() => {
-  if (!search.value) return users.value
   const q = search.value.toLowerCase()
-  return users.value.filter(u => u.fullName?.toLowerCase().includes(q) || u.email?.toLowerCase().includes(q))
+  return users.value.filter(u => (!q || u.fullName?.toLowerCase().includes(q) || u.email?.toLowerCase().includes(q) || u.phone?.includes(q)) && (!roleFilter.value || u.role === roleFilter.value) && (statusFilter.value === null || u.status === statusFilter.value))
 })
 
 async function load() {

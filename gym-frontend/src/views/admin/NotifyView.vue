@@ -77,7 +77,7 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { adminAPI } from '@/api'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 const sendingBroadcast = ref(false)
 const sendingUser      = ref(false)
@@ -87,6 +87,7 @@ const userForm      = reactive({ userId: null, title: '', message: '', type: 'SY
 
 async function sendBroadcast() {
   if (!broadcastForm.title || !broadcastForm.message) { ElMessage.warning('Nhập đủ tiêu đề và nội dung'); return }
+  await ElMessageBox.confirm('Xác nhận gửi thông báo này tới tất cả người dùng?', 'Xác nhận gửi', { type:'warning', confirmButtonText:'Gửi thông báo' })
   sendingBroadcast.value = true
   try {
     await adminAPI.broadcast(broadcastForm)
@@ -97,6 +98,7 @@ async function sendBroadcast() {
 
 async function sendToUser() {
   if (!userForm.userId || !userForm.title) { ElMessage.warning('Nhập ID user và tiêu đề'); return }
+  await ElMessageBox.confirm(`Xác nhận gửi thông báo tới User #${userForm.userId}?`, 'Xác nhận gửi', { type:'warning', confirmButtonText:'Gửi thông báo' })
   sendingUser.value = true
   try {
     await adminAPI.sendToUser(userForm.userId, { title: userForm.title, message: userForm.message, type: userForm.type })

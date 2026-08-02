@@ -22,6 +22,7 @@ public class ProgressService {
     private final ProgressTrackingRepository progressRepository;
     private final UserRepository userRepository;
     private final UserProfileRepository profileRepository;
+    private final MembershipService membershipService;
 
     public ProgressResponse addProgress(String email, ProgressRequest request) {
         User user = getUser(email);
@@ -74,7 +75,7 @@ public class ProgressService {
         User user = getUser(email);
         List<ProgressTracking> list = progressRepository.findByUserIdOrderByDateAsc(user.getId());
 
-        return java.util.stream.IntStream.range(0, list.size()).mapToObj(i -> {
+        List<ProgressResponse> result = java.util.stream.IntStream.range(0, list.size()).mapToObj(i -> {
             ProgressTracking pt = list.get(i);
             Double weightChange = null;
             if (i > 0) {
@@ -85,13 +86,20 @@ public class ProgressService {
             }
             return buildResponse(pt, weightChange);
         }).collect(Collectors.toList());
+        if (!membershipService.isVip(user)) {
+            LocalDate cutoff = LocalDate.now().minusWeeks(4);
+            return result.stream()
+                    .filter(p -> p.getRecordedDate() == null || !p.getRecordedDate().isBefore(cutoff))
+                    .collect(Collectors.toList());
+        }
+        return result;
     }
 
     public ProgressResponse getLatestProgress(String email) {
         User user = getUser(email);
         return progressRepository.findFirstByUserIdOrderByRecordedDateDesc(user.getId())
                 .map(p -> buildResponse(p, null))
-                .orElseThrow(() -> new RuntimeException("No progress records found. Start tracking today!"));
+                .orElse(null);
     }
 
     public ProgressResponse updateProgress(String email, Long id, ProgressRequest request) {

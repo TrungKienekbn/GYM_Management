@@ -23,6 +23,9 @@ public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession, 
 
     boolean existsByUserIdAndPlanDayIdAndWeekNumber(Long userId, Long planDayId, Integer weekNumber);
 
+    boolean existsByUserIdAndWorkoutPlanIdAndWeekNumberAndStatus(
+            Long userId, Long workoutPlanId, Integer weekNumber, SessionStatus status);
+
     @Query("SELECT COUNT(s) FROM WorkoutSession s WHERE s.user.id=:uid AND s.workoutPlan.id=:planId AND s.weekNumber=:week")
     long countEnrolledInWeek(@Param("uid") Long uid, @Param("planId") Long planId, @Param("week") Integer week);
 

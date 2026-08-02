@@ -4,6 +4,7 @@
       <h2>THEO DÕI TIẾN ĐỘ</h2>
       <el-button type="primary" @click="addDialog=true">+ GHI NHẬN</el-button>
     </div>
+    <div v-if="!isVip" class="vip-lock-banner"><div><b>🔒 Gói thường đang hiển thị dữ liệu 4 tuần gần nhất</b><span>Nâng cấp VIP để xem toàn bộ lịch sử tiến độ và biểu đồ dài hạn.</span></div><el-button type="warning" @click="$router.push('/app/membership')">👑 Nâng cấp VIP</el-button></div>
 
     <!-- Stats row -->
     <div class="grid-4" style="margin-bottom:24px" v-if="progressList.length">
@@ -129,7 +130,7 @@
 <script setup>
 import { ref, computed, reactive, onMounted, nextTick } from 'vue'
 import { Chart, registerables } from 'chart.js'
-import { progressAPI } from '@/api'
+import { progressAPI, membershipAPI } from '@/api'
 import { ElMessage } from 'element-plus'
 import dayjs from 'dayjs'
 
@@ -138,6 +139,7 @@ Chart.register(...registerables)
 const progressList = ref([])
 const addDialog    = ref(false)
 const chartRef     = ref(null)
+const isVip        = ref(false)
 let   chartInst    = null
 
 const form = reactive({
@@ -227,7 +229,10 @@ function bmiCat(b) {
   return 'Béo phì'
 }
 
-onMounted(load)
+onMounted(async () => {
+  try { const r = await membershipAPI.getActive(); isVip.value = r.data?.membershipType === 'VIP' && r.data?.paymentStatus === 'PAID' } catch { isVip.value = false }
+  load()
+})
 </script>
 
 <style scoped>
@@ -239,4 +244,5 @@ onMounted(load)
 .meas-icon  { font-size:1.5rem; margin-bottom:4px; }
 .meas-label { font-size:0.72rem; color:var(--c-text3); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px; }
 .meas-val   { font-family:var(--font-display); font-size:1.1rem; color:var(--c-text); }
+.vip-lock-banner{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:14px 18px;margin-bottom:20px;border:1px solid #e7bd52;background:#fff8dc;border-radius:10px;color:#6b4b00}.vip-lock-banner span{display:block;font-size:.8rem;margin-top:4px}@media(max-width:650px){.vip-lock-banner{align-items:flex-start;flex-direction:column}}
 </style>

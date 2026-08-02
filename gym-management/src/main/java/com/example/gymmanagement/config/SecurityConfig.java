@@ -56,7 +56,7 @@ public class SecurityConfig {
                         .requestMatchers("/h2-console/**").permitAll()
 
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/exercises").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/exercises").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/ratings/public").permitAll()
                         // File đính kèm phục vụ tĩnh (tên UUID không đoán được)
                         .requestMatchers(HttpMethod.GET, "/api/files/**").permitAll()

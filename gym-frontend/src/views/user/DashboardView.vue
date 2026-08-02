@@ -1,5 +1,6 @@
 <template>
   <div class="fade-in">
+    <div v-if="!isVip" class="vip-lock-banner"><div><b>🔒 Thống kê gói thường: 4 tuần gần nhất</b><span>VIP mở toàn bộ lịch sử, thống kê dài hạn và tự động điều chỉnh giáo án mỗi tuần.</span></div><el-button type="warning" @click="$router.push('/app/membership')">👑 Mở khóa VIP</el-button></div>
     <div v-if="loading">
       <el-skeleton :rows="6" animated style="background:var(--c-card);padding:24px;border-radius:12px"/>
     </div>
@@ -207,7 +208,7 @@
 <script setup>
 import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { Chart, registerables } from 'chart.js'
-import { planAPI, sessionAPI, foodAPI } from '@/api'
+import { planAPI, sessionAPI, foodAPI, membershipAPI } from '@/api'
 import { ArrowDown } from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
 
@@ -219,6 +220,7 @@ const loading       = ref(true)
 const recommendedFoods = ref([])
 const loadingFoods      = ref(false)
 const foodError         = ref(false)
+const isVip             = ref(false)
 
 // ── Khối lượng % hoàn thành tuần này — theo THỨ TỰ BUỔI trong giáo án (không đổi) ──
 const volChart = ref(null)
@@ -571,10 +573,14 @@ function muscleLabel(m) {
   }[m] || m
 }
 
-onMounted(load)
+onMounted(async () => {
+  try { const r = await membershipAPI.getActive(); isVip.value = r.data?.membershipType === 'VIP' && r.data?.paymentStatus === 'PAID' } catch { isVip.value = false }
+  load()
+})
 </script>
 
 <style scoped>
+.vip-lock-banner{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:14px 18px;margin-bottom:20px;border:1px solid #e7bd52;background:#fff8dc;border-radius:10px;color:#6b4b00}.vip-lock-banner span{display:block;font-size:.8rem;margin-top:4px}@media(max-width:650px){.vip-lock-banner{align-items:flex-start;flex-direction:column}}
 .chart-empty { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--c-text3); font-size:0.85rem; }
 
 .today-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }

@@ -61,6 +61,7 @@ public class FoodController {
                 .isActive(true)
                 .weightGrams(req.getWeightGrams())
                 .build();
+        validateNutrition(food);
         return ResponseEntity.ok(ApiResponse.success(foodRepository.save(food), "Đã thêm món ăn!"));
     }
 
@@ -78,6 +79,7 @@ public class FoodController {
         if (req.getImageUrl()      != null) food.setImageUrl(req.getImageUrl());
         if (req.getSuitableGoals() != null) food.setSuitableGoals(joinGoals(req.getSuitableGoals()));
         if (req.getWeightGrams() != null) food.setWeightGrams(req.getWeightGrams());
+        validateNutrition(food);
         return ResponseEntity.ok(ApiResponse.success(foodRepository.save(food), "Đã cập nhật món ăn!"));
     }
 
@@ -94,5 +96,20 @@ public class FoodController {
     private String joinGoals(List<String> goals) {
         if (goals == null || goals.isEmpty()) return "";
         return String.join(",", goals);
+    }
+
+    private void validateNutrition(Food food) {
+        if (food.getWeightGrams() == null || food.getWeightGrams() <= 0)
+            throw new RuntimeException("Khối lượng khẩu phần phải lớn hơn 0 g");
+        if (food.getCalories() == null || food.getCalories() < 0
+                || food.getProteinGrams() == null || food.getProteinGrams() < 0
+                || food.getFatGrams() == null || food.getFatGrams() < 0)
+            throw new RuntimeException("Calo, protein và chất béo không được để trống hoặc âm");
+        if (food.getProteinGrams() + food.getFatGrams() > food.getWeightGrams())
+            throw new RuntimeException("Tổng protein và chất béo không thể lớn hơn khối lượng khẩu phần");
+        if (food.getCaloriesPer100g() > 900)
+            throw new RuntimeException("Calo quy đổi không hợp lý: không được vượt quá 900 kcal/100 g");
+        if (food.getProteinPer100g() > 100 || food.getFatPer100g() > 100)
+            throw new RuntimeException("Protein hoặc chất béo không thể vượt quá 100 g trên 100 g thực phẩm");
     }
 }

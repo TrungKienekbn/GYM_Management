@@ -18,7 +18,13 @@
       </div>
     </div>
 
-    <el-table :data="sessions" v-loading="loading" stripe>
+    <el-card class="filters">
+      <el-input v-model="keyword" placeholder="Tìm tên buổi tập..." clearable prefix-icon="Search" />
+      <el-select v-model="statusFilter" placeholder="Trạng thái" clearable><el-option v-for="s in statuses" :key="s" :value="s" :label="statusLabel(s)"/></el-select>
+      <el-input-number v-model="weekFilter" :min="1" placeholder="Tuần" controls-position="right" />
+    </el-card>
+
+    <el-table :data="pagedSessions" v-loading="loading" stripe>
       <el-table-column label="Ngày" width="110">
         <template #default="{row}">{{ fmtDate(row.sessionDate) }}</template>
       </el-table-column>
@@ -42,6 +48,7 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination v-if="filteredSessions.length" v-model:current-page="page" v-model:page-size="pageSize" :total="filteredSessions.length" :page-sizes="[5,10,20]" layout="total, sizes, prev, pager, next" style="margin-top:18px;justify-content:flex-end" />
   </div>
 </template>
 
@@ -55,6 +62,19 @@ dayjs.locale('vi')
 
 const sessions = ref([])
 const loading  = ref(true)
+const keyword = ref('')
+const statusFilter = ref('')
+const weekFilter = ref(null)
+const page = ref(1)
+const pageSize = ref(10)
+const statuses = ['SCHEDULED','CHECKED_IN','COMPLETED','SKIPPED']
+const filteredSessions = computed(() => sessions.value.filter(s => {
+  const name = (s.customSessionName || s.planName || '').toLowerCase()
+  return (!keyword.value || name.includes(keyword.value.toLowerCase())) &&
+    (!statusFilter.value || s.status === statusFilter.value) &&
+    (!weekFilter.value || s.weekNumber === weekFilter.value)
+}))
+const pagedSessions = computed(() => filteredSessions.value.slice((page.value-1)*pageSize.value, page.value*pageSize.value))
 
 // Không filter — luôn hiển thị toàn bộ lịch sử buổi tập, kể cả SKIPPED, CHECKED_IN dở dang...
 const totalCompleted = computed(() =>
@@ -117,4 +137,5 @@ onMounted(load)
 .status-checkedin  { background: #fff4e0; color: #b45309; }
 .status-completed  { background: #e6f7ea; color: #15803d; }
 .status-skipped    { background: #fdecec; color: #b91c1c; }
+.filters{margin-bottom:16px}.filters :deep(.el-card__body){display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}@media(max-width:700px){.filters :deep(.el-card__body){grid-template-columns:1fr}}
 </style>

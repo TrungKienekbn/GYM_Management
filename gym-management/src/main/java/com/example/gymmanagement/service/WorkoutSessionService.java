@@ -11,6 +11,7 @@ import com.example.gymmanagement.enums.SessionStatus;
 import com.example.gymmanagement.pet.PetService;
 import com.example.gymmanagement.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
@@ -22,6 +23,7 @@ import com.example.gymmanagement.service.schedule.ScheduleCatalog;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class WorkoutSessionService {
 
     private final WorkoutSessionRepository  sessionRepo;
@@ -48,6 +50,7 @@ public class WorkoutSessionService {
     private final ManaService manaService;
     private final WorkoutPlanMuscleGroupWeightRepository mgWeightRepo;
     private final WorkoutPlanExerciseRepository planExerciseRepo;
+    private final MembershipService membershipService;
 
     @Transactional
     public WorkoutSessionResponse enrollSession(String email, EnrollSessionRequest req) {
@@ -67,6 +70,10 @@ public class WorkoutSessionService {
                 throw new RuntimeException("Bạn đã đăng ký ngày tập này trong tuần " + req.getWeekNumber());
 
             if (req.getWeekNumber() != null && plan != null) {
+                if (sessionRepo.existsByUserIdAndWorkoutPlanIdAndWeekNumberAndStatus(
+                        user.getId(), plan.getId(), req.getWeekNumber(), SessionStatus.SCHEDULED)) {
+                    throw new RuntimeException("Bạn đang có một buổi tập chưa checkout. Hãy hoàn thành hoặc thoát buổi đó trước khi bắt đầu buổi khác.");
+                }
                 long enrolled = sessionRepo.countEnrolledInWeek(user.getId(), plan.getId(), req.getWeekNumber());
                 if (enrolled >= plan.getSessionsPerWeek())
                     throw new RuntimeException("Đã đủ " + plan.getSessionsPerWeek() + " buổi cho tuần này!");
@@ -134,8 +141,13 @@ public class WorkoutSessionService {
     }
 
     public List<WorkoutSessionResponse> getMySessions(String email) {
-        return sessionRepo.findByUserIdOrderBySessionDateDesc(getUser(email).getId())
-                .stream().map(this::buildResponse).collect(Collectors.toList());
+        User user = getUser(email);
+        java.util.stream.Stream<WorkoutSession> stream = sessionRepo.findByUserIdOrderBySessionDateDesc(user.getId()).stream();
+        if (!membershipService.isVip(user)) {
+            LocalDate cutoff = LocalDate.now().minusWeeks(4);
+            stream = stream.filter(s -> s.getSessionDate() == null || !s.getSessionDate().isBefore(cutoff));
+        }
+        return stream.map(this::buildResponse).collect(Collectors.toList());
     }
 
     public List<WorkoutSessionResponse> getWeekSessions(String email) {
@@ -270,29 +282,35 @@ public class WorkoutSessionService {
                 profileRepo.save(profile);
             });
 
-            applyWeightAdjustmentNote(user, plan, s.getWeekNumber(), req.getCheckoutWeight());
-
-            List<SessionExerciseLog> weekLogs = logRepo.findByUserIdAndPlanIdAndWeekNumber(
-                    user.getId(), plan.getId(), s.getWeekNumber());
-            adjustMuscleGroupWeights(plan, weekLogs);
+            if (membershipService.isVip(user)) {
+                applyWeightAdjustmentNote(user, plan, s.getWeekNumber(), req.getCheckoutWeight());
+                List<SessionExerciseLog> weekLogs = logRepo.findByUserIdAndPlanIdAndWeekNumber(
+                        user.getId(), plan.getId(), s.getWeekNumber());
+                adjustMuscleGroupWeights(plan, weekLogs);
+            } else {
+                plan.setWeightAdjustmentNote("Gói thường: giáo án được giữ nguyên. Nâng cấp VIP để tự động điều chỉnh theo kết quả mỗi tuần.");
+                planRepo.save(plan);
+            }
 
             if (isFitnessImprovementPlan) {
                 try {
                     workoutPlanService.checkFitnessImprovementProgress(plan, email);
                 } catch (Exception e) {
-                    notifService.sendToUser(user.getId(), "⚠️ Lưu ý",
-                            "Buổi tập đã hoàn thành nhưng kiểm tra tiến độ thể lực gặp sự cố. Vui lòng thử lại.", "SYSTEM");
+                    log.warn("Không thể kiểm tra tiến độ thể lực sau buổi tập {} của user {}",
+                            s.getId(), user.getId(), e);
                 }
             } else if (isTemplatePlan) {
                 advanceTemplatePlanWeek(plan);
-            } else if (isAiPlan) {
+            } else if (isAiPlan && membershipService.isVip(user)) {
                 try {
                     workoutPlanService.adjustPlanAfterWeek(
                             plan.getId(), email, req.getCheckoutWeight(), req.getCheckoutBodyFat());
                 } catch (Exception e) {
-                    notifService.sendToUser(user.getId(), "⚠️ Lưu ý",
-                            "Buổi tập đã hoàn thành nhưng căn chỉnh tuần mới gặp sự cố. Vui lòng thử lại.", "SYSTEM");
+                    log.warn("Không thể căn chỉnh tuần mới sau buổi tập {} của user {}",
+                            s.getId(), user.getId(), e);
                 }
+            } else if (isAiPlan) {
+                workoutPlanService.advancePlanWeekWithoutAdjustment(plan.getId(), email);
             }
         }
 
@@ -305,8 +323,10 @@ public class WorkoutSessionService {
 
         if (isLastCompletedSession) {
             String nextMsg = isTemplatePlan
-                    ? "Dữ liệu đã ghi nhận. Giáo án tự động chuyển sang tuần tiếp theo."
-                    : "Dữ liệu đã ghi nhận và giáo án đã được căn chỉnh cho tuần mới.";
+                    ? "Dữ liệu đã ghi nhận. Giáo án đã chuyển sang tuần tiếp theo."
+                    : membershipService.isVip(user)
+                    ? "Dữ liệu đã ghi nhận và giáo án VIP đã được tự động căn chỉnh cho tuần mới."
+                    : "Dữ liệu đã ghi nhận. Giáo án đã chuyển tuần nhưng không tự điều chỉnh vì bạn đang dùng gói thường.";
             notifService.sendToUser(user.getId(),
                     "📊 Hoàn thành tuần " + s.getWeekNumber() + "!", nextMsg, "SYSTEM");
         }

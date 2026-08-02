@@ -2,8 +2,17 @@
   <div class="auth-page">
     <div class="auth-bg">
       <div class="bg-overlay"/>
-      <div class="bg-text">GYMPRO</div>
-      <div class="bg-tagline">Hệ thống quản lý luyện tập thông minh</div>
+      <div class="login-showcase">
+        <div class="showcase-kicker">NỀN TẢNG LUYỆN TẬP CÁ NHÂN</div>
+        <h1>TẬP ĐÚNG.<br/><span>TIẾN BỘ THẬT.</span></h1>
+        <p class="showcase-lead">GymPro đồng hành cùng bạn từ buổi tập đầu tiên đến khi chạm mục tiêu — với giáo án phù hợp và tiến độ rõ ràng mỗi tuần.</p>
+        <div class="showcase-features">
+          <div><span>01</span><b>Giáo án cá nhân hóa</b><small>Theo mục tiêu, thể lực và lịch rảnh của bạn</small></div>
+          <div><span>02</span><b>Theo dõi từng buổi</b><small>Ghi nhận khối lượng, thể lực và mức hoàn thành</small></div>
+          <div><span>03</span><b>Bài tập & dinh dưỡng</b><small>Thư viện hướng dẫn và món ăn được đề xuất</small></div>
+        </div>
+        <div class="showcase-quote">“Mỗi buổi tập tốt là một bước gần hơn tới phiên bản mạnh mẽ nhất của bạn.”</div>
+      </div>
     </div>
     <div class="auth-panel fade-in">
       <div class="auth-logo">
@@ -24,27 +33,38 @@
         </el-button>
       </el-form>
 
+      <button class="forgot-link" type="button" @click="forgotDialog=true">Quên mật khẩu?</button>
+
       <div style="text-align:center;color:var(--c-text2);font-size:0.875rem;margin-top:20px">
         Chưa có tài khoản? <router-link to="/register" style="color:var(--c-accent);font-weight:600">Đăng ký ngay</router-link>
-      </div>s
+      </div>
 
       <div class="demo-box">
         <div style="font-size:0.72rem;font-weight:700;color:var(--c-text3);letter-spacing:0.1em;margin-bottom:4px">DEMO</div>
         <div style="font-size:0.78rem;color:var(--c-text2)">Admin: <strong>admin@gym.com</strong> / <strong>admin123</strong></div>
-        <div style="font-size:0.78rem;color:var(--c-text2);margin-top:4px">User VIP 👑: <strong>vip@gym.com</strong> / <strong>vip123</strong></div>
+        <div style="font-size:0.78rem;color:var(--c-text2);margin-top:4px">Full Test 🧪: <strong>fulltest@gym.com</strong> / <strong>password</strong></div>
       </div>
     </div>
+    <el-dialog v-model="forgotDialog" title="ĐĂNG NHẬP BẰNG 4 SỐ CUỐI" width="400px" align-center>
+      <el-form label-position="top">
+        <el-form-item label="Email"><el-input v-model="forgot.email" type="email" /></el-form-item>
+        <el-form-item label="4 số cuối số điện thoại"><el-input v-model="forgot.lastFourDigits" maxlength="4" inputmode="numeric" /></el-form-item>
+      </el-form>
+      <template #footer><el-button @click="forgotDialog=false">Hủy</el-button><el-button type="primary" @click="loginWithPhone">Xác nhận</el-button></template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
 const auth = useAuthStore()
 const router = useRouter()
 const form = reactive({ email: '', password: '' })
+const forgotDialog = ref(false)
+const forgot = reactive({ email:'', lastFourDigits:'' })
 
 async function handleLogin() {
   if (!form.email || !form.password) return
@@ -52,6 +72,10 @@ async function handleLogin() {
     const data = await auth.login(form)
     router.push(data.role === 'ROLE_ADMIN' ? '/admin' : '/app')
   } catch {}
+}
+async function loginWithPhone() {
+  if (!forgot.email || !/^\d{4}$/.test(forgot.lastFourDigits)) return
+  try { const data = await auth.loginWithPhone(forgot); router.push(data.role === 'ROLE_ADMIN' ? '/admin' : '/app') } catch {}
 }
 </script>
 
@@ -66,11 +90,7 @@ async function handleLogin() {
   position:absolute; inset:0;
   background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }
-.bg-text {
-  font-family:var(--font-display); font-size:10vw; line-height:1;
-  color:rgba(255,255,255,0.08); user-select:none; letter-spacing:0.05em;
-}
-.bg-tagline { color:rgba(255,255,255,0.4); font-size:0.9rem; margin-top:16px; letter-spacing:0.05em; }
+.login-showcase{position:relative;z-index:1;width:min(720px,78%);color:#fff8f3}.showcase-kicker{font-size:.8rem;letter-spacing:.18em;color:#efb35f;font-weight:700}.login-showcase h1{font-size:clamp(3.2rem,5.3vw,6.5rem);line-height:.9;margin:22px 0 26px;letter-spacing:-.03em}.login-showcase h1 span{color:#efb35f}.showcase-lead{max-width:650px;color:#f0d9c7;font-size:1.08rem;line-height:1.65}.showcase-features{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:38px}.showcase-features>div{padding:18px;background:#fff1;border:1px solid #fff2;border-radius:12px;backdrop-filter:blur(5px)}.showcase-features span{display:block;color:#efb35f;font-weight:700;font-size:.75rem}.showcase-features b{display:block;margin:8px 0 5px}.showcase-features small{color:#e8d5c0;line-height:1.45}.showcase-quote{margin-top:32px;padding-left:16px;border-left:3px solid #d4892a;color:#d9bea8;font-style:italic}
 @media(max-width:768px) { .auth-bg { display:none; } }
 
 .auth-panel {
@@ -83,4 +103,5 @@ async function handleLogin() {
   background:var(--c-card2); border:1px solid var(--c-border2);
   border-radius:var(--radius-lg); text-align:center;
 }
+.forgot-link{border:0;background:none;color:var(--c-accent);cursor:pointer;margin-top:12px;align-self:flex-end;font-family:inherit}
 </style>
