@@ -58,13 +58,15 @@ public class DataInitializer implements CommandLineRunner {
             List<Exercise> exercises = List.of(
 
                     // ── CHEST ─────────────────────────────────────────────────
-                    Exercise.builder().name("Push Up").description("Hít đất cơ bản, vừa tăng cơ vừa tốt cho sức bền")
+                    Exercise.builder().name("Push Up").description("Bước 1: Đặt hai tay rộng hơn vai, siết bụng và giữ người thẳng. Bước 2: Hạ ngực có kiểm soát, khuỷu tay chếch khoảng 45 độ. Bước 3: Đẩy người lên và thở ra, không võng lưng.")
+                            .videoUrl("https://www.youtube.com/watch?v=IODxDxX7oi4")
                             .muscleGroup(MuscleGroup.CHEST).difficulty(Difficulty.EASY)
                             .caloriesBurned(8).defaultSets(3).defaultReps(15).restSeconds(60)
                             .muscleGainScore(6).weightLossScore(5).enduranceScore(7).flexibilityScore(2).maintenanceScore(6)
                             .isActive(true).build(),
 
-                    Exercise.builder().name("Bench Press").description("Đẩy tạ nằm - bài tập tăng cơ ngực hàng đầu")
+                    Exercise.builder().name("Bench Press").description("Bước 1: Nằm chắc trên ghế, kéo bả vai về sau và đặt chân vững. Bước 2: Hạ thanh đòn về giữa ngực. Bước 3: Đẩy thanh lên có kiểm soát, không nhấc mông khỏi ghế.")
+                            .videoUrl("https://www.youtube.com/watch?v=rT7DgCr-3pg")
                             .muscleGroup(MuscleGroup.CHEST).difficulty(Difficulty.MEDIUM)
                             .caloriesBurned(12).defaultSets(4).defaultReps(10).restSeconds(90)
                             .muscleGainScore(10).weightLossScore(4).enduranceScore(4).flexibilityScore(1).maintenanceScore(7)
@@ -89,7 +91,8 @@ public class DataInitializer implements CommandLineRunner {
                             .muscleGainScore(9).weightLossScore(5).enduranceScore(7).flexibilityScore(3).maintenanceScore(7)
                             .isActive(true).build(),
 
-                    Exercise.builder().name("Deadlift").description("Kéo tạ đất - bài compound toàn thân")
+                    Exercise.builder().name("Deadlift").description("Bước 1: Đặt thanh tạ trên giữa bàn chân, giữ lưng trung lập. Bước 2: Siết cơ lõi, đạp chân và đưa hông đứng thẳng. Bước 3: Hạ tạ sát chân, không cong lưng.")
+                            .videoUrl("https://www.youtube.com/watch?v=op9kVnSso6Q")
                             .muscleGroup(MuscleGroup.BACK).difficulty(Difficulty.HARD)
                             .caloriesBurned(15).defaultSets(3).defaultReps(6).restSeconds(120)
                             .muscleGainScore(10).weightLossScore(6).enduranceScore(5).flexibilityScore(2).maintenanceScore(8)
@@ -152,7 +155,8 @@ public class DataInitializer implements CommandLineRunner {
                             .isActive(true).build(),
 
                     // ── LEGS ──────────────────────────────────────────────────
-                    Exercise.builder().name("Squat").description("Ngồi xuống đứng lên - bài tập cơ bản chân")
+                    Exercise.builder().name("Squat").description("Bước 1: Đứng chân rộng bằng vai. Bước 2: Đẩy hông ra sau và hạ người, giữ gối cùng hướng mũi chân. Bước 3: Đạp cả bàn chân xuống để đứng lên.")
+                            .videoUrl("https://www.youtube.com/watch?v=aclHkVaku9U")
                             .muscleGroup(MuscleGroup.LEGS).difficulty(Difficulty.MEDIUM)
                             .caloriesBurned(12).defaultSets(4).defaultReps(12).restSeconds(90)
                             .muscleGainScore(10).weightLossScore(7).enduranceScore(6).flexibilityScore(4).maintenanceScore(8)
@@ -183,7 +187,8 @@ public class DataInitializer implements CommandLineRunner {
                             .isActive(true).build(),
 
                     // ── CORE ──────────────────────────────────────────────────
-                    Exercise.builder().name("Plank").description("Chống đẩy tĩnh - ổn định cơ lõi")
+                    Exercise.builder().name("Plank").description("Bước 1: Chống cẳng tay dưới vai, duỗi chân và siết bụng. Bước 2: Giữ đầu, lưng và hông thành một đường thẳng. Bước 3: Thở đều và dừng khi hông bắt đầu võng.")
+                            .videoUrl("https://www.youtube.com/watch?v=ASdvN_XEl_c")
                             .muscleGroup(MuscleGroup.CORE).difficulty(Difficulty.EASY)
                             .caloriesBurned(5).defaultSets(3).defaultDurationSeconds(60).restSeconds(30)
                             .muscleGainScore(5).weightLossScore(5).enduranceScore(8).flexibilityScore(3).maintenanceScore(7)

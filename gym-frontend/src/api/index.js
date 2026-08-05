@@ -32,7 +32,7 @@ export default api
 export const authAPI = {
     register: (data) => api.post('/auth/register', data),
     login:    (data) => api.post('/auth/login', data),
-    loginWithPhone: (data) => api.post('/auth/login-phone-last4', data),
+    resetPasswordWithPhone: (data) => api.post('/auth/reset-password-phone', data),
     verify:   (token) => api.get(`/auth/verify-email?token=${token}`)
 }
 
@@ -78,6 +78,7 @@ export const sessionAPI = {
     enroll:       (data)       => api.post('/sessions/enroll', data),
     checkOut:     (id, data)   => api.post(`/sessions/${id}/check-out`, data),
     skip:         (id, notes)  => api.post(`/sessions/${id}/skip`, { notes }),
+    finishSkippedWeek: (id, data) => api.post(`/sessions/${id}/skip-week-review`, data),
     delete:       (id)         => api.delete(`/sessions/${id}`),
     getWeekProgress: (planId, weekNumber) => api.get(`/sessions/week-progress?planId=${planId}&weekNumber=${weekNumber}`)
 }
@@ -103,9 +104,7 @@ export const progressAPI = {
 // ── Memberships ───────────────────────────────
 export const membershipAPI = {
     getAll:         ()     => api.get('/memberships'),
-    getActive:      ()     => api.get('/memberships/active', { silentError: true }),
-    purchase:       (data) => api.post('/memberships', data),
-    confirmPayment: (id, txId) => api.post(`/memberships/${id}/confirm-payment`, { transactionId: txId })
+    getActive:      ()     => api.get('/memberships/active', { silentError: true })
 }
 export const petCosmeticAPI = {
     getCatalog: ()     => api.get('/pet/cosmetics'),
@@ -150,8 +149,27 @@ export const ratingAPI = {
     getMy:        ()             => api.get('/ratings/my'),
     getAverages:  ()             => api.get('/ratings/averages'),
     getAll:       ()             => api.get('/ratings/admin/all'),
-    adminReply:   (id, formData) => api.post(`/ratings/admin/${id}/reply`, formData, { timeout: 120000 }),
-    adminRemove:  (id)           => api.delete(`/ratings/admin/${id}`)
+    adminReply:   (id, formData) => api.post(`/ratings/admin/${id}/reply`, formData, { timeout: 120000 })
+}
+
+export const shopAPI = {
+    products: (params) => api.get('/shop/products', { params }),
+    cart: () => api.get('/shop/cart'),
+    addCart: (productId, quantity = 1) => api.post('/shop/cart', { productId, quantity }),
+    updateCart: (id, quantity) => api.put(`/shop/cart/${id}`, { quantity }),
+    removeCart: (id) => api.delete(`/shop/cart/${id}`),
+    checkout: (data) => api.post('/shop/orders', data),
+    orders: () => api.get('/shop/orders'),
+    order: (id) => api.get(`/shop/orders/${id}`),
+    cancelOrder: (id) => api.post(`/shop/orders/${id}/cancel`)
+}
+export const adminShopAPI = {
+    products: () => api.get('/shop/admin/products'),
+    create: (data) => api.post('/shop/admin/products', data),
+    update: (id, data) => api.put(`/shop/admin/products/${id}`, data),
+    hide: (id) => api.delete(`/shop/admin/products/${id}`),
+    orders: () => api.get('/shop/admin/orders'),
+    status: (id, status) => api.put(`/shop/admin/orders/${id}/status`, { status })
 }
 
 // ── Chat với bot ──────────────────────────────
@@ -170,7 +188,8 @@ export const supportAPI = {
     messages:  (id)          => api.get(`/support/sessions/${id}/messages`),
     send:      (id, content) => api.post(`/support/sessions/${id}/messages`, { content }),
     sendFile:  (id, formData)=> api.post(`/support/sessions/${id}/attachments`, formData, { timeout: 120000 }),
-    close:     (id)          => api.post(`/support/sessions/${id}/close`)
+    close:     (id)          => api.post(`/support/sessions/${id}/close`),
+    rate:      (id, data)    => api.post(`/support/sessions/${id}/rating`, data)
 }
 
 // ── Chat với user (Admin) ─────────────────────
@@ -189,7 +208,8 @@ export const adminSupportAPI = {
 export const notifAPI = {
     getAll:       () => api.get('/notifications'),
     getUnread:    () => api.get('/notifications/unread-count'),
-    markAllRead:  () => api.post('/notifications/mark-all-read')
+    markAllRead:  () => api.post('/notifications/mark-all-read'),
+    delete:       (id) => api.delete(`/notifications/${id}`)
 }
 
 // ── Dashboard ─────────────────────────────────
@@ -208,7 +228,6 @@ export const adminAPI = {
     deleteUser:         (id)         => api.delete(`/admin/users/${id}`),
     getMemberships:     ()           => api.get('/admin/memberships'),
     getPending:         ()           => api.get('/admin/memberships/pending'),
-    confirmPayment:     (id)         => api.post(`/admin/memberships/${id}/confirm-payment`),
     refund:             (id)         => api.put(`/admin/memberships/${id}/refund`),
     getUserMemberships: (uid)        => api.get(`/admin/memberships/user/${uid}`),
     getInvoices:        ()     => api.get('/admin/invoices'),

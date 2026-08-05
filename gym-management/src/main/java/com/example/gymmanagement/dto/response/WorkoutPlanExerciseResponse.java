@@ -14,6 +14,7 @@ public class WorkoutPlanExerciseResponse {
     private Integer orderIndex;
     private String notes;
     private String videoUrl;
+    private String description;
     private Integer caloriesBurned;
 
     private Double baseWeightKg;

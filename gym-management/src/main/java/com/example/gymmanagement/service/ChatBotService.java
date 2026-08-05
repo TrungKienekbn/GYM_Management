@@ -40,7 +40,7 @@ public class ChatBotService {
     // Giá & thời hạn gói tập (đồng bộ với MembershipService)
     private static final Map<MembershipType, Double> PRICES = Map.of(
             MembershipType.FREE, 0.0,
-            MembershipType.VIP, 299000.0
+            MembershipType.VIP, 99000.0
     );
     private static final Map<MembershipType, Integer> DURATIONS_MONTHS = Map.of(
             MembershipType.FREE, 1200, // gói free không giới hạn thời gian (100 năm)

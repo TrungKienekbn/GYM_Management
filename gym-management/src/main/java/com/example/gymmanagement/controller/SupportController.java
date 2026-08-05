@@ -1,6 +1,7 @@
 package com.example.gymmanagement.controller;
 
 import com.example.gymmanagement.dto.request.SupportMessageRequest;
+import com.example.gymmanagement.dto.request.SupportRatingRequest;
 import com.example.gymmanagement.dto.response.*;
 import com.example.gymmanagement.service.SupportChatService;
 import lombok.RequiredArgsConstructor;
@@ -73,5 +74,14 @@ public class SupportController {
             @PathVariable Long id) {
         supportChatService.closeByUser(userDetails.getUsername(), id);
         return ResponseEntity.ok(ApiResponse.success("OK", "Đã kết thúc cuộc hội thoại"));
+    }
+
+    @PostMapping("/sessions/{id}/rating")
+    public ResponseEntity<ApiResponse<SupportSessionResponse>> rate(
+            @AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id,
+            @RequestBody SupportRatingRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(
+                supportChatService.rateByUser(userDetails.getUsername(), id, request),
+                "Cảm ơn bạn đã đánh giá phiên hỗ trợ"));
     }
 }

@@ -3,18 +3,18 @@
     <div class="page-header">
       <h2>GIÁO ÁN TẬP</h2>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <el-button v-if="plan" @click="allPlansDialog=true" plain>📋 Tất cả giáo án</el-button>
-        <el-button @click="openGoalDialog" type="primary">✨ {{ plan ? 'Tạo lại' : 'Tạo giáo án' }}</el-button>
+        <el-button v-if="plan" @click="allPlansDialog=true" plain> Tất cả giáo án</el-button>
+        <el-button @click="openGoalDialog" type="primary"> {{ plan ? 'Tạo lại' : 'Tạo giáo án' }}</el-button>
       </div>
     </div>
 
     <div v-if="!plan && !loading" class="empty-plan">
-      <div style="font-size:4rem;margin-bottom:16px">🤖</div>
+      <div style="font-size:4rem;margin-bottom:16px"></div>
       <h3 class="display" style="font-size:1.8rem;color:var(--c-text);margin-bottom:8px">CHƯA CÓ GIÁO ÁN</h3>
       <p style="color:var(--c-text2);margin-bottom:20px;max-width:440px;margin-left:auto;margin-right:auto">
         Hệ thống sẽ tự động chọn bài tập phù hợp nhất theo mục tiêu của bạn, dựa trên chỉ số benefit và chỉ số hồ sơ cá nhân (BMI, cân nặng). Hoặc bạn có thể chọn một giáo án mẫu do phòng tập thiết kế sẵn.
       </p>
-      <el-button type="primary" size="large" @click="openGoalDialog">✨ Chọn mục tiêu & Tạo giáo án</el-button>
+      <el-button type="primary" size="large" @click="openGoalDialog"> Chọn mục tiêu & Tạo giáo án</el-button>
     </div>
 
     <div v-if="loading" style="padding:40px 0">
@@ -33,22 +33,22 @@
               <el-tag type="info">{{ levelLabel(plan.targetLevel) }}</el-tag>
               <el-tag type="danger">Tuần {{ plan.currentWeek }} / {{ plan.durationWeeks }}</el-tag>
               <el-tag>{{ plan.sessionsPerWeek }} buổi/tuần</el-tag>
-              <el-tag v-if="plan.isAiGenerated" type="success">✨ Giáo án cá nhân hóa </el-tag>
-              <el-tag v-else-if="!plan.isAiGenerated" type="warning" effect="plain">📋 Giáo án mẫu</el-tag>
+              <el-tag v-if="plan.isAiGenerated" type="success"> Giáo án cá nhân hóa </el-tag>
+              <el-tag v-else-if="!plan.isAiGenerated" type="warning" effect="plain"> Giáo án mẫu</el-tag>
               <el-tag v-if="plan.fitnessScore != null" type="success" effect="plain">
-                💪 Thể lực: {{ fitnessScoreText(plan) }}
+                 Thể lực: {{ fitnessScoreText(plan) }}
               </el-tag>
               <el-tag v-if="plan.bodyType" effect="plain">
-                🧍 Thể trạng: {{ bodyTypeLabel(plan.bodyType) }}
+                 Thể trạng: {{ bodyTypeLabel(plan.bodyType) }}
               </el-tag>
                      </template>
    <el-tag v-if="plan.isFitnessImprovement" type="danger" effect="dark">
-                  ⏸️ Đang tập giáo án nâng cao thể lực
+                   Đang tập giáo án nâng cao thể lực
                 </el-tag>
             </div>
 
             <div v-if="plan.estimatedWeeks != null" style="font-size:0.82rem;color:var(--c-text2);margin-bottom:6px">
-              ⏱ Dự kiến ban đầu: <strong>{{ plan.estimatedWeeks }} tuần</strong>
+               Dự kiến ban đầu: <strong>{{ plan.estimatedWeeks }} tuần</strong>
               <span v-if="plan.durationWeeks !== plan.estimatedWeeks">
                 (hiện đã điều chỉnh thành <strong>{{ plan.durationWeeks }} tuần</strong>)
               </span>
@@ -56,14 +56,14 @@
 
             <div class="target-food-row" :class="{ 'no-target': !hasTarget(plan) }">
               <div v-if="hasTarget(plan)" class="target-progress-box">
-                <div style="font-weight:700;margin-bottom:6px">🎯 Tiến độ mục tiêu</div>
+                <div style="font-weight:700;margin-bottom:6px"> Tiến độ mục tiêu</div>
                 <div style="font-size:0.85rem">{{ targetBaselineText(plan) }} → {{ targetGoalText(plan) }}</div>
                 <div style="font-size:0.85rem;margin-top:2px">Hiện tại: <strong>{{ targetCurrentText(plan) }}</strong></div>
-                <el-tag v-if="plan.targetAchieved" type="success" size="small" style="margin-top:8px">✅ Đã đạt mục tiêu</el-tag>
+                <el-tag v-if="plan.targetAchieved" type="success" size="small" style="margin-top:8px"> Đã đạt mục tiêu</el-tag>
               </div>
 
               <div class="food-suggest-box">
-                <div style="font-weight:700;margin-bottom:4px">🍽️ MÓN ĂN ĐỀ XUẤT</div>
+                <div style="font-weight:700;margin-bottom:4px"> MÓN ĂN ĐỀ XUẤT</div>
                 <div style="font-size:0.78rem;color:var(--c-text2);margin-bottom:8px">
                   Gợi ý dinh dưỡng phù hợp với mục tiêu: {{ goalLabel(foodGoalFor(plan.goal)) }}
                 </div>
@@ -77,14 +77,14 @@
                   <div v-for="f in recommendedFoods" :key="f.id" class="food-suggest-card">
                     <img v-if="f.imageUrl" :src="f.imageUrl" class="food-suggest-img" alt="" />
                     <div class="food-suggest-info">
-                      <div class="food-suggest-name">🍗 {{ f.name }}</div>
+                      <div class="food-suggest-name"> {{ f.name }}</div>
                       <div class="food-suggest-meta">
-                        <span v-if="f.calories != null">🔥 {{ f.calories }} kcal</span>
-                        <span v-if="f.proteinGrams != null">🥩 Protein {{ f.proteinGrams }}g</span>
-                        <span v-if="f.fatGrams != null">🥑 Chất béo {{ f.fatGrams }}g</span>
+                        <span v-if="f.calories != null"> {{ f.calories }} kcal</span>
+                        <span v-if="f.proteinGrams != null"> Protein {{ f.proteinGrams }}g</span>
+                        <span v-if="f.fatGrams != null"> Chất béo {{ f.fatGrams }}g</span>
                       </div>
                       <div v-if="f.weightGrams" style="font-size:0.68rem;color:var(--c-text3);margin-top:2px">
-                        📦 {{ f.weightGrams }}g/phần · {{ f.caloriesPer100g }} kcal/100g
+                         {{ f.weightGrams }}g/phần · {{ f.caloriesPer100g }} kcal/100g
                       </div>
                     </div>
                   </div>
@@ -95,12 +95,28 @@
         </div>
       </el-card>
 
-      <div v-if="plan.weightAdjustmentNote" class="weight-adjustment-box">
-        ⚖️ {{ plan.weightAdjustmentNote }}
+      <div v-if="displayWeightAdjustmentNote" class="weight-adjustment-box">
+         {{ displayWeightAdjustmentNote }}
       </div>
       <div v-if="!isVip && plan.isAiGenerated" class="vip-plan-lock">
-        <div><b>🔒 Tự động điều chỉnh giáo án mỗi tuần dành cho VIP</b><span>Gói thường vẫn chuyển tuần và giữ nguyên mức bài tập hiện tại.</span></div>
+        <div><b> Tự động điều chỉnh giáo án mỗi tuần dành cho VIP</b><span>Gói thường vẫn chuyển tuần và giữ nguyên mức bài tập hiện tại.</span></div>
         <router-link to="/app/membership"><el-button type="warning" size="small">Nâng cấp VIP</el-button></router-link>
+      </div>
+      <div v-if="plan.lowCompletionWarning && !lowCompletionDismissed" class="low-completion-warning">
+        <div class="low-warning-icon"></div>
+        <div class="low-warning-content">
+          <b>Giáo án hiện tại có thể đang quá sức với bạn</b>
+          <p>{{ plan.lowCompletionMessage }}</p>
+          <div class="low-week-rates">
+            <span>Tuần {{ plan.lowCompletionWeek1 }}: <strong>{{ plan.lowCompletionRate1 }}%</strong></span>
+            <span>Tuần {{ plan.lowCompletionWeek2 }}: <strong>{{ plan.lowCompletionRate2 }}%</strong></span>
+          </div>
+          <small>Sau khi cập nhật hồ sơ và tạo lại, hệ thống sẽ dùng số liệu mới cùng kết quả hai tuần này để giảm độ khó và khối lượng.</small>
+        </div>
+        <div class="low-warning-actions">
+          <el-button type="warning" @click="$router.push('/app/profile?retune=1')">Cập nhật số liệu</el-button>
+          <el-button plain @click="lowCompletionDismissed=true">Vẫn tiếp tục tập</el-button>
+        </div>
       </div>
       <div v-if="plan.isFitnessImprovement" class="fi-pause-box">
       Giáo án sẽ tiếp tục khi chỉ số cơ thể , thể lực được cải thiện
@@ -110,7 +126,7 @@
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px">
           <div>
             <span style="font-weight:700;font-size:1.1rem;color:var(--c-text)">
-              📊 Tiến độ Tuần {{ plan.currentWeek }}:
+               Tiến độ Tuần {{ plan.currentWeek }}:
             </span>
             <span style="margin-left:8px;color:var(--c-accent);font-weight:700">
               {{ weekProgress.completed }} / {{ weekProgress.target }} Buổi hoàn thành
@@ -121,16 +137,16 @@
           </div>
 
           <div v-if="weekProgress.canGoNextWeek" style="color:#16a34a;font-size:0.9rem;font-weight:600">
-            ✅ Đã hoàn thành tuần này! Giáo án đã tự động căn chỉnh và chuyển sang tuần tiếp theo.
+             Đã hoàn thành tuần này! Giáo án đã tự động căn chỉnh và chuyển sang tuần tiếp theo.
           </div>
           <div v-else-if="weekProgress.isWeekDone" style="color:var(--c-warning);font-size:0.9rem;font-weight:600">
-            ⚠ Bạn cần hoàn thành Checkout buổi cuối cùng để nộp số liệu trước khi chuyển tuần!
+             Bạn cần ghi nhận kết quả buổi cuối cùng để nộp số liệu trước khi chuyển tuần!
           </div>
         </div>
       </el-card>
 
       <div v-if="plan.suggestedDays && plan.suggestedDays.length" class="suggested-days-box">
-        <div style="font-weight:700;font-size:0.9rem;margin-bottom:10px">📅 Lịch tập khuyến nghị:</div>
+        <div style="font-weight:700;font-size:0.9rem;margin-bottom:10px"> Lịch tập khuyến nghị:</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <el-tag v-for="d in plan.suggestedDays" :key="d" effect="plain" type="success">
             {{ dowVietName(d) }}
@@ -142,7 +158,7 @@
       </div>
 
       <div v-else-if="!plan.isAiGenerated" class="suggested-days-box">
-        <div style="font-weight:700;font-size:0.9rem;margin-bottom:6px">📅 Ngày tập theo lịch Admin:</div>
+        <div style="font-weight:700;font-size:0.9rem;margin-bottom:6px"> Ngày tập theo lịch quản trị viên:</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <el-tag v-for="day in plan.planDays" :key="day.id" effect="plain" type="warning">
             {{ dowVietName(day.dayOfWeek) }}
@@ -150,13 +166,13 @@
         </div>
       </div>
 
-      <div v-if="plan.maxMana && !plan.isFitnessImprovement" class="mana-box">
+      <div v-if="plan.maxMana != null && !plan.isFitnessImprovement" class="mana-box">
         <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-          <span style="font-weight:700">⚡ Thể lực</span>
+          <span style="font-weight:700"> Thể lực</span>
           <span style="font-weight:700">{{ plan.currentMana }}/{{ plan.maxMana }}</span>
         </div>
         <div class="mana-bar-track">
-          <div class="mana-bar-fill" :style="{ width: (plan.currentMana / plan.maxMana * 100) + '%' }"></div>
+          <div class="mana-bar-fill" :style="{ width: manaPercent(plan) + '%' }"></div>
         </div>
         <div style="margin-top:6px;font-size:0.85rem">{{ plan.manaMessage }}</div>
       </div>
@@ -174,8 +190,9 @@
             <div style="display:flex;justify-content:space-between;align-items:center">
               <span class="display accent" style="font-size:1.1rem">Buổi {{ index + 1 }}</span>
               <div>
-                <el-tag v-if="day.sessionStatus === 'SCHEDULED'" type="warning" size="small">📝 Sẵn sàng Checkout</el-tag>
-                <el-tag v-else-if="day.sessionStatus === 'COMPLETED'" type="success" size="small">✅ Hoàn thành</el-tag>
+                <el-tag v-if="day.sessionStatus === 'SCHEDULED'" type="warning" size="small"> Sẵn sàng ghi nhận</el-tag>
+                <el-tag v-else-if="day.sessionStatus === 'COMPLETED'" type="success" size="small"> Hoàn thành</el-tag>
+                <el-tag v-else-if="day.sessionStatus === 'SKIPPED'" type="info" size="small"> Đã bỏ qua</el-tag>
                 <span v-else style="font-size:0.75rem;color:var(--c-text3)">{{ day.exercises?.length || 0 }} bài</span>
               </div>
             </div>
@@ -184,15 +201,25 @@
           <div class="schedule-section">
             <div v-if="day.sessionStatus === 'NOT_SCHEDULED' || !day.sessionId" class="no-schedule">
               <el-button type="success" size="small" @click="handleStartSession(day, index + 1)">
-                🏃 Bắt đầu tập
+                 Bắt đầu tập
+              </el-button>
+              <el-button type="info" plain size="small" :loading="skippingDayId===day.id" @click="handleSkipSession(day, index + 1)">
+                 Bỏ qua
               </el-button>
             </div>
             <div v-else-if="day.sessionStatus === 'SCHEDULED'" class="scheduled">
-              <el-button type="danger" size="small" @click="openCheckOutDialog(day, index + 1)">Checkout 🏁</el-button>
+              <el-button type="danger" size="small" @click="openCheckOutDialog(day, index + 1)">Hoàn thành </el-button>
+              <el-button type="info" plain size="small" :loading="skippingDayId===day.id" @click="handleSkipSession(day, index + 1)"> Bỏ qua</el-button>
             </div>
             <div v-else-if="day.sessionStatus === 'COMPLETED'" class="completed-zone">
-              ✨ Hoàn thành vào {{ fmtDate(day.scheduledDate) }}
+               Hoàn thành vào {{ fmtDate(day.scheduledDate) }}
               <span v-if="day.completionRate !== null"> (Đạt {{ day.completionRate }}%)</span>
+            </div>
+            <div v-else-if="day.sessionStatus === 'SKIPPED'" class="skipped-zone">
+               Bạn đã chọn bỏ qua buổi tập này
+              <el-button v-if="weekProgress?.isWeekDone" type="warning" link @click="openSkippedWeekReview(day)">
+                Nhập cân nặng và chuyển tuần
+              </el-button>
             </div>
           </div>
 
@@ -210,27 +237,27 @@
                 </div>
                 <div v-if="ex.restSeconds" style="font-size:0.7rem;color:var(--c-text3)">nghỉ {{ ex.restSeconds }}s</div>
               </div>
-              <el-icon style="color:var(--c-text3);font-size:12px;flex-shrink:0"><ArrowRight/></el-icon>
+              
             </div>
           </div>
         </el-card>
       </div>
 
       <el-card class="extra-session-card">
-        <div class="extra-session-head"><div><strong>➕ Buổi tập phụ <el-tag v-if="!isVip" size="small" type="warning">Gói thường: 2 bài</el-tag><el-tag v-else size="small" type="warning" effect="dark">👑 Không giới hạn</el-tag></strong><p>Chọn bài yêu thích từ thư viện. Buổi phụ không làm thay đổi thứ tự giáo án chính.</p></div><router-link to="/app/exercises"><el-button type="primary" plain>Chọn bài tập thêm</el-button></router-link></div>
+        <div class="extra-session-head"><div><strong> Buổi tập phụ <el-tag v-if="!isVip" size="small" type="warning">Gói thường: 2 bài</el-tag><el-tag v-else size="small" type="warning" effect="dark"> Không giới hạn</el-tag></strong><p>Chọn bài yêu thích từ thư viện. Buổi phụ không làm thay đổi thứ tự giáo án chính.</p></div><router-link to="/app/exercises"><el-button type="primary" plain>Chọn bài tập thêm</el-button></router-link></div>
         <div v-if="extraExercises.length" class="extra-exercises">
-          <div v-for="ex in extraExercises" :key="ex.id" class="extra-exercise-row"><div><b>{{ ex.name }}</b><span>{{ muscleLabel(ex.muscleGroup) }} · {{ ex.defaultSets }}×{{ ex.defaultReps || ex.defaultDurationSeconds + 's' }}</span></div><el-button type="danger" link @click="removeExtraExercise(ex.id)">Xóa</el-button></div>
+          <div v-for="ex in extraExercises" :key="ex.id" class="extra-exercise-row extra-clickable" @click="openExtraExDetail(ex)"><div><b>{{ ex.name }}</b><span>{{ muscleLabel(ex.muscleGroup) }} · {{ ex.defaultSets }}×{{ ex.defaultReps || ex.defaultDurationSeconds + 's' }}</span><small>Bấm để xem cách thực hiện</small></div><el-button type="danger" link @click.stop="removeExtraExercise(ex.id)">Xóa</el-button></div>
         </div>
         <el-empty v-else description="Chưa chọn bài tập phụ" :image-size="55" />
       </el-card>
     </template>
 
     <!-- ===================== DIALOG TẠO GIÁO ÁN ===================== -->
-    <el-dialog v-model="goalDialog" title="TẠO GIÁO ÁN" width="560px" align-center>
+    <el-dialog v-model="goalDialog" title="TẠO GIÁO ÁN" width="560px" align-center append-to-body>
       <el-tabs v-model="createTab">
-        <el-tab-pane label="✨ Tạo Giáo Án Cá Nhân Hóa" name="ai">
+        <el-tab-pane label=" Tạo Giáo Án Cá Nhân Hóa" name="ai">
           <div style="margin-bottom:20px">
-            <div style="font-weight:700;color:var(--c-text);margin-bottom:12px">🎯 Chọn mục tiêu chính</div>
+            <div style="font-weight:700;color:var(--c-text);margin-bottom:12px"> Chọn mục tiêu chính</div>
             <div class="goal-grid">
               <div
                   v-for="g in goals" :key="g.value"
@@ -249,7 +276,7 @@
             <el-divider/>
             <div style="margin-bottom:16px">
               <div style="font-weight:700;color:var(--c-text);margin-bottom:10px">
-                🎯 Mục tiêu {{ genForm.goal === 'MUSCLE_GAIN' ? 'tăng' : 'giảm' }} cân
+                 Mục tiêu {{ genForm.goal === 'MUSCLE_GAIN' ? 'tăng' : 'giảm' }} cân
               </div>
               <el-form-item :label="'Số kg muốn ' + (genForm.goal === 'MUSCLE_GAIN' ? 'tăng' : 'giảm')">
                 <el-input-number v-model="genForm.targetDeltaKgInput" :min="0.5" :max="100" :precision="1" style="width:100%"/>
@@ -260,7 +287,7 @@
           <template v-else-if="genForm.goal === 'ENDURANCE'">
             <el-divider/>
             <div style="margin-bottom:16px">
-              <div style="font-weight:700;color:var(--c-text);margin-bottom:10px">🏃 Bài test sức bền</div>
+              <div style="font-weight:700;color:var(--c-text);margin-bottom:10px"> Bài test sức bền</div>
 
               <div v-if="loadingEnduranceTest">
                 <el-skeleton :rows="2" animated/>
@@ -268,10 +295,10 @@
 
               <template v-else>
                 <div v-if="enduranceTest && !showEnduranceTestForm" class="endurance-test-result">
-                  <div>💪 Chống đẩy: <strong>{{ enduranceTest.pushupReps }}</strong> reps</div>
-                  <div>🧘 Plank: <strong>{{ enduranceTest.plankSeconds }}</strong> giây</div>
-                  <div>🦵 Squat: <strong>{{ enduranceTest.squatReps }}</strong> reps</div>
-                  <el-button size="small" text @click="showEnduranceTestForm = true">🔄 Làm lại bài test</el-button>
+                  <div> Chống đẩy: <strong>{{ enduranceTest.pushupReps }}</strong> reps</div>
+                  <div> Plank: <strong>{{ enduranceTest.plankSeconds }}</strong> giây</div>
+                  <div> Squat: <strong>{{ enduranceTest.squatReps }}</strong> reps</div>
+                  <el-button size="small" text @click="showEnduranceTestForm = true"> Làm lại bài test</el-button>
                 </div>
 
                 <div v-else class="endurance-test-form">
@@ -293,7 +320,7 @@
                 </div>
 
                 <div v-if="enduranceTest && !showEnduranceTestForm" style="margin-top:16px">
-                  <div style="font-weight:700;color:var(--c-text);margin-bottom:10px">🎯 Chọn chỉ số mục tiêu</div>
+                  <div style="font-weight:700;color:var(--c-text);margin-bottom:10px"> Chọn chỉ số mục tiêu</div>
                   <el-radio-group v-model="genForm.enduranceMetric" style="display:flex;flex-direction:column;gap:8px">
                     <el-radio v-for="m in enduranceMetricOptions" :key="m.value" :label="m.value">
                       {{ m.label }} — hiện tại: {{ enduranceBaselineFor(m.value) ?? '--' }} {{ m.unit }}
@@ -311,13 +338,13 @@
           <el-divider/>
 
           <div style="margin-bottom:16px">
-            <div style="font-weight:700;color:var(--c-text);margin-bottom:10px">⚙️ Tuỳ chỉnh nâng cao</div>
+            <div style="font-weight:700;color:var(--c-text);margin-bottom:10px"> Tuỳ chỉnh nâng cao</div>
             <div class="grid-2">
               <el-form-item label="Trình độ giáo án">
                 <el-select v-model="genForm.fitnessLevel" placeholder="Lấy từ Hồ sơ" clearable style="width:100%">
-                  <el-option label="🌱 Mới bắt đầu" value="BEGINNER"/>
-                  <el-option label="🔄 Trung bình" value="INTERMEDIATE"/>
-                  <el-option label="⚡ Nâng cao" value="ADVANCED"/>
+                  <el-option label=" Mới bắt đầu" value="BEGINNER"/>
+                  <el-option label=" Trung bình" value="INTERMEDIATE"/>
+                  <el-option label=" Nâng cao" value="ADVANCED"/>
                 </el-select>
               </el-form-item>
               <el-form-item :label="'Số ngày/tuần (' + minDaysRequired + '-' + maxDaysRequired + ')'">
@@ -338,7 +365,7 @@
           </div>
         </el-tab-pane>
 
-        <el-tab-pane label="📋 Chọn giáo án mẫu" name="template">
+        <el-tab-pane label=" Chọn giáo án mẫu" name="template">
           <div v-if="loadingTemplates" style="padding:20px 0">
             <el-skeleton :rows="3" animated />
           </div>
@@ -347,7 +374,7 @@
           </div>
           <div v-else class="template-list">
             <div
-              v-for="t in templates" :key="t.id"
+              v-for="t in recommendedTemplates" :key="t.id"
               class="template-card"
               :class="{selected: selectedTemplateId === t.id}"
               @click="selectedTemplateId = t.id"
@@ -360,7 +387,9 @@
                 <el-tag size="small">{{ t.sessionsPerWeek }} buổi/tuần</el-tag>
               </div>
               <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
-                <el-tag type="warning" size="small">{{ goalLabel(t.goal) }}</el-tag>
+                <el-tag v-if="isWeakTemplate(t)" type="danger" effect="dark" size="small"> Dành cho thể lực yếu</el-tag>
+                <el-tag v-if="shouldRecommendWeak && isWeakTemplate(t)" type="success" effect="dark" size="small">Được đề xuất theo hồ sơ</el-tag>
+                <el-tag v-else type="warning" size="small">{{ goalLabel(t.goal) }}</el-tag>
                 <el-tag type="info" size="small">{{ levelLabel(t.targetLevel) }}</el-tag>
                 <el-tag size="small">{{ t.durationWeeks }} tuần</el-tag>
               </div>
@@ -376,14 +405,14 @@
           type="primary" @click="generateWithGoal"
           :loading="generating" :disabled="!canGenerate"
         >
-          ✨ KHỞI TẠO GIÁO ÁN
+           KHỞI TẠO GIÁO ÁN
         </el-button>
         <el-button
           v-else
           type="primary" @click="applyTemplate"
           :loading="applyingTemplate" :disabled="!selectedTemplateId"
         >
-          ✅ ÁP DỤNG GIÁO ÁN NÀY
+           ÁP DỤNG GIÁO ÁN NÀY
         </el-button>
       </template>
     </el-dialog>
@@ -391,9 +420,10 @@
 <!-- ===================== DIALOG GỢI Ý FITNESS IMPROVEMENT (MỚI) ===================== -->
     <el-dialog
         v-model="fitnessImprovementDialog"
-        title="💡 KHUYẾN NGHỊ NÂNG CAO THỂ LỰC"
+        title=" KHUYẾN NGHỊ NÂNG CAO THỂ LỰC"
         width="480px"
         align-center
+        append-to-body
         :close-on-click-modal="false"
     >
       <p style="color:var(--c-text2);line-height:1.6">
@@ -409,7 +439,7 @@
       </template>
     </el-dialog>
     <!-- ===================== DIALOG CHECK-OUT (LẦN 1 — chỉ nhập kết quả bài tập) ===================== -->
-    <el-dialog v-model="checkOutDialog" title="🏁 CHECKOUT BUỔI TẬP" width="520px" align-center :close-on-click-modal="false" @closed="resetCheckoutSelection">
+    <el-dialog v-model="checkOutDialog" title=" GHI NHẬN BUỔI TẬP" width="520px" align-center append-to-body :close-on-click-modal="false" @closed="resetCheckoutSelection">
       <div style="margin-bottom:14px; font-weight:600; color:var(--c-text)">
         Buổi {{ selectedDayNumber }} - Tuần {{ plan?.currentWeek }}
       </div>
@@ -445,9 +475,10 @@
     <!-- ===================== DIALOG WEEKLY REVIEW (chỉ mở khi needWeeklyReview=true) ===================== -->
     <el-dialog
         v-model="weeklyReviewDialog"
-        title="📊 REVIEW CUỐI TUẦN"
+        title=" REVIEW CUỐI TUẦN"
         width="480px"
         align-center
+        append-to-body
         :close-on-click-modal="false"
         :close-on-press-escape="false"
     >
@@ -456,13 +487,13 @@
       </p>
 
       <el-form-item label="Cân nặng hiện tại (kg) *" required>
-        <el-input-number v-model="reviewForm.checkoutWeight" :min="30" :max="300" :precision="1" style="width:100%"/>
+        <el-input-number v-model="reviewForm.checkoutWeight" :min="30" :max="250" :precision="1" style="width:100%"/>
       </el-form-item>
 
 <template v-if="plan?.isAiGenerated && plan?.goal === 'ENDURANCE'">
         <el-divider/>
         <div style="font-weight:700;color:var(--c-text);margin-bottom:10px">
-          🏃 Bài test: {{ assessmentMetricLabel(plan.targetMetricType) }} *
+           Bài test: {{ assessmentMetricLabel(plan.targetMetricType) }} *
         </div>
         <el-form-item :label="'Kết quả (' + assessmentMetricUnit(plan.targetMetricType) + ')'" required>
           <el-input-number v-model="reviewForm.assessmentValue" :min="0" :max="9999" style="width:100%"/>
@@ -472,18 +503,23 @@
       <template #footer>
         <el-button @click="cancelWeeklyReview">Hủy</el-button>
         <el-button type="primary" @click="submitWeeklyReview" :loading="submittingReview">
-          ✅ Hoàn thành và căn chỉnh giáo án
+           Hoàn thành và căn chỉnh giáo án
         </el-button>
       </template>
     </el-dialog>
 
     <!-- ===================== DIALOG CHI TIẾT BÀI TẬP ===================== -->
-    <el-dialog v-model="exDetailDialog" :title="selEx?.exerciseName" width="540px" align-center v-if="selEx">
+    <el-dialog v-model="exDetailDialog" :title="selEx?.exerciseName" width="540px" align-center append-to-body v-if="selEx">
       <div v-if="selEx.videoUrl" class="video-wrap">
         <iframe :src="ytEmbed(selEx.videoUrl)" frameborder="0" allowfullscreen
                 style="width:100%;height:260px;border-radius:8px"/>
       </div>
-      <div v-else class="no-video">📹 Chưa có video hướng dẫn</div>
+      <div v-else class="no-video"> Chưa có video hướng dẫn</div>
+      <div v-if="selEx.description" class="exercise-instruction">
+        <strong> Cách thực hiện</strong>
+        <p>{{ selEx.description }}</p>
+      </div>
+      <a v-if="selEx.videoUrl" :href="selEx.videoUrl" target="_blank" rel="noopener noreferrer" class="guide-link">▶ Mở video hướng dẫn trên YouTube</a>
       <el-descriptions :column="2" border size="small" style="margin-top:14px">
         <el-descriptions-item label="Nhóm cơ">{{ muscleLabel(selEx.muscleGroup) }}</el-descriptions-item>
         <el-descriptions-item label="Độ khó">
@@ -495,15 +531,15 @@
           <span v-else>{{ selEx.durationSeconds }}s</span>
         </el-descriptions-item>
         <el-descriptions-item label="Nghỉ giữa set">{{ selEx.restSeconds || '--' }}s</el-descriptions-item>
-        <el-descriptions-item label="Calories/set">{{ selEx.caloriesBurned || '--' }} kcal</el-descriptions-item>
+        <el-descriptions-item label="Calo mỗi hiệp">{{ selEx.caloriesBurned || '--' }} kcal</el-descriptions-item>
         <el-descriptions-item label="Ghi chú" :span="2" v-if="selEx.notes">
           {{ selEx.notes }}
         </el-descriptions-item>
       </el-descriptions>
 
-      <div v-if="selEx.recommendedWeightKg != null" class="recommended-weight-box">
+      <div v-if="!selEx.isExtra && selEx.recommendedWeightKg != null" class="recommended-weight-box">
         <div>
-          🎯 Mức tạ khuyến nghị:
+           Mức tạ khuyến nghị:
           <strong>{{ currentRecommendedDisplay(selEx) }} kg</strong>
         </div>
         <div v-if="selEx.baseWeightKg == null" style="font-size:0.78rem;color:var(--c-text3);margin-top:4px">
@@ -514,7 +550,7 @@
         </div>
       </div>
 
-      <div v-if="!selEx.baseWeightKg" style="margin-top:14px">
+      <div v-if="!selEx.isExtra && !selEx.baseWeightKg" style="margin-top:14px">
         <el-form-item label="Nhập mức tạ mà bạn tập : ">
           <el-input-number v-model="baseWeightInput" :min="0" :max="500" :precision="1" style="width:100%"/>
         </el-form-item>
@@ -522,13 +558,13 @@
       </div>
 
       <div v-if="selEx.baseWeightKg != null && selEx.currentWeightKg != null" class="weight-reveal">
-        ⚖️ Mức tạ áp dụng tuần này:
+         Mức tạ áp dụng tuần này:
         <strong>{{ selEx.currentWeightKg }} kg</strong>
         <span v-if="selEx.weightJustRevealed && selEx.currentWeightKg > selEx.baseWeightKg" style="color:#16a34a">
-          (tăng so với tuần trước 📈)
+          (tăng so với tuần trước )
         </span>
         <span v-else-if="selEx.weightJustRevealed && selEx.currentWeightKg < selEx.baseWeightKg" style="color:#dc2626">
-          (giảm so với tuần trước 📉)
+          (giảm so với tuần trước )
         </span>
       </div>
 
@@ -537,7 +573,7 @@
       </template>
     </el-dialog>
 
-    <el-dialog v-model="allPlansDialog" title="TẤT CẢ GIÁO ÁN" width="600px" align-center>
+    <el-dialog v-model="allPlansDialog" title="TẤT CẢ GIÁO ÁN" width="600px" align-center append-to-body>
       <div v-if="!allPlans.length" class="empty-state">Chưa có giáo án nào</div>
       <div v-else class="plans-list">
         <div v-for="p in allPlans" :key="p.id" class="plan-item" :class="{active:p.isActive}">
@@ -545,6 +581,10 @@
             <div style="font-weight:700;color:var(--c-text)">{{ p.planName }}</div>
             <div style="font-size:0.8rem;color:var(--c-text3);margin-top:2px">
               {{ goalLabel(p.goal) }} · {{ levelLabel(p.targetLevel) }} · {{ p.durationWeeks }} tuần
+            </div>
+            <div class="plan-time-info">
+              <span> Tạo lúc: {{ formatPlanCreatedAt(p.createdAt) }}</span>
+              <span> Thời gian: {{ formatPlanPeriod(p) }}</span>
             </div>
           </div>
           <div style="display:flex;gap:6px;align-items:center">
@@ -564,18 +604,34 @@
 
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
-import { planAPI, sessionAPI, enduranceTestAPI, foodAPI, membershipAPI } from '@/api'
+import { planAPI, sessionAPI, enduranceTestAPI, foodAPI, membershipAPI, profileAPI } from '@/api'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import dayjs from 'dayjs'
+import { useAuthStore } from '@/stores/auth'
 
 const plan = ref(null)
+const displayWeightAdjustmentNote = computed(() => {
+  const note = plan.value?.weightAdjustmentNote?.trim()
+  if (!note) return ''
+
+  // Dữ liệu demo cũ lưu cứng tuần và mana trong ghi chú nên bị sai sau khi
+  // chuyển tuần/hồi thể lực. Khi gặp định dạng cũ, luôn dựng lại từ dữ liệu sống.
+  if (/^(Đang|Dang)\s+(tập|tap)\s+tuần\s+\d+\s*-\s*(thể lực|the luc)\s+hiện tại/i.test(note)) {
+    return `Đang tập tuần ${plan.value.currentWeek} - thể lực hiện tại ${plan.value.currentMana}/${plan.value.maxMana}`
+  }
+  return note
+})
+const auth = useAuthStore()
+const extraStorageKey = computed(() => `gym-extra-exercises-${auth.user?.userId || 'anonymous'}`)
 const allPlans = ref([])
 const weekProgress = ref(null)
 const activeSessions = ref([])
 const loading = ref(true)
+const lowCompletionDismissed = ref(false)
 
 const generating = ref(false)
 const checkingOut = ref(false)
+const skippingDayId = ref(null)
 const submittingReview = ref(false)
 
 const goalDialog = ref(false)
@@ -592,9 +648,19 @@ const checkoutSessionId = ref(null)
 
 const createTab = ref('ai')
 const templates = ref([])
+const userProfile = ref(null)
 const loadingTemplates = ref(false)
 const selectedTemplateId = ref(null)
 const applyingTemplate = ref(false)
+const shouldRecommendWeak = computed(() => {
+  const p = userProfile.value
+  if (!p) return false
+  return p.fitnessLevel === 'BEGINNER' && (
+    Number(p.bmi) < 18.5 || Number(p.bmi) >= 30 || Number(p.availableDaysPerWeek) <= 2 || Boolean(p.medicalConditions?.trim())
+  )
+})
+const recommendedTemplates = computed(() => [...templates.value].sort((a, b) =>
+  shouldRecommendWeak.value ? Number(isWeakTemplate(b)) - Number(isWeakTemplate(a)) : 0))
 
 const checkoutExercises = ref([])
 
@@ -660,14 +726,14 @@ const coForm = reactive({
 
 // ── MỚI: cache exerciseLogs của LẦN GỌI ĐẦU để gửi lại nguyên vẹn ở LẦN GỌI THỨ HAI
 // (Backend không lưu tạm gì cả — mục 13, LOCKED — nên FE phải tự giữ lại dữ liệu này) ──
-const reviewCache = reactive({ exerciseLogs: null, notes: '' })
+const reviewCache = reactive({ exerciseLogs: null, notes: '', isSkipped: false })
 const reviewForm = reactive({ checkoutWeight: null, checkoutBodyFat: null, assessmentValue: null })
 
 const goals = [
-  { value: 'MUSCLE_GAIN', icon: '💪', label: 'Tăng cơ / Tăng cân', desc: 'Yêu cầu 4-6 buổi/tuần', aiNote: 'ưu tiên bài tập compound nặng, tăng Sets, hạ Reps. Phân bổ cách ngày để phục hồi cơ.' },
-  { value: 'WEIGHT_LOSS', icon: '🔥', label: 'Giảm cân / Đốt mỡ', desc: 'Yêu cầu 4-6 buổi/tuần', aiNote: 'ưu tiên Cardio/HIIT, tăng lượng Reps, giảm thời gian nghỉ. Sắp xếp chu kỳ tập liên tục.' },
-  { value: 'ENDURANCE', icon: '🏃', label: 'Tăng sức bền', desc: 'Yêu cầu 2-4 buổi/tuần', aiNote: 'chọn Cardio và Full Body thời gian dài, cường độ vừa, xen kẽ phục hồi tim mạch.' },
-  { value: 'MAINTENANCE', icon: '⚖️', label: 'Duy trì thể hình', desc: 'Yêu cầu 3-5 buổi/tuần', aiNote: 'cân bằng đều giữa các nhóm cơ chính với cấu trúc Set/Rep tiêu chuẩn.' }
+  { value: 'MUSCLE_GAIN', icon: '', label: 'Tăng cơ / Tăng cân', desc: 'Yêu cầu 4-6 buổi/tuần', aiNote: 'ưu tiên bài tập compound nặng, tăng Sets, hạ Reps. Phân bổ cách ngày để phục hồi cơ.' },
+  { value: 'WEIGHT_LOSS', icon: '', label: 'Giảm cân / Đốt mỡ', desc: 'Yêu cầu 4-6 buổi/tuần', aiNote: 'ưu tiên Cardio/HIIT, tăng lượng Reps, giảm thời gian nghỉ. Sắp xếp chu kỳ tập liên tục.' },
+  { value: 'ENDURANCE', icon: '', label: 'Tăng sức bền', desc: 'Yêu cầu 2-4 buổi/tuần', aiNote: 'chọn Cardio và Full Body thời gian dài, cường độ vừa, xen kẽ phục hồi tim mạch.' },
+  { value: 'MAINTENANCE', icon: '', label: 'Duy trì thể hình', desc: 'Yêu cầu 3-5 buổi/tuần', aiNote: 'cân bằng đều giữa các nhóm cơ chính với cấu trúc Set/Rep tiêu chuẩn.' }
 ]
 
 const minDaysRequired = computed(() => {
@@ -747,7 +813,7 @@ async function startFitnessImprovementPlan() {
     const r = await planAPI.startFitnessImprovement(template.id)
     plan.value = r.data
     fitnessImprovementDialog.value = false
-    ElMessage.success('Đã bắt đầu giáo án nâng cao thể lực! 💪')
+    ElMessage.success('Đã bắt đầu giáo án nâng cao thể lực! ')
     await load()
   } catch (err) {
     ElMessage.error(err.response?.data?.message || 'Không thể bắt đầu giáo án nâng cao thể lực')
@@ -879,8 +945,15 @@ function openGoalDialog() {
 async function loadTemplates() {
   loadingTemplates.value = true
   try {
-    const res = await planAPI.getTemplates()
+    const [res, profileRes] = await Promise.all([
+      planAPI.getTemplates(),
+      profileAPI.get().catch(() => ({ data: null }))
+    ])
+    userProfile.value = profileRes.data
     templates.value = (res.data || []).filter(t => !t.isFitnessImprovement)
+    if (shouldRecommendWeak.value) {
+      selectedTemplateId.value = templates.value.find(isWeakTemplate)?.id || null
+    }
   } catch (e) {
     // im lặng
   } finally {
@@ -941,7 +1014,7 @@ async function generateWithGoal() {
     const r = await planAPI.generateWithGoal(payload)
     plan.value = r.data
     goalDialog.value = false
-    ElMessage.success('Giáo án thích ứng đã khởi tạo thành công! 🎉')
+    ElMessage.success('Giáo án thích ứng đã khởi tạo thành công! ')
     resetGenForm()
     await load()
     checkFitnessImprovementSuggestion(r.data)
@@ -961,7 +1034,7 @@ async function applyTemplate() {
     plan.value = r.data
     goalDialog.value = false
     selectedTemplateId.value = null
-    ElMessage.success('Đã áp dụng giáo án mẫu thành công! 🎉')
+    ElMessage.success('Đã áp dụng giáo án mẫu thành công! ')
     await load()
     checkFitnessImprovementSuggestion(r.data)
   } catch (err) {
@@ -1036,6 +1109,51 @@ function openCheckOutDialog(day, dayNumber, sessionId) {
   checkOutDialog.value = true
 }
 
+async function handleSkipSession(day, dayNumber) {
+  try {
+    await ElMessageBox.confirm(
+      `Bạn có chắc muốn bỏ qua Buổi ${dayNumber}? Buổi này sẽ được ghi nhận là không hoàn thành.`,
+      'XÁC NHẬN BỎ BUỔI',
+      { type:'warning', confirmButtonText:'Bỏ qua buổi này', cancelButtonText:'Tiếp tục tập' }
+    )
+  } catch { return }
+
+  skippingDayId.value = day.id
+  try {
+    let sessionId = day.sessionId
+    if (!sessionId) {
+      const enrollRes = await sessionAPI.enroll({
+        planDayId: day.id,
+        sessionDate: dayjs().format('YYYY-MM-DD'),
+        scheduledTime: dayjs().format('HH:mm:ss'),
+        weekNumber: plan.value.currentWeek,
+        isLastSessionOfWeek: dayNumber === plan.value.sessionsPerWeek
+      })
+      sessionId = enrollRes.data?.id
+    }
+    if (!sessionId) throw new Error('Không tạo được buổi tập để ghi nhận')
+    const skipRes = await sessionAPI.skip(sessionId, `Người dùng chủ động bỏ qua Buổi ${dayNumber}`)
+    ElMessage.success(`Đã ghi nhận bỏ qua Buổi ${dayNumber}`)
+    await load()
+    if (skipRes.data?.needWeeklyReview) openSkippedWeekReview({ ...day, sessionId })
+  } catch (err) {
+    ElMessage.error(err.response?.data?.message || err.message || 'Không thể bỏ qua buổi tập')
+  } finally {
+    skippingDayId.value = null
+  }
+}
+
+function openSkippedWeekReview(day) {
+  checkoutSessionId.value = day.sessionId
+  reviewCache.exerciseLogs = []
+  reviewCache.notes = 'Kết thúc tuần với buổi cuối được bỏ qua'
+  reviewCache.isSkipped = true
+  reviewForm.checkoutWeight = null
+  reviewForm.checkoutBodyFat = null
+  reviewForm.assessmentValue = null
+  weeklyReviewDialog.value = true
+}
+
 function resetCheckoutSelection() {
   if (weeklyReviewDialog.value) return
   checkoutSessionId.value = null
@@ -1085,7 +1203,7 @@ async function submitCheckOut() {
     const resp = r.data
 
     if (resp.overLimitWarning) {
-      ElMessageBox.alert(resp.overLimitWarning, '⚠️ Cảnh báo tập quá nhiều', { type: 'warning' })
+      ElMessageBox.alert(resp.overLimitWarning, ' Cảnh báo tập quá nhiều', { type: 'warning' })
     }
 
     if (resp.needWeeklyReview) {
@@ -1101,7 +1219,7 @@ async function submitCheckOut() {
       return
     }
 
-    ElMessage.success('Hoàn thành buổi tập! 🎉')
+    ElMessage.success('Hoàn thành buổi tập! ')
     checkOutDialog.value = false
 
     await load()
@@ -1114,8 +1232,8 @@ async function submitCheckOut() {
 
 // ====================== WEEKLY REVIEW (LẦN GỌI THỨ HAI) ======================
 async function submitWeeklyReview() {
-  if (!reviewForm.checkoutWeight) {
-    ElMessage.warning('Vui lòng nhập cân nặng hiện tại!')
+  if (!reviewForm.checkoutWeight || reviewForm.checkoutWeight < 30 || reviewForm.checkoutWeight > 250) {
+    ElMessage.warning('Cân nặng hiện tại phải từ 30 đến 250 kg!')
     return
   }
   if (plan.value?.isAiGenerated && plan.value?.goal === 'ENDURANCE' && reviewForm.assessmentValue == null) {
@@ -1143,11 +1261,14 @@ if (plan.value?.isAiGenerated && plan.value?.goal === 'ENDURANCE') {
       payload.assessmentValue = reviewForm.assessmentValue
     }
 
-    const r = await sessionAPI.checkOut(checkoutSessionId.value, payload)
+    const r = reviewCache.isSkipped
+        ? await sessionAPI.finishSkippedWeek(checkoutSessionId.value, payload)
+        : await sessionAPI.checkOut(checkoutSessionId.value, payload)
     const resp = r.data
 
-    ElMessage.success(isVip.value ? 'Hoàn thành tuần tập! Giáo án VIP đã được căn chỉnh 🎉' : 'Hoàn thành tuần tập! Đã chuyển tuần với mức bài tập hiện tại.')
+    ElMessage.success(isVip.value ? 'Hoàn thành tuần tập! Giáo án VIP đã được căn chỉnh ' : 'Hoàn thành tuần tập! Đã chuyển tuần với mức bài tập hiện tại.')
     weeklyReviewDialog.value = false
+    reviewCache.isSkipped = false
 
     await load()
   } catch (err) {
@@ -1163,6 +1284,7 @@ function cancelWeeklyReview() {
   weeklyReviewDialog.value = false
   reviewCache.exerciseLogs = null
   reviewCache.notes = ''
+  reviewCache.isSkipped = false
   load()
 }
 
@@ -1171,18 +1293,41 @@ function fmtDate(d) {
   return d ? dayjs(d).format('DD/MM/YYYY') : ''
 }
 
+function formatPlanCreatedAt(value) {
+  return value ? dayjs(value).format('HH:mm DD/MM/YYYY') : 'Chưa có thông tin'
+}
+
+function formatPlanPeriod(p) {
+  const startValue = p.weekStartDate || p.createdAt
+  if (!startValue) return 'Chưa có thông tin'
+  const start = dayjs(startValue)
+  const end = start.add(Math.max((p.durationWeeks || 1) * 7 - 1, 0), 'day')
+  return `${start.format('DD/MM/YYYY')} – ${end.format('DD/MM/YYYY')}`
+}
+
 function loadExtraExercises() {
-  try { extraExercises.value = JSON.parse(localStorage.getItem('gym-extra-exercises') || '[]') } catch { extraExercises.value = [] }
+  try { extraExercises.value = JSON.parse(localStorage.getItem(extraStorageKey.value) || '[]') } catch { extraExercises.value = [] }
 }
 function removeExtraExercise(id) {
   extraExercises.value = extraExercises.value.filter(ex => ex.id !== id)
-  localStorage.setItem('gym-extra-exercises', JSON.stringify(extraExercises.value))
+  localStorage.setItem(extraStorageKey.value, JSON.stringify(extraExercises.value))
 }
 
 function openExDetail(ex) {
   selEx.value = ex
   baseWeightInput.value = null
   exDetailDialog.value = true
+}
+
+function openExtraExDetail(ex) {
+  openExDetail({
+    ...ex,
+    isExtra: true,
+    exerciseName: ex.name,
+    sets: ex.defaultSets,
+    reps: ex.defaultReps,
+    durationSeconds: ex.defaultDurationSeconds
+  })
 }
 
 async function saveBaseWeight() {
@@ -1210,18 +1355,22 @@ function ytEmbed(url) {
 
 function goalLabel(g) {
   return {
-    WEIGHT_LOSS: '🔥 Giảm cân',
-    MUSCLE_GAIN: '💪 Tăng cơ',
-    ENDURANCE: '🏃 Sức bền',
-    MAINTENANCE: '⚖️ Duy trì, Sức bền '
+    WEIGHT_LOSS: ' Giảm cân',
+    MUSCLE_GAIN: ' Tăng cơ',
+    ENDURANCE: ' Sức bền',
+    MAINTENANCE: ' Duy trì thể hình'
   }[g] || g
+}
+
+function isWeakTemplate(template) {
+  return (template?.planName || '').toLowerCase().includes('thể lực yếu')
 }
 
 function levelLabel(l) {
   return {
-    BEGINNER: 'Starter (Mới bắt đầu)',
-    INTERMEDIATE: 'Progress (Trung bình)',
-    ADVANCED: 'Elite (Nâng cao)'
+    BEGINNER: 'Mới bắt đầu',
+    INTERMEDIATE: 'Trung bình',
+    ADVANCED: 'Nâng cao'
   }[l] || l
 }
 
@@ -1235,9 +1384,16 @@ function fitnessLevelLabel(level) {
 }
 
 function fitnessScoreText(p) {
-  const score = Math.round(p.fitnessScore)
+  const score = Number.isFinite(Number(p.fitnessScore)) ? Math.max(0, Math.min(100, Math.round(p.fitnessScore))) : 0
   const levelLabel = fitnessLevelLabel(p.fitnessLevel)
   return levelLabel ? `${levelLabel} (${score}/100)` : `${score}/100`
+}
+
+function manaPercent(p) {
+  const max = Number(p?.maxMana)
+  const current = Number(p?.currentMana)
+  if (!Number.isFinite(max) || max <= 0 || !Number.isFinite(current)) return 0
+  return Math.max(0, Math.min(100, current / max * 100))
 }
 
 function bodyTypeLabel(bt) {
@@ -1309,6 +1465,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.extra-clickable{cursor:pointer;transition:background .15s,border-color .15s}.extra-clickable:hover{background:#fff8ef;border-color:var(--c-accent)}.extra-clickable small{display:block;margin-top:4px;color:var(--c-accent);font-size:.7rem}.exercise-instruction{margin-top:14px;padding:12px 14px;border-left:3px solid var(--c-accent);background:var(--c-card2);border-radius:8px;color:var(--c-text)}.exercise-instruction p{margin:7px 0 0;line-height:1.65;color:var(--c-text2);white-space:pre-line}.guide-link{display:inline-block;margin-top:10px;color:#c76b09;font-size:.82rem;font-weight:600;text-decoration:none}.guide-link:hover{text-decoration:underline}
 .target-food-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px; }
 .target-food-row.no-target { grid-template-columns:1fr; }
 @media (max-width:700px) { .target-food-row { grid-template-columns:1fr; } }
@@ -1380,6 +1537,7 @@ onMounted(async () => {
 .days-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; margin-top:16px; }
 .extra-session-card{margin-top:20px}.extra-session-head{display:flex;align-items:center;justify-content:space-between;gap:20px}.extra-session-card p{font-size:.84rem;color:var(--c-text2);margin-top:5px}.extra-exercises{display:grid;gap:8px;margin-top:16px}.extra-exercise-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--c-card2);border-radius:8px}.extra-exercise-row span{display:block;font-size:.76rem;color:var(--c-text3);margin-top:3px}@media(max-width:650px){.extra-session-head{align-items:flex-start;flex-direction:column}}
 .vip-plan-lock{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px 16px;margin-bottom:16px;border:1px solid #e7bd52;background:#fff8dc;border-radius:10px;color:#6b4b00}.vip-plan-lock span{display:block;font-size:.8rem;margin-top:3px}@media(max-width:650px){.vip-plan-lock{align-items:flex-start;flex-direction:column}}
+.low-completion-warning{display:flex;align-items:flex-start;gap:14px;padding:16px;margin-bottom:18px;border:1px solid #f59e0b;border-left:5px solid #f59e0b;background:#fffbeb;border-radius:12px;color:#713f12}.low-warning-icon{font-size:1.5rem}.low-warning-content{flex:1}.low-warning-content b{font-size:.95rem}.low-warning-content p{margin:5px 0 9px;font-size:.82rem;line-height:1.5}.low-warning-content small{display:block;margin-top:8px;color:#92400e;line-height:1.45}.low-week-rates{display:flex;gap:8px;flex-wrap:wrap}.low-week-rates span{padding:4px 9px;background:#fff;border:1px solid #fcd34d;border-radius:14px;font-size:.76rem}.low-week-rates strong{color:#dc2626}.low-warning-actions{display:flex;flex-direction:column;gap:8px;flex-shrink:0}@media(max-width:700px){.low-completion-warning{flex-wrap:wrap}.low-warning-actions{width:100%;flex-direction:row}.low-warning-actions .el-button{flex:1;margin-left:0}}
 .session-completed { border-top: 3px solid #16a34a; }
 .exercise-list { display:flex; flex-direction:column; gap:6px; }
 .ex-row {
@@ -1400,6 +1558,8 @@ onMounted(async () => {
   border-radius:var(--radius-lg); transition:border-color var(--transition);
 }
 .plan-item.active { border-color:var(--c-accent); }
+.plan-time-info{display:flex;gap:6px 16px;flex-wrap:wrap;margin-top:7px;color:var(--c-text2);font-size:.75rem}.plan-time-info span{white-space:nowrap}
+.skipped-zone{padding:10px;text-align:center;border-radius:8px;background:#f1f5f9;color:#64748b;font-size:.82rem;font-weight:600}.no-schedule,.scheduled{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
 .video-wrap { border-radius:8px; overflow:hidden; }
 .no-video { text-align:center; padding:20px; color:var(--c-text3); background:var(--c-card2); border-radius:8px; }
 

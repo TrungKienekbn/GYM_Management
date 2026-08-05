@@ -3,9 +3,9 @@
     <nav><div class="brand">GYM<span>PRO</span></div><div><router-link to="/login">Đăng nhập</router-link><router-link class="join" to="/register">Đăng ký</router-link></div></nav>
     <section class="hero">
       <div><p class="eyebrow">LUYỆN TẬP THÔNG MINH · TIẾN BỘ BỀN VỮNG</p><h1>Quản lý hành trình<br><span>tập luyện của bạn</span></h1><p class="lead">Giáo án cá nhân hóa, theo dõi từng buổi tập, dinh dưỡng và tiến độ — tất cả trong một nơi.</p><div class="actions"><router-link class="primary" to="/register">Bắt đầu ngay</router-link><router-link class="secondary" to="/login">Tôi đã có tài khoản</router-link></div></div>
-      <div class="info-card"><div class="icon">🏋️</div><h2>GYMPRO</h2><p>Hệ thống quản lý phòng gym và trợ lý luyện tập cá nhân.</p><div class="metrics"><div><b>AI</b><span>Giáo án</span></div><div><b>24/7</b><span>Theo dõi</span></div><div><b>100%</b><span>Cá nhân hóa</span></div></div></div>
+      <div class="info-card"><div class="icon"></div><h2>GYMPRO</h2><p>Hệ thống quản lý phòng gym và trợ lý luyện tập cá nhân.</p><div class="metrics"><div><b>AI</b><span>Giáo án</span></div><div><b>24/7</b><span>Theo dõi</span></div><div><b>100%</b><span>Cá nhân hóa</span></div></div></div>
     </section>
-    <section class="features"><article><b>01</b><h3>Giáo án phù hợp</h3><p>Tạo lịch tập theo mục tiêu, thể lực và số ngày bạn có thể luyện tập.</p></article><article><b>02</b><h3>Ghi nhận mỗi buổi</h3><p>Checkout kết quả, khối lượng và theo dõi tiến bộ theo từng tuần.</p></article><article><b>03</b><h3>Bài tập & dinh dưỡng</h3><p>Tra cứu hướng dẫn bài tập và gợi ý món ăn phù hợp với mục tiêu.</p></article></section>
+    <section class="features"><article><b>01</b><h3>Giáo án phù hợp</h3><p>Tạo lịch tập theo mục tiêu, thể lực và số ngày bạn có thể luyện tập.</p></article><article><b>02</b><h3>Ghi nhận mỗi buổi</h3><p>Ghi nhận kết quả, khối lượng và theo dõi tiến bộ theo từng tuần.</p></article><article><b>03</b><h3>Bài tập & dinh dưỡng</h3><p>Tra cứu hướng dẫn bài tập và gợi ý món ăn phù hợp với mục tiêu.</p></article></section>
   </main>
 </template>
 <style scoped>

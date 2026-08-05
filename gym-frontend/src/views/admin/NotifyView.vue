@@ -7,7 +7,7 @@
     <div class="grid-2" style="gap:24px;align-items:start">
 
       <!-- Broadcast -->
-      <el-card header="📢 BROADCAST — GỬI TẤT CẢ USER">
+      <el-card header=" GỬI THÔNG BÁO ĐẾN TẤT CẢ NGƯỜI DÙNG">
         <el-form :model="broadcastForm" label-position="top">
           <el-form-item label="Tiêu đề">
             <el-input v-model="broadcastForm.title" placeholder="Ví dụ: Ưu đãi tháng 6" />
@@ -18,21 +18,21 @@
           </el-form-item>
           <el-form-item label="Loại thông báo">
             <el-select v-model="broadcastForm.type" style="width:100%">
-              <el-option label="🎉 Khuyến mãi" value="PROMOTION" />
-              <el-option label="📢 Hệ thống" value="SYSTEM" />
-              <el-option label="💪 Nhắc nhở tập" value="WORKOUT_REMINDER" />
+              <el-option label=" Khuyến mãi" value="PROMOTION" />
+              <el-option label=" Hệ thống" value="SYSTEM" />
+              <el-option label=" Nhắc nhở tập" value="WORKOUT_REMINDER" />
             </el-select>
           </el-form-item>
           <el-button type="primary" style="width:100%" @click="sendBroadcast" :loading="sendingBroadcast">
-            📢 GỬI TỚI TẤT CẢ USER
+             GỬI TỚI TẤT CẢ NGƯỜI DÙNG
           </el-button>
         </el-form>
       </el-card>
 
       <!-- Send to user -->
-      <el-card header="👤 GỬI TỚI 1 USER CỤ THỂ">
+      <el-card header=" GỬI TỚI MỘT NGƯỜI DÙNG CỤ THỂ">
         <el-form :model="userForm" label-position="top">
-          <el-form-item label="User ID">
+          <el-form-item label="Mã người dùng">
             <el-input-number v-model="userForm.userId" :min="1" style="width:100%" placeholder="Nhập ID của user" />
           </el-form-item>
           <el-form-item label="Tiêu đề">
@@ -43,12 +43,12 @@
           </el-form-item>
           <el-form-item label="Loại">
             <el-select v-model="userForm.type" style="width:100%">
-              <el-option label="📢 Hệ thống" value="SYSTEM" />
-              <el-option label="🎉 Khuyến mãi" value="PROMOTION" />
+              <el-option label=" Hệ thống" value="SYSTEM" />
+              <el-option label=" Khuyến mãi" value="PROMOTION" />
             </el-select>
           </el-form-item>
           <el-button style="width:100%" @click="sendToUser" :loading="sendingUser">
-            📨 GỬI TỚI USER NÀY
+             GỬI TỚI NGƯỜI DÙNG NÀY
           </el-button>
         </el-form>
       </el-card>
@@ -56,7 +56,7 @@
     </div>
 
     <!-- Tips -->
-    <el-card header="💡 GỢI Ý NỘI DUNG" style="margin-top:24px">
+    <el-card header=" GỢI Ý NỘI DUNG" style="margin-top:24px">
       <div class="tips-grid">
         <div
           v-for="tip in tips" :key="tip.title"
@@ -91,27 +91,27 @@ async function sendBroadcast() {
   sendingBroadcast.value = true
   try {
     await adminAPI.broadcast(broadcastForm)
-    ElMessage.success('Đã gửi broadcast tới tất cả user! 📢')
+    ElMessage.success('Đã gửi broadcast tới tất cả user! ')
     broadcastForm.title = ''; broadcastForm.message = ''
   } finally { sendingBroadcast.value = false }
 }
 
 async function sendToUser() {
   if (!userForm.userId || !userForm.title) { ElMessage.warning('Nhập ID user và tiêu đề'); return }
-  await ElMessageBox.confirm(`Xác nhận gửi thông báo tới User #${userForm.userId}?`, 'Xác nhận gửi', { type:'warning', confirmButtonText:'Gửi thông báo' })
+  await ElMessageBox.confirm(`Xác nhận gửi thông báo tới người dùng #${userForm.userId}?`, 'Xác nhận gửi', { type:'warning', confirmButtonText:'Gửi thông báo' })
   sendingUser.value = true
   try {
     await adminAPI.sendToUser(userForm.userId, { title: userForm.title, message: userForm.message, type: userForm.type })
-    ElMessage.success(`Đã gửi thông báo tới User #${userForm.userId}!`)
+    ElMessage.success(`Đã gửi thông báo tới người dùng #${userForm.userId}!`)
     userForm.title = ''; userForm.message = ''
   } finally { sendingUser.value = false }
 }
 
 const tips = [
-  { icon:'🎁', title:'Ưu đãi thành viên mới', msg:'Đăng ký tháng này nhận ngay 1 tháng miễn phí! Hạn dùng 30/06/2025.' },
-  { icon:'💪', title:'Challenge tuần này', msg:'Tham gia thử thách 7 ngày liên tiếp để nhận quà đặc biệt!' },
-  { icon:'📊', title:'Cập nhật tính năng', msg:'Hệ thống vừa cập nhật giáo án AI mới. Hãy thử tạo lại giáo án của bạn!' },
-  { icon:'🌟', title:'Chúc mừng tháng mới', msg:'Tháng mới, mục tiêu mới! Hãy kiên trì với kế hoạch luyện tập của bạn.' },
+  { icon:'', title:'Ưu đãi thành viên mới', msg:'Đăng ký tháng này nhận ngay 1 tháng miễn phí! Hạn dùng 30/06/2025.' },
+  { icon:'', title:'Challenge tuần này', msg:'Tham gia thử thách 7 ngày liên tiếp để nhận quà đặc biệt!' },
+  { icon:'', title:'Cập nhật tính năng', msg:'Hệ thống vừa cập nhật giáo án AI mới. Hãy thử tạo lại giáo án của bạn!' },
+  { icon:'', title:'Chúc mừng tháng mới', msg:'Tháng mới, mục tiêu mới! Hãy kiên trì với kế hoạch luyện tập của bạn.' },
 ]
 </script>
 

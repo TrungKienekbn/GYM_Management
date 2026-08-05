@@ -6,6 +6,7 @@ import com.example.gymmanagement.entity.ServiceRating;
 import com.example.gymmanagement.entity.User;
 import com.example.gymmanagement.repository.ServiceRatingRepository;
 import com.example.gymmanagement.repository.UserRepository;
+import com.example.gymmanagement.repository.WorkoutSessionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +25,7 @@ public class RatingService {
     private final UserRepository userRepository;
     private final NotificationService notificationService;
     private final FileStorageService fileStorageService;
+    private final WorkoutSessionRepository workoutSessionRepository;
 
     // ─────────────────────────────────────────────
     // USER ADD RATING
@@ -37,12 +39,19 @@ public class RatingService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        if (workoutSessionRepository.countCompletedByUserId(user.getId()) == 0) {
+            throw new RuntimeException("Bạn cần hoàn thành ít nhất một buổi tập trước khi đánh giá.");
+        }
+        if (ratingRepository.existsByUserIdAndCreatedAtAfter(user.getId(), LocalDateTime.now().minusDays(7))) {
+            throw new RuntimeException("Mỗi tài khoản chỉ được gửi một đánh giá trong 7 ngày. Bạn vẫn có thể sửa đánh giá đã gửi.");
+        }
+
         ServiceRating rating = ServiceRating.builder()
                 .user(user)
                 .rating(request.getRating())
                 .title(blankToNull(request.getTitle()))
                 .comment(blankToNull(request.getComment()))
-                .serviceType(blankToNull(request.getServiceType()))
+                .serviceType(normalizeServiceType(request.getServiceType()))
                 .isPublic(
                         request.getIsPublic() != null
                                 ? request.getIsPublic()
@@ -106,6 +115,12 @@ public class RatingService {
         return (s == null || s.isBlank()) ? null : s.trim();
     }
 
+    private String normalizeServiceType(String type) {
+        String value = blankToNull(type);
+        if (value == null || "WORKOUT_PLAN".equals(value) || "NUTRITION".equals(value)) return value;
+        throw new RuntimeException("Loại đánh giá không hợp lệ. Vui lòng chọn Giáo án hoặc Dinh dưỡng.");
+    }
+
     /** Gán thông tin file vừa lưu vào đánh giá. */
     private void applyAttachment(ServiceRating rating, FileStorageService.Stored stored) {
         rating.setAttachmentUrl(stored.getUrl());
@@ -137,7 +152,7 @@ public class RatingService {
         rating.setRating(request.getRating());
         rating.setTitle(blankToNull(request.getTitle()));
         rating.setComment(blankToNull(request.getComment()));
-        rating.setServiceType(blankToNull(request.getServiceType()));   // cho phép bỏ chọn dịch vụ
+        rating.setServiceType(normalizeServiceType(request.getServiceType())); // cho phép bỏ chọn dịch vụ
         if (request.getIsPublic() != null) rating.setIsPublic(request.getIsPublic());
         rating.setUpdatedAt(LocalDateTime.now());
 
@@ -268,24 +283,13 @@ public class RatingService {
     }
 
     // ─────────────────────────────────────────────
-    // ADMIN DELETE RATING
-    // ─────────────────────────────────────────────
-    public void adminDeleteRating(Long ratingId) {
-        ServiceRating rating = ratingRepository.findById(ratingId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy đánh giá"));
-        ratingRepository.delete(rating);
-    }
-
-    // ─────────────────────────────────────────────
     // AVERAGE RATINGS
     // ─────────────────────────────────────────────
     public Map<String, Double> getAverageRatings() {
 
         return Map.of(
                 "WORKOUT_PLAN", getAvg("WORKOUT_PLAN"),
-                "NUTRITION", getAvg("NUTRITION"),
-                "FACILITY", getAvg("FACILITY"),
-                "TRAINER", getAvg("TRAINER")
+                "NUTRITION", getAvg("NUTRITION")
         );
     }
 

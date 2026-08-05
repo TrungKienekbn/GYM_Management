@@ -25,7 +25,15 @@ public class ProgressService {
     private final MembershipService membershipService;
 
     public ProgressResponse addProgress(String email, ProgressRequest request) {
+        if (request.getWeight() == null || !Double.isFinite(request.getWeight())
+                || request.getWeight() < 30 || request.getWeight() > 250) {
+            throw new RuntimeException("Cân nặng phải từ 30 đến 250 kg");
+        }
         User user = getUser(email);
+        LocalDate recordedDate = request.getRecordedDate() != null ? request.getRecordedDate() : LocalDate.now();
+        if (progressRepository.existsByUserIdAndRecordedDate(user.getId(), recordedDate)) {
+            throw new RuntimeException("Bạn đã ghi nhận tiến độ trong ngày này. Mỗi ngày chỉ được ghi nhận một lần.");
+        }
 
         double bmi = 0;
         if (request.getWeight() != null && request.getHeight() != null && request.getHeight() > 0) {
@@ -53,7 +61,7 @@ public class ProgressService {
                 .hipCm(request.getHipCm())
                 .armCm(request.getArmCm())
                 .thighCm(request.getThighCm())
-                .recordedDate(request.getRecordedDate() != null ? request.getRecordedDate() : LocalDate.now())
+                .recordedDate(recordedDate)
                 .notes(request.getNotes())
                 .build();
         progressRepository.save(pt);

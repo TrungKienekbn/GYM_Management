@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :model-value="modelValue" title="Chọn trang phục" width="420px"
+  <el-dialog :model-value="modelValue" title="Chọn trang phục" width="420px" append-to-body
              @update:model-value="v => emit('update:modelValue', v)">
     <el-tabs v-model="activeTab">
       <el-tab-pane label="Áo" name="SHIRT" />

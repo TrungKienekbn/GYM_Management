@@ -9,7 +9,7 @@
       <el-card class="conv-col" body-style="padding:0;">
         <!-- Trợ lý -->
         <div class="conv-item" :class="{ active: isBot }" @click="selectConv('bot')">
-          <div class="avatar bot-avatar">🤖</div>
+          <div class="avatar bot-avatar"></div>
           <div class="conv-meta">
             <div class="conv-name">Trợ lý</div>
             <div class="conv-sub">Hỏi đáp tự động 24/7</div>
@@ -17,9 +17,9 @@
         </div>
 
         <div class="conv-section">
-          <span>Chat với admin</span>
+          <span>Trò chuyện với quản trị viên</span>
           <el-button size="small" text @click="newConversation" title="Tạo cuộc hội thoại mới">
-            <el-icon><Plus/></el-icon>
+            <el-icon><Plus /></el-icon>
           </el-button>
         </div>
 
@@ -31,7 +31,7 @@
           v-for="s in sessions" :key="s.id"
           class="conv-item" :class="{ active: activeConv === s.id }"
           @click="selectConv(s.id)">
-          <div class="avatar admin-avatar">🎧</div>
+          <div class="avatar admin-avatar"></div>
           <div class="conv-meta">
             <div class="conv-name ellipsis">{{ s.subject }}</div>
             <div class="conv-sub ellipsis">
@@ -49,7 +49,7 @@
       <el-card class="chat-card" body-style="padding:0; display:flex; flex-direction:column; height:100%;">
         <div class="chat-head">
           <div class="head-info">
-            <div class="avatar" :class="isBot ? 'bot-avatar' : 'admin-avatar'">{{ isBot ? '🤖' : '🎧' }}</div>
+            <div class="avatar" :class="isBot ? 'bot-avatar' : 'admin-avatar'">{{ isBot ? '' : '' }}</div>
             <div>
               <div class="s-name">{{ isBot ? 'Trợ lý' : currentSession?.subject }}</div>
               <div class="s-meta">{{ headSub }}</div>
@@ -57,7 +57,7 @@
           </div>
           <div class="head-actions">
             <el-button v-if="isBot && messages.length" text @click="clearChat" :loading="clearing" title="Xóa lịch sử">
-              <el-icon><Delete/></el-icon>
+              <el-icon><Delete /></el-icon>
             </el-button>
             <el-button v-if="isSupport" text type="danger" @click="closeCurrent">Kết thúc</el-button>
           </div>
@@ -68,7 +68,7 @@
           <!-- CHAT VỚI ADMIN -->
           <template v-if="isSupport">
             <div v-for="(m, i) in supportMessages" :key="'s'+i" class="msg-row" :class="m.senderRole === 'USER' ? 'from-user' : 'from-bot'">
-              <div v-if="m.senderRole === 'ADMIN'" class="avatar admin-avatar sm">🎧</div>
+              <div v-if="m.senderRole === 'ADMIN'" class="avatar admin-avatar sm"></div>
               <div class="bubble" :class="m.senderRole === 'USER' ? 'bubble-user' : 'bubble-admin'">
                 <MessageBody :message="m" />
                 <div class="bubble-time">{{ fmtTime(m.createdAt) }}</div>
@@ -79,7 +79,7 @@
             <div v-if="showSent" class="sent-status" :class="{ err: sendStatus === 'failed' }">{{ sentText }}</div>
 
             <div v-if="currentStatus === 'PENDING'" class="waiting-banner">
-              <el-icon class="spin" :size="22"><Loading/></el-icon>
+              
               <div>Yêu cầu đã được gửi. Đang chờ admin xác nhận để bắt đầu chat 1:1…</div>
             </div>
             <div v-else-if="!supportMessages.length" class="empty-state">Bắt đầu cuộc trò chuyện với admin…</div>
@@ -88,7 +88,7 @@
           <!-- CHAT VỚI BOT -->
           <template v-else>
             <div v-for="(m, i) in messages" :key="i" class="msg-row" :class="m.sender === 'USER' ? 'from-user' : 'from-bot'">
-              <div v-if="m.sender === 'BOT'" class="avatar bot-avatar sm">🤖</div>
+              <div v-if="m.sender === 'BOT'" class="avatar bot-avatar sm"></div>
               <div class="bubble" :class="m.sender === 'USER' ? 'bubble-user' : 'bubble-bot'">
                 <MessageBody :message="m" />
                 <div class="bubble-time">{{ fmtTime(m.createdAt) }}</div>
@@ -99,7 +99,7 @@
             <div v-if="showSent" class="sent-status" :class="{ err: sendStatus === 'failed' }">{{ sentText }}</div>
 
             <div v-if="typing" class="msg-row from-bot">
-              <div class="avatar bot-avatar sm">🤖</div>
+              <div class="avatar bot-avatar sm"></div>
               <div class="bubble bubble-bot typing"><span class="dot"/><span class="dot"/><span class="dot"/></div>
             </div>
           </template>
@@ -121,7 +121,7 @@
           <el-button
             v-if="isBot || (isSupport && currentStatus === 'ACTIVE')"
             class="attach-btn" text :loading="uploading" @click="pickFile" title="Đính kèm file">
-            <el-icon :size="20"><Paperclip/></el-icon>
+            <el-icon><Paperclip /></el-icon>
           </el-button>
           <el-input
             v-model="draft"
@@ -130,7 +130,7 @@
             :disabled="inputDisabled"
             clearable/>
           <el-button type="primary" :disabled="!canSend" :loading="isBot && typing" @click="sendMessage()">
-            <el-icon><Promotion/></el-icon>
+            <el-icon><Promotion /></el-icon>
           </el-button>
         </div>
       </el-card>
@@ -151,14 +151,14 @@
         <el-form-item label="Đính kèm (tùy chọn)">
           <input ref="convFileInput" type="file" hidden @change="onConvFile"/>
           <el-button v-if="!newConvFile" plain @click="convFileInput?.click()">
-            <el-icon><Paperclip/></el-icon><span style="margin-left:6px">Chọn file</span>
+            <span style="margin-left:6px">Chọn file</span>
           </el-button>
           <div v-else class="conv-file-chip">
-            <el-icon :size="18"><Document/></el-icon>
+            
             <span class="cf-name">{{ newConvFile.name }}</span>
             <span class="cf-size">{{ prettyFileSize(newConvFile.size) }}</span>
             <el-button text class="cf-remove" @click="newConvFile = null" title="Bỏ file">
-              <el-icon><Close/></el-icon>
+              <el-icon><Close /></el-icon>
             </el-button>
           </div>
         </el-form-item>
@@ -168,11 +168,19 @@
         <el-button type="primary" :loading="creating" @click="submitNewConversation">Gửi yêu cầu</el-button>
       </template>
     </el-dialog>
+
+    <el-dialog v-model="ratingVisible" title="ĐÁNH GIÁ PHIÊN HỖ TRỢ" width="430px" append-to-body :close-on-click-modal="false">
+      <div style="text-align:center;margin-bottom:16px">Bạn hài lòng thế nào với sự hỗ trợ của quản trị viên?</div>
+      <div style="text-align:center;margin-bottom:18px"><el-rate v-model="supportRating.rating" size="large" show-text :texts="['Rất tệ','Chưa tốt','Bình thường','Tốt','Rất tốt']" /></div>
+      <el-input v-model="supportRating.comment" type="textarea" :rows="4" maxlength="500" show-word-limit placeholder="Nhập nhận xét của bạn (không bắt buộc)" />
+      <template #footer><el-button @click="ratingVisible=false">Để sau</el-button><el-button type="primary" :loading="ratingSubmitting" @click="submitSupportRating">Gửi đánh giá</el-button></template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, nextTick, watch, h } from 'vue'
+import { Plus, Delete, Paperclip, Promotion, Close } from '@element-plus/icons-vue'
+import { ref, reactive, computed, onMounted, onUnmounted, nextTick, watch, h } from 'vue'
 import { useRoute } from 'vue-router'
 import { chatAPI, supportAPI } from '@/api'
 import { useAuthStore } from '@/stores/auth'
@@ -214,6 +222,10 @@ const newConvContent = ref('')
 const newConvFile    = ref(null)
 const convFileInput  = ref(null)
 const creating       = ref(false)
+const ratingVisible  = ref(false)
+const ratingSubmitting = ref(false)
+const ratingSessionId = ref(null)
+const supportRating = reactive({ rating: 5, comment: '' })
 
 const MAX_FILE = 50 * 1024 * 1024   // 50MB
 
@@ -244,7 +256,7 @@ const inputPlaceholder = computed(() => {
 const headSub = computed(() => {
   if (isBot.value) return 'Hỏi về gói tập, bài tập, lịch tập, dinh dưỡng…'
   if (currentStatus.value === 'ACTIVE')
-    return `Admin ${currentSession.value?.adminName || ''} đang hỗ trợ`.trim()
+    return `Quản trị viên ${currentSession.value?.adminName || ''} đang hỗ trợ`.trim()
   return 'Đang chờ admin xác nhận…'
 })
 
@@ -257,7 +269,7 @@ const showSent = computed(() => {
 })
 const sentText = computed(() =>
   sendStatus.value === 'sending' ? 'Đang gửi…'
-  : sendStatus.value === 'failed' ? '⚠ Gửi lỗi, thử lại' : 'Đã gửi ✓')
+  : sendStatus.value === 'failed' ? ' Gửi lỗi, thử lại' : 'Đã gửi ')
 
 // ── Bot ───────────────────────────────────────
 async function loadBot() {
@@ -268,7 +280,7 @@ async function loadBot() {
     if (!messages.value.length) {
       messages.value.push({
         sender: 'BOT',
-        content: `Xin chào ${auth.user?.fullName || 'bạn'}! 👋 Mình là trợ lý của GymPro. `
+        content: `Xin chào ${auth.user?.fullName || 'bạn'}!  Mình là trợ lý của GymPro. `
           + 'Bạn có thể hỏi mình về gói tập, bài tập, lịch tập, dinh dưỡng và hồ sơ của bạn. '
           + 'Cần gặp người thật? Bấm dấu "+" ở cột bên trái để nhắn với admin nhé!',
         createdAt: new Date().toISOString()
@@ -311,7 +323,7 @@ async function loadSessions() {
     list.forEach(s => {
       const prev = prevStatuses.get(s.id)
       if (prev === 'PENDING' && s.status === 'ACTIVE') {
-        ElMessage.success(`Admin đã tham gia cuộc "${s.subject}"! 🎧`)
+        ElMessage.success(`Admin đã tham gia cuộc "${s.subject}"! `)
         if (activeConv.value === s.id) loadSessionMessages(s.id)
       }
       // Tin nhắn mới từ admin (chỉ báo khi không đang mở đúng cuộc đó)
@@ -340,7 +352,7 @@ async function loadSessions() {
 // Thông báo khi admin gửi tin nhắn mới (bấm vào để mở cuộc hội thoại)
 function notifyNewAdminMessage(s) {
   const inst = ElNotification({
-    title: `💬 ${s.adminName || 'Admin'} vừa nhắn`,
+    title: ` ${s.adminName || 'Admin'} vừa nhắn`,
     type: 'success',
     duration: 5000,
     message: h('div', {
@@ -463,12 +475,25 @@ async function sendBotFile(file, caption) {
 async function closeCurrent() {
   const id = activeConv.value
   if (typeof id !== 'number') return
-  try { await supportAPI.close(id) } catch {}
+  try { await supportAPI.close(id) } catch { return }
   prevStatuses.delete(id)
   activeConv.value = 'bot'
   supportMessages.value = []
   await loadSessions()
-  ElMessage.info('Đã kết thúc cuộc hội thoại với admin')
+  ratingSessionId.value = id
+  Object.assign(supportRating, { rating: 5, comment: '' })
+  ratingVisible.value = true
+  ElMessage.success('Đã kết thúc cuộc hội thoại với quản trị viên')
+}
+
+async function submitSupportRating() {
+  if (!supportRating.rating) { ElMessage.warning('Vui lòng chọn số sao'); return }
+  ratingSubmitting.value = true
+  try {
+    await supportAPI.rate(ratingSessionId.value, supportRating)
+    ElMessage.success('Cảm ơn bạn đã đánh giá phiên hỗ trợ')
+    ratingVisible.value = false
+  } finally { ratingSubmitting.value = false }
 }
 
 // ── Điều phối gửi tin ─────────────────────────

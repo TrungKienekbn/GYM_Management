@@ -21,8 +21,8 @@
     <el-card style="margin-bottom:20px">
       <el-radio-group v-model="categoryFilter">
         <el-radio-button label="">Tất cả</el-radio-button>
-        <el-radio-button label="ADMIN">📋 Giáo án Admin</el-radio-button>
-        <el-radio-button label="FI">💪 Giáo án nâng cao thể lực</el-radio-button>
+        <el-radio-button label="ADMIN"> Giáo án quản trị viên</el-radio-button>
+        <el-radio-button label="FI"> Giáo án nâng cao thể lực</el-radio-button>
       </el-radio-group>
     </el-card>
 
@@ -86,11 +86,11 @@
 
           <el-form-item label="Mục tiêu" required v-if="!form.isFitnessImprovement">
             <el-select v-model="form.goal" style="width:100%">
-              <el-option label="🔥 Giảm cân" value="WEIGHT_LOSS" />
-              <el-option label="💪 Tăng cơ" value="MUSCLE_GAIN" />
-              <el-option label="🏃 Sức bền" value="ENDURANCE" />
+              <el-option label=" Giảm cân" value="WEIGHT_LOSS" />
+              <el-option label=" Tăng cơ" value="MUSCLE_GAIN" />
+              <el-option label=" Sức bền" value="ENDURANCE" />
 
-              <el-option label="⚖️ Duy trì" value="MAINTENANCE" />
+              <el-option label=" Duy trì" value="MAINTENANCE" />
             </el-select>
           </el-form-item>
         </div>
@@ -102,9 +102,9 @@
         <div class="grid-3">
           <el-form-item label="Trình độ" required v-if="!form.isFitnessImprovement">
             <el-select v-model="form.targetLevel" style="width:100%">
-              <el-option label="Beginner" value="BEGINNER" />
-              <el-option label="Intermediate" value="INTERMEDIATE" />
-              <el-option label="Advanced" value="ADVANCED" />
+              <el-option label="Mới bắt đầu" value="BEGINNER" />
+              <el-option label="Trung bình" value="INTERMEDIATE" />
+              <el-option label="Nâng cao" value="ADVANCED" />
             </el-select>
           </el-form-item>
 
@@ -124,14 +124,14 @@
         <!-- ── MỚI: Segmented Control loại giáo án mẫu ── -->
                         <el-form-item label="Loại giáo án mẫu">
                           <el-radio-group v-model="form.isFitnessImprovement">
-                            <el-radio-button :label="false">Giáo án Admin</el-radio-button>
+                            <el-radio-button :label="false">Giáo án quản trị viên</el-radio-button>
                             <el-radio-button :label="true">Giáo án cải thiện cơ thể</el-radio-button>
                           </el-radio-group>
                         </el-form-item>
         <el-divider />
 
         <div style="font-weight:700;color:var(--c-text);margin-bottom:12px">
-          📅 Chọn bài tập cho từng ngày ({{ form.days.length }} ngày)
+           Chọn bài tập cho từng ngày ({{ form.days.length }} ngày)
         </div>
 
         <div class="days-editor-scroll">
@@ -434,12 +434,12 @@ async function remove(id) {
 
 function goalLabel(g) {
   return {
-    WEIGHT_LOSS: '🔥 Giảm cân', MUSCLE_GAIN: '💪 Tăng cơ', ENDURANCE: '🏃 Sức bền',
-    FLEXIBILITY: '🤸 Linh hoạt', MAINTENANCE: '⚖️ Duy trì'
+    WEIGHT_LOSS: ' Giảm cân', MUSCLE_GAIN: ' Tăng cơ', ENDURANCE: ' Sức bền',
+    FLEXIBILITY: ' Linh hoạt', MAINTENANCE: ' Duy trì'
   }[g] || g
 }
 function levelLabel(l) {
-  return { BEGINNER: 'Beginner', INTERMEDIATE: 'Intermediate', ADVANCED: 'Advanced' }[l] || l
+  return { BEGINNER: 'Mới bắt đầu', INTERMEDIATE: 'Trung bình', ADVANCED: 'Nâng cao' }[l] || l
 }
 function muscleLabel(m) {
   return {

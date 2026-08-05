@@ -25,7 +25,7 @@ public class MembershipService {
 
     private static final Map<MembershipType, Double> PRICES = Map.of(
             MembershipType.FREE, 0.0,
-            MembershipType.VIP, 299000.0
+            MembershipType.VIP, 99000.0
     );
 
     private static final Map<MembershipType, Integer> DURATIONS_MONTHS = Map.of(
@@ -112,29 +112,10 @@ public class MembershipService {
                 .price(price)
                 .isActive(true)
                 .paymentStatus(PaymentStatus.PENDING)
-                .paymentMethod(request.getPaymentMethod())
+                .paymentMethod("BANK_TRANSFER")
                 .notes(request.getNotes())
                 .build();
         membershipRepository.save(membership);
-
-        return buildResponse(membership);
-    }
-
-    @Transactional
-    public MembershipResponse confirmPayment(Long membershipId, String transactionId) {
-        Membership membership = membershipRepository.findById(membershipId)
-                .orElseThrow(() -> new RuntimeException("Membership not found"));
-        membership.setPaymentStatus(PaymentStatus.PAID);
-        membership.setTransactionId(transactionId);
-        membership.setPaidAt(LocalDateTime.now());
-        membershipRepository.save(membership);
-
-        emailService.sendMembershipConfirmation(
-                membership.getUser().getEmail(),
-                membership.getUser().getFullName(),
-                membership.getMembershipType().name(),
-                membership.getEndDate().toString()
-        );
 
         return buildResponse(membership);
     }

@@ -37,4 +37,11 @@ public class NotificationController {
         notificationService.markAllRead(userDetails.getUsername());
         return ResponseEntity.ok(ApiResponse.success(null, "All notifications marked as read"));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> delete(
+            @AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
+        notificationService.deleteMine(userDetails.getUsername(), id);
+        return ResponseEntity.ok(ApiResponse.success(null, "Đã xóa thông báo"));
+    }
 }

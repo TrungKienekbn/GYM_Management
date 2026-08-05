@@ -17,6 +17,7 @@ import java.util.Map;
 public class BankWebhookController {
 
     private final InvoiceService invoiceService;
+    private final com.example.gymmanagement.shop.ShopService shopService;
 
     @Value("${sepay.webhook-api-key}")
     private String expectedApiKey;
@@ -26,7 +27,7 @@ public class BankWebhookController {
             @RequestHeader(value = "Authorization", required = false) String authorization,
             @RequestBody Map<String, Object> payload) {
 
-        log.info("[SePay Webhook] Received: {}", payload);
+        log.info("[SePay Webhook] Đã nhận giao dịch ngân hàng");
 
         String expected = "Apikey " + expectedApiKey;
         if (authorization == null || !authorization.trim().equals(expected)) {
@@ -35,9 +36,10 @@ public class BankWebhookController {
         }
 
         try {
-            invoiceService.handleBankWebhook(payload);
+        if (!shopService.handleWebhook(payload)) invoiceService.handleBankWebhook(payload);
         } catch (Exception e) {
             log.error("[SePay Webhook] Lỗi xử lý payload", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("success", false));
         }
 
         return ResponseEntity.ok(Map.of("success", true));

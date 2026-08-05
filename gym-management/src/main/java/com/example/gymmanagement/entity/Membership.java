@@ -31,7 +31,7 @@ public class Membership {
     private PaymentStatus paymentStatus = PaymentStatus.PENDING;
 
     private String transactionId;
-    private String paymentMethod; // CARD, MOMO, VNPAY, ZALOPAY, CASH
+    private String paymentMethod; // BANK_TRANSFER
     private LocalDateTime paidAt;
     private LocalDateTime createdAt = LocalDateTime.now();
     private String notes;

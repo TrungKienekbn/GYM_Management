@@ -9,8 +9,6 @@
         <el-select v-model="filterType" placeholder="Loại dịch vụ" clearable style="width:160px">
           <el-option label="Giáo án" value="WORKOUT_PLAN"/>
           <el-option label="Dinh dưỡng" value="NUTRITION"/>
-          <el-option label="Cơ sở" value="FACILITY"/>
-          <el-option label="HLV" value="TRAINER"/>
         </el-select>
       </div>
     </div>
@@ -60,7 +58,7 @@
 
           <!-- Existing reply -->
           <div v-if="r.adminReply || r.replyAttachmentUrl" class="admin-reply-show">
-            <span class="reply-label">💬 Phản hồi của bạn:</span>
+            <span class="reply-label"> Phản hồi của bạn:</span>
             <span class="muted" style="font-size:0.72rem">{{ fmtDate(r.repliedAt) }}</span>
             <MessageBody :message="replyBody(r)"/>
           </div>
@@ -73,23 +71,23 @@
             <!-- Đính kèm -->
             <div class="reply-attach">
               <div v-if="replyFile" class="file-chip">
-                <el-icon :size="18"><Document/></el-icon>
+                
                 <span class="fc-name">{{ replyFile.name }}</span>
                 <span class="fc-size">{{ prettyFileSize(replyFile.size) }}</span>
                 <el-button text class="fc-remove" @click="replyFile=null" title="Bỏ file">
-                  <el-icon><Close/></el-icon>
+                  <el-icon><Close /></el-icon>
                 </el-button>
               </div>
               <div v-else-if="r.replyAttachmentUrl && !replyRemoveAttachment" class="file-chip">
-                <el-icon :size="18"><Document/></el-icon>
+                
                 <span class="fc-name">{{ r.replyAttachmentName || 'Tệp đính kèm' }}</span>
                 <span class="fc-size">{{ prettyFileSize(r.replyAttachmentSize) }}</span>
                 <el-button text class="fc-remove" @click="replyRemoveAttachment=true" title="Gỡ file">
-                  <el-icon><Close/></el-icon>
+                  <el-icon><Close /></el-icon>
                 </el-button>
               </div>
               <el-button v-else plain size="small" @click="replyFileInput?.click()">
-                <el-icon><Paperclip/></el-icon><span style="margin-left:6px">Đính kèm file</span>
+                <span style="margin-left:6px">Đính kèm file</span>
               </el-button>
             </div>
 
@@ -101,10 +99,7 @@
 
           <div class="card-actions">
             <el-button size="small" type="primary" plain @click="openReply(r)">
-              {{ r.adminReply || r.replyAttachmentUrl ? '✏️ Sửa phản hồi' : '💬 Phản hồi' }}
-            </el-button>
-            <el-button size="small" type="danger" plain @click="removeRating(r)">
-              🗑️ Xóa đánh giá
+              {{ r.adminReply || r.replyAttachmentUrl ? ' Sửa phản hồi' : ' Phản hồi' }}
             </el-button>
           </div>
         </div>
@@ -116,10 +111,11 @@
 </template>
 
 <script setup>
+import { Close } from '@element-plus/icons-vue'
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { ratingAPI } from '@/api'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import MessageBody from '@/components/common/MessageBody.vue'
 import dayjs from 'dayjs'
 
@@ -238,22 +234,7 @@ async function sendReply(id) {
   } catch {} finally { replying.value = false }
 }
 
-async function removeRating(r) {
-  try {
-    await ElMessageBox.confirm(
-        `Xóa đánh giá của "${r.userName || r.userEmail}"? Hành động không thể hoàn tác.`,
-        'Xóa đánh giá',
-        { type: 'warning', confirmButtonText: 'Xóa', cancelButtonText: 'Hủy' })
-  } catch { return }   // admin bấm Hủy
-  try {
-    await ratingAPI.adminRemove(r.id)
-    ElMessage.success('Đã xóa đánh giá')
-    if (replyTarget.value === r.id) replyTarget.value = null
-    load()
-  } catch { /* lỗi đã hiển thị qua interceptor */ }
-}
-
-function serviceLabel(s) { return { WORKOUT_PLAN:'Giáo án', NUTRITION:'Dinh dưỡng', FACILITY:'Cơ sở', TRAINER:'HLV' }[s] || s }
+function serviceLabel(s) { return { WORKOUT_PLAN:'Giáo án', NUTRITION:'Dinh dưỡng' }[s] || s }
 function fmtDate(d) { return d ? dayjs(d).format('DD/MM/YYYY HH:mm') : '' }
 
 onMounted(async () => {

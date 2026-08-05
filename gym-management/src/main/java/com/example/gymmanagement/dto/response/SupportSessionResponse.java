@@ -15,4 +15,8 @@ public class SupportSessionResponse {
     private String lastMessage;          // nội dung tin nhắn cuối (cho danh sách của admin)
     private LocalDateTime lastMessageAt; // thời điểm tin nhắn cuối (để phát hiện tin mới)
     private String lastMessageRole;      // USER / ADMIN — ai gửi tin nhắn cuối
+    private LocalDateTime closedAt;
+    private Integer userRating;
+    private String userRatingComment;
+    private LocalDateTime ratedAt;
 }

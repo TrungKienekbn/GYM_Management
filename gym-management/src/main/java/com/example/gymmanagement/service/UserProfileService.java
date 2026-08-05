@@ -21,6 +21,7 @@ public class UserProfileService {
     private final ProgressService progressService;
 
     public UserProfileResponse saveOrUpdate(String email, UserProfileRequest request) {
+        validateProfile(request);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -45,6 +46,13 @@ public class UserProfileService {
         profile.setAvailableDaysPerWeek(request.getAvailableDaysPerWeek());
         profile.setPreferredSessionDuration(request.getPreferredSessionDuration());
         profile.setMedicalConditions(request.getMedicalConditions());
+        profile.setTrainingExperienceMonths(request.getTrainingExperienceMonths());
+        profile.setDailyActivityLevel(request.getDailyActivityLevel());
+        profile.setTrainingLocation(request.getTrainingLocation());
+        profile.setAvailableEquipment(request.getAvailableEquipment());
+        profile.setPreferredTrainingDays(request.getPreferredTrainingDays());
+        profile.setInjuryAreas(request.getInjuryAreas());
+        profile.setDislikedExercises(request.getDislikedExercises());
 
         // Calculate BMI (giữ nguyên logic)
         if (request.getHeight() != null && request.getWeight() != null && request.getHeight() > 0) {
@@ -65,6 +73,27 @@ public class UserProfileService {
         );
 
         return buildResponse(profile, user);
+    }
+
+    private void validateProfile(UserProfileRequest request) {
+        if (request.getDateOfBirth() == null) throw new RuntimeException("Vui lòng chọn ngày sinh");
+        int age = java.time.Period.between(request.getDateOfBirth(), LocalDate.now()).getYears();
+        if (age < 16 || age > 80) throw new RuntimeException("Độ tuổi sử dụng hệ thống phải từ 16 đến 80");
+        if (request.getHeight() == null || !Double.isFinite(request.getHeight())
+                || request.getHeight() < 100 || request.getHeight() > 250)
+            throw new RuntimeException("Chiều cao phải từ 100 đến 250 cm");
+        if (request.getWeight() == null || !Double.isFinite(request.getWeight())
+                || request.getWeight() < 30 || request.getWeight() > 250)
+            throw new RuntimeException("Cân nặng phải từ 30 đến 250 kg");
+        if (request.getAvailableDaysPerWeek() == null || request.getAvailableDaysPerWeek() < 1
+                || request.getAvailableDaysPerWeek() > 7)
+            throw new RuntimeException("Số ngày tập mỗi tuần phải từ 1 đến 7");
+        if (request.getPreferredSessionDuration() == null || request.getPreferredSessionDuration() < 15
+                || request.getPreferredSessionDuration() > 120)
+            throw new RuntimeException("Thời lượng mỗi buổi phải từ 15 đến 120 phút");
+        if (request.getTrainingExperienceMonths() == null || request.getTrainingExperienceMonths() < 0
+                || request.getTrainingExperienceMonths() > 720)
+            throw new RuntimeException("Kinh nghiệm tập luyện không hợp lệ");
     }
 
     public UserProfileResponse getMyProfile(String email) {
@@ -108,6 +137,13 @@ public class UserProfileService {
                 .availableDaysPerWeek(profile.getAvailableDaysPerWeek())
                 .preferredSessionDuration(profile.getPreferredSessionDuration())
                 .medicalConditions(profile.getMedicalConditions())
+                .trainingExperienceMonths(profile.getTrainingExperienceMonths())
+                .dailyActivityLevel(profile.getDailyActivityLevel())
+                .trainingLocation(profile.getTrainingLocation())
+                .availableEquipment(profile.getAvailableEquipment())
+                .preferredTrainingDays(profile.getPreferredTrainingDays())
+                .injuryAreas(profile.getInjuryAreas())
+                .dislikedExercises(profile.getDislikedExercises())
                 .build();
     }
 

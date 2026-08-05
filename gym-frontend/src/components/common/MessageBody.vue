@@ -6,24 +6,24 @@
       <div v-if="isImage" class="att-media">
         <img :src="message.attachmentUrl" class="att-img" @click="openFile(message.attachmentUrl)" loading="lazy"/>
         <a :href="message.attachmentUrl" :download="message.attachmentName" class="att-dl-link">
-          <el-icon><Download/></el-icon> Tải xuống
+           Tải xuống
         </a>
       </div>
       <!-- Video -->
       <div v-else-if="isVideo" class="att-media">
         <video :src="message.attachmentUrl" class="att-video" controls preload="metadata"/>
         <a :href="message.attachmentUrl" :download="message.attachmentName" class="att-dl-link">
-          <el-icon><Download/></el-icon> Tải xuống
+           Tải xuống
         </a>
       </div>
       <!-- File khác -->
       <a v-else :href="message.attachmentUrl" :download="message.attachmentName" class="att-file">
-        <div class="att-icon"><el-icon :size="22"><Document/></el-icon></div>
+        <div class="att-icon"></div>
         <div class="att-info">
           <div class="att-name">{{ message.attachmentName || 'Tệp đính kèm' }}</div>
           <div class="att-size">{{ prettySize }}</div>
         </div>
-        <el-icon class="att-dl-ico" :size="18"><Download/></el-icon>
+        
       </a>
     </template>
 

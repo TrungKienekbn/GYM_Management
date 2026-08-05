@@ -34,17 +34,21 @@
   --c-warning:   #E65100;
   --c-info:      #1565C0;
 
-  --radius:      6px;
-  --radius-lg:   12px;
+  --radius-sm:   8px;
+  --radius:      10px;
+  --radius-lg:   16px;
+  --radius-xl:   22px;
+  --radius-pill: 999px;
 
   --shadow:      0 2px 12px rgba(107,66,38,0.12);
   --shadow-lg:   0 8px 32px rgba(107,66,38,0.18);
 
   --transition:  0.2s ease;
 
-  --font-display: "Times New Roman", Times, serif;
-  --font-mono:    "Times New Roman", Times, serif;
-  --font-body:    "Times New Roman", Times, serif;
+  --font-display: "Roboto", "Segoe UI", Arial, sans-serif;
+  --font-mono:    "Roboto", "Segoe UI", Arial, sans-serif;
+  --font-body:    "Roboto", "Segoe UI", Arial, sans-serif;
+  --el-font-family: "Roboto", "Segoe UI", Arial, sans-serif;
 }
 
 /* RESET */
@@ -113,7 +117,11 @@ a {
 
 .el-button {
   border-radius: var(--radius) !important;
+  min-height: 34px;
 }
+
+.el-button.is-round,
+.el-button.is-circle { border-radius: var(--radius-pill) !important; }
 
 /* CARD */
 .el-card {
@@ -128,6 +136,10 @@ a {
   background: var(--c-card2) !important;
   border-bottom: 1px solid var(--c-border2) !important;
   color: var(--c-text) !important;
+}
+
+.el-card__header:first-child {
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
 .el-card__body {
@@ -163,6 +175,16 @@ a {
   box-shadow: none !important;
   border-radius: var(--radius) !important;
 }
+
+.el-textarea__inner,
+.el-select__wrapper,
+.el-input-number,
+.el-date-editor.el-input__wrapper,
+.el-date-editor--date {
+  border-radius: var(--radius) !important;
+}
+
+.el-input-number .el-input__wrapper { border-radius: var(--radius) !important; }
 
 .el-input__wrapper:hover {
   border-color: var(--c-accent) !important;
@@ -203,9 +225,38 @@ a {
 /* DIALOG */
 .el-dialog {
   background: var(--c-card) !important;
-  border-radius: var(--radius-lg) !important;
+  border-radius: var(--radius-xl) !important;
   box-shadow: var(--shadow-lg) !important;
+  overflow: hidden;
 }
+
+.el-dialog__header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--c-border2);
+}
+
+.el-dialog__body { padding: 22px 24px; }
+
+.el-dialog__footer {
+  padding: 14px 24px 20px;
+  border-top: 1px solid var(--c-border2);
+}
+
+.el-tag,
+.badge,
+.el-badge__content { border-radius: var(--radius-pill) !important; }
+
+.el-alert,
+.el-message-box,
+.el-notification,
+.el-popover.el-popper,
+.el-dropdown__popper,
+.el-select__popper { border-radius: var(--radius-lg) !important; }
+
+.el-pagination button,
+.el-pagination .el-pager li { border-radius: var(--radius-sm) !important; }
+
+.el-checkbox__inner { border-radius: 5px; }
 
 /* FIX OVERLAY BUG */
 .el-overlay {

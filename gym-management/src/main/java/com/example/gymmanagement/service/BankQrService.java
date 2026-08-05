@@ -29,7 +29,10 @@ public class BankQrService {
     }
 
     public BankQrResult generate(Long invoiceId, long amount) {
-        String transferCode = "GYMPRO" + invoiceId;
+        return generate("GYMPRO" + invoiceId, amount);
+    }
+
+    public BankQrResult generate(String transferCode, long amount) {
 
         BankQrResult result = new BankQrResult();
         result.setTransferCode(transferCode);

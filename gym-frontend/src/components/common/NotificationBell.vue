@@ -16,9 +16,16 @@
         <el-button text size="small" @click="markAll" v-if="unread">Đọc tất cả</el-button>
       </div>
 
+      <el-select v-model="typeFilter" size="small" style="width:100%;margin-bottom:8px">
+        <el-option label="Tất cả loại" value="" />
+        <el-option label="Hệ thống" value="SYSTEM" />
+        <el-option label="Nhắc tập" value="WORKOUT_REMINDER" />
+        <el-option label="Khuyến mãi" value="PROMOTION" />
+      </el-select>
+
       <div class="notif-list" v-if="notifications.length">
         <div
-          v-for="n in notifications.slice(0,8)"
+          v-for="n in filteredNotifications.slice(0,8)"
           :key="n.id"
           class="notif-item"
           :class="{ unread: !n.isRead, clickable: targetRoute(n) }"
@@ -29,6 +36,7 @@
             <div class="notif-title">{{ n.title }}</div>
             <div class="notif-msg">{{ n.message }}</div>
           </div>
+          <el-button text type="danger" size="small" @click.stop="removeNotification(n.id)">×</el-button>
         </div>
       </div>
       <div v-else class="notif-empty">Không có thông báo nào</div>
@@ -37,7 +45,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { Bell } from '@element-plus/icons-vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { notifAPI } from '@/api'
@@ -50,6 +59,10 @@ const auth   = useAuthStore()
 const notifications = ref([])
 const unread = ref(0)
 const panelOpen = ref(false)
+const typeFilter = ref('')
+const filteredNotifications = computed(() => typeFilter.value
+  ? notifications.value.filter(n => n.type === typeFilter.value)
+  : notifications.value)
 let timer = null
 
 /**
@@ -93,6 +106,13 @@ async function markAll() {
   await notifAPI.markAllRead()
   unread.value = 0
   notifications.value.forEach(n => n.isRead = true)
+}
+
+async function removeNotification(id) {
+  await notifAPI.delete(id)
+  const removed = notifications.value.find(n => n.id === id)
+  notifications.value = notifications.value.filter(n => n.id !== id)
+  if (removed && !removed.isRead) unread.value = Math.max(0, unread.value - 1)
 }
 
 /** Chỉ lấy số chưa đọc — đủ để bật chấm đỏ mà không tải cả danh sách. */

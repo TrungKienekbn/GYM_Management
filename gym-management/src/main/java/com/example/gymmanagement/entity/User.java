@@ -29,6 +29,10 @@ public class User {
 
     private String verificationToken;
 
+    @Builder.Default
+    private Integer passwordResetAttempts = 0;
+    private LocalDateTime passwordResetBlockedUntil;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

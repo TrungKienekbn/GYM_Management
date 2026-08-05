@@ -90,6 +90,15 @@ public class WorkoutSessionController {
                         body != null ? body.get("notes") : null)));
     }
 
+    @PostMapping("/{id}/skip-week-review")
+    public ResponseEntity<ApiResponse<WorkoutSessionResponse>> finishSkippedWeek(
+            @AuthenticationPrincipal UserDetails ud, @PathVariable Long id,
+            @RequestBody CheckOutRequest req) {
+        return ResponseEntity.ok(ApiResponse.success(
+                sessionService.finishWeekAfterSkip(ud.getUsername(), id, req),
+                "Đã ghi nhận số liệu và chuyển sang tuần tiếp theo"));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(
             @AuthenticationPrincipal UserDetails ud, @PathVariable Long id) {

@@ -170,25 +170,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  async function loginWithPhone(credentials) {
-    loading.value = true
-    try {
-      const res = await authAPI.loginWithPhone(credentials)
-      const authData = res.data
-      if (!authData?.token || !isTokenValid(authData.token)) throw new Error('Token không hợp lệ')
-      token.value = authData.token
-      user.value = { userId: authData.userId, fullName: authData.fullName, email: authData.email, role: authData.role, emailVerified: authData.emailVerified }
-      sessionStorage.setItem('token', token.value)
-      sessionStorage.setItem('user', JSON.stringify(user.value))
-      ElMessage.success('Xác minh thành công!')
-      return authData
-    } catch (err) {
-      logout()
-      ElMessage.error(err?.response?.data?.message || 'Thông tin xác minh không đúng')
-      throw err
-    } finally { loading.value = false }
-  }
-
   // ───────────────────────────────────────────
   // Register
   // ───────────────────────────────────────────
@@ -270,7 +251,6 @@ export const useAuthStore = defineStore('auth', () => {
     checkToken,
 
     login,
-    loginWithPhone,
     register,
     logout
   }

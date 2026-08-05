@@ -24,12 +24,12 @@
         </div>
 
         <div v-if="invoiceData.status === 'PAID'" class="invoice-success-box">
-          <p class="success-alert">🎉 {{ isCosmetic ? 'Thanh toán thành công! Trang phục đã được mở khóa.' : 'Thanh toán thành công! Gói tập đã được kích hoạt.' }}</p>
+          <p class="success-alert"> {{ isCosmetic ? 'Thanh toán thành công! Trang phục đã được mở khóa.' : 'Thanh toán thành công! Gói tập đã được kích hoạt.' }}</p>
           <button @click="goBack" class="btn-secondary">{{ isCosmetic ? 'Quay lại và thay trang phục' : 'Quay lại trang Gói tập' }}</button>
         </div>
 
         <div v-else-if="invoiceData.status === 'EXPIRED'" class="invoice-expired-box">
-          <p class="error-alert">⏰ Hóa đơn này đã quá thời gian thanh toán (5 phút).</p>
+          <p class="error-alert"> Hóa đơn này đã quá thời gian thanh toán (5 phút).</p>
           <button @click="reCreateQR" class="btn-primary">Tạo lại mã QR mới để thanh toán</button>
         </div>
 
@@ -41,7 +41,7 @@
         </div>
 
         <div v-else-if="invoiceData.status === 'FAILED'" class="invoice-expired-box">
-          <p class="error-alert">❌ Không tạo được mã QR thanh toán.</p>
+          <p class="error-alert"> Không tạo được mã QR thanh toán.</p>
           <p v-if="invoiceData.resultMessage" style="color:#7f8c8d;font-size:13px;margin-bottom:12px">
             Chi tiết: {{ invoiceData.resultMessage }}
           </p>
@@ -49,14 +49,14 @@
         </div>
 
         <div v-else-if="invoiceData.status === 'CANCELLED'" class="invoice-expired-box">
-          <p class="error-alert">🚫 Hóa đơn này đã bị hủy.</p>
+          <p class="error-alert"> Hóa đơn này đã bị hủy.</p>
           <button @click="goBack" class="btn-secondary">Quay lại trang Gói tập</button>
         </div>
       </div>
 
       <div class="qr-card" v-if="invoiceData.status === 'PENDING'">
         <div class="momo-header">
-          <span class="momo-emoji">🏦</span>
+          <span class="momo-emoji"></span>
           <span class="momo-title">Quét mã VietQR bằng app Ngân hàng hoặc Ví điện tử</span>
         </div>
 
@@ -70,7 +70,7 @@
 
         <div class="payment-instruction">
           <p>Mở app <strong>Ngân hàng</strong> bất kỳ (hoặc MoMo/ZaloPay) hỗ trợ quét VietQR để chuyển khoản.</p>
-          <p class="warning-text">⚠️ Tuyệt đối không sửa đổi Số tiền và Nội dung chuyển khoản (mã hóa đơn) — hệ thống dựa vào đúng nội dung này để tự động xác nhận.</p>
+          <p class="warning-text"> Tuyệt đối không sửa đổi Số tiền và Nội dung chuyển khoản (mã hóa đơn) — hệ thống dựa vào đúng nội dung này để tự động xác nhận.</p>
         </div>
 
         <div class="checking-status">

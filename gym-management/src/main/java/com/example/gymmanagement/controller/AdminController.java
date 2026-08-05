@@ -129,15 +129,6 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success(pending));
     }
 
-    @PostMapping("/memberships/{id}/confirm-payment")
-    public ResponseEntity<ApiResponse<MembershipResponse>> adminConfirmPayment(
-            @PathVariable Long id,
-            @RequestBody(required = false) Map<String, String> body) {
-        String txId = body != null ? body.getOrDefault("transactionId", "ADMIN-" + id) : "ADMIN-" + id;
-        return ResponseEntity.ok(ApiResponse.success(
-                membershipService.confirmPayment(id, txId), "Payment confirmed"));
-    }
-
     @PutMapping("/memberships/{id}/refund")
     public ResponseEntity<ApiResponse<Void>> refundMembership(@PathVariable Long id) {
         Membership m = membershipRepository.findById(id).orElseThrow(() -> new RuntimeException("Membership not found"));

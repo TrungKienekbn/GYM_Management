@@ -62,4 +62,12 @@ public class WorkoutPlanResponse {
     private Long originalPlanId;
     private Boolean isFitnessImprovement;
     private Integer requiredMaxSessionManaCost;
+
+    // Cảnh báo mềm cho gói thường khi 2 tuần liên tiếp hoàn thành dưới 40%.
+    private Boolean lowCompletionWarning;
+    private Integer lowCompletionWeek1;
+    private Integer lowCompletionRate1;
+    private Integer lowCompletionWeek2;
+    private Integer lowCompletionRate2;
+    private String lowCompletionMessage;
 }

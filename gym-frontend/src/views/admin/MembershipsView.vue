@@ -3,9 +3,9 @@
     <div class="page-header">
       <h2>QUẢN LÝ HÓA ĐƠN</h2>
       <el-select v-model="filterStatus" placeholder="Lọc trạng thái" clearable style="width:180px">
-        <el-option label="⏳ Chờ thanh toán" value="PENDING"/>
-        <el-option label="✅ Đã thanh toán" value="PAID"/>
-        <el-option label="↩️ Hoàn tiền" value="REFUNDED"/>
+        <el-option label=" Chờ thanh toán" value="PENDING"/>
+        <el-option label=" Đã thanh toán" value="PAID"/>
+        <el-option label="↩ Hoàn tiền" value="REFUNDED"/>
       </el-select>
     </div>
 
@@ -15,19 +15,19 @@
         <div class="label">TỔNG DOANH THU ĐÃ TT</div>
         <div class="value">{{ formatM(totalRevenue) }}</div>
         <div class="sub">đồng</div>
-        <div class="icon">💰</div>
+        <div class="icon"></div>
       </div>
       <div class="stat-card">
-        <div class="label">CHỜ XÁC NHẬN</div>
+        <div class="label">CHỜ CHUYỂN KHOẢN</div>
         <div class="value">{{ pending.length }}</div>
-        <div class="sub">hóa đơn pending</div>
-        <div class="icon">⏳</div>
+        <div class="sub">tự động xác nhận qua ngân hàng</div>
+        <div class="icon"></div>
       </div>
       <div class="stat-card">
         <div class="label">TỔNG HÓA ĐƠN</div>
         <div class="value">{{ all.length }}</div>
         <div class="sub">kể từ đầu</div>
-        <div class="icon">📋</div>
+        <div class="icon"></div>
       </div>
     </div>
 
@@ -53,7 +53,6 @@
         </el-table-column>
         <el-table-column label="Thao tác" width="150" align="center" fixed="right">
           <template #default="{row}">
-            <el-button v-if="row.paymentStatus==='PENDING'" type="primary" size="small" @click="confirm(row.id)">Xác nhận</el-button>
             <el-button v-if="row.paymentStatus==='PAID'" type="danger" size="small" plain @click="refund(row.id)">Hoàn tiền</el-button>
           </template>
         </el-table-column>
@@ -79,9 +78,6 @@ async function load() {
   loading.value = true
   try { const r = await adminAPI.getMemberships(); all.value = r.data || [] }
   finally { loading.value = false }
-}
-async function confirm(id) {
-  await adminAPI.confirmPayment(id); ElMessage.success('Đã xác nhận thanh toán!'); load()
 }
 async function refund(id) {
   await ElMessageBox.confirm('Xác nhận hoàn tiền?', 'Cảnh báo', { type:'warning' })

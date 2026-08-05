@@ -5,8 +5,8 @@
     </div>
 
     <p style="color:var(--c-text2); margin-bottom:20px">
-      Các hệ số/ngưỡng dưới đây được dùng trực tiếp trong công thức tính Fitness Score, Mana và giáo án AI.
-      Di chuột vào dấu <b>?</b> để xem giải thích chi tiết trước khi chỉnh sửa.
+      Các hệ số/ngưỡng dưới đây được dùng trực tiếp trong công thức tính điểm thể lực, năng lượng và giáo án tự động.
+      Phần giải thích được hiển thị ngay dưới từng công thức để dễ kiểm tra trước khi chỉnh sửa.
     </p>
 
     <div v-for="cat in categories" :key="cat" style="margin-bottom:28px">
@@ -15,16 +15,14 @@
         <el-table :data="grouped[cat]" v-loading="loading">
           <el-table-column label="Tên công thức" min-width="260">
             <template #default="{row}">
-              <div style="font-weight:600">
+              <div class="config-name">
                 {{ vnLabel(row.configKey) }}
-                <el-tooltip :content="row.description" placement="top-start" raw-content
-                            popper-class="config-tooltip">
-                  <el-icon style="margin-left:6px; cursor:help; color:var(--c-text3); vertical-align:middle">
-                    <QuestionFilled/>
-                  </el-icon>
+                <el-tooltip :content="row.description || 'Chưa có giải thích cho công thức này.'" placement="top-start">
+                  <el-icon class="help-icon"><QuestionFilled /></el-icon>
                 </el-tooltip>
               </div>
               <div style="font-size:0.72rem; color:var(--c-text3); margin-top:2px">{{ row.configKey }}</div>
+              <div class="config-description">{{ row.description || 'Chưa có giải thích cho công thức này.' }}</div>
             </template>
           </el-table-column>
 
@@ -111,6 +109,7 @@ async function save(row) {
 onMounted(load)
 </script>
 
-<style>
-.config-tooltip { max-width: 340px; line-height: 1.5; }
+<style scoped>
+.config-description { max-width:560px; margin-top:7px; color:var(--c-text2); font-size:.78rem; line-height:1.5; }
+.config-name{display:flex;align-items:center;gap:7px;font-weight:600}.help-icon{color:var(--c-accent);cursor:help;font-size:16px}
 </style>

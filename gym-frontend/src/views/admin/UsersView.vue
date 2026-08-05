@@ -3,14 +3,14 @@
     <div class="page-header">
       <h2>QUẢN LÝ NGƯỜI DÙNG</h2>
       <div style="display:flex;gap:8px">
-        <el-input v-model="search" placeholder="Tìm tên / email..." prefix-icon="Search" style="width:260px" clearable/>
-        <el-select v-model="roleFilter" placeholder="Vai trò" clearable style="width:130px"><el-option label="User" value="ROLE_USER"/><el-option label="Admin" value="ROLE_ADMIN"/></el-select>
-        <el-select v-model="statusFilter" placeholder="Trạng thái" clearable style="width:130px"><el-option label="Active" :value="true"/><el-option label="Khóa" :value="false"/></el-select>
+        <el-input v-model="search" placeholder="Tìm tên / email..." style="width:260px" clearable/>
+        <el-select v-model="roleFilter" placeholder="Vai trò" clearable style="width:150px"><el-option label="Người dùng" value="ROLE_USER"/><el-option label="Quản trị viên" value="ROLE_ADMIN"/></el-select>
+        <el-select v-model="statusFilter" placeholder="Trạng thái" clearable style="width:130px"><el-option label="Hoạt động" :value="true"/><el-option label="Khóa" :value="false"/></el-select>
         <el-tag type="info" style="height:32px;line-height:30px">{{ filtered.length }} user</el-tag>
       </div>
     </div>
 
-    <el-table :data="filtered" v-loading="loading" stripe>
+    <el-table :data="pagedUsers" v-loading="loading" stripe>
       <el-table-column label="STT" type="index" width="60" align="center"/>
       <el-table-column label="Họ tên" prop="fullName" min-width="150"/>
       <el-table-column label="Email" prop="email" min-width="200"/>
@@ -18,22 +18,20 @@
       <el-table-column label="Vai trò" width="100" align="center">
         <template #default="{row}">
           <el-tag :type="row.role==='ROLE_ADMIN'?'danger':'info'" size="small">
-            {{ row.role==='ROLE_ADMIN'?'Admin':'User' }}
+            {{ row.role==='ROLE_ADMIN'?'Quản trị':'Người dùng' }}
           </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="Trạng thái" width="110" align="center">
         <template #default="{row}">
           <span class="badge" :class="row.status?'badge-success':'badge-danger'">
-            {{ row.status ? 'Active' : 'Khóa' }}
+            {{ row.status ? 'Hoạt động' : 'Khóa' }}
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="Email XN" width="100" align="center">
+      <el-table-column label="Xác nhận email" width="120" align="center">
         <template #default="{row}">
-          <el-icon :color="row.emailVerified?'var(--c-success)':'var(--c-danger)'">
-            <CircleCheck v-if="row.emailVerified"/><CircleClose v-else/>
-          </el-icon>
+          
         </template>
       </el-table-column>
       <el-table-column label="Ngày tạo" width="110">
@@ -45,13 +43,16 @@
           <el-button size="small" :type="row.status?'danger':'success'" @click="toggleStatus(row)">
             {{ row.status ? 'Khóa' : 'Mở' }}
           </el-button>
-          <el-button size="small" type="warning" @click="openReset(row)">Reset PW</el-button>
+          <el-button size="small" type="warning" @click="openReset(row)">Đổi mật khẩu</el-button>
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination v-if="filtered.length > pageSize" v-model:current-page="page" v-model:page-size="pageSize"
+      :total="filtered.length" :page-sizes="[10,20,50]" layout="total, sizes, prev, pager, next"
+      style="margin-top:16px;justify-content:flex-end" />
 
     <!-- Detail Dialog -->
-    <el-dialog v-model="detailDialog" title="CHI TIẾT NGƯỜI DÙNG" width="580px" align-center>
+    <el-dialog v-model="detailDialog" title="CHI TIẾT NGƯỜI DÙNG" width="580px" align-center append-to-body>
       <div v-if="detailUser">
         <el-descriptions :column="2" border size="small">
           <el-descriptions-item label="ID">{{ detailUser.id }}</el-descriptions-item>
@@ -59,9 +60,9 @@
           <el-descriptions-item label="Email">{{ detailUser.email }}</el-descriptions-item>
           <el-descriptions-item label="SĐT">{{ detailUser.phone || '--' }}</el-descriptions-item>
           <el-descriptions-item label="Trạng thái">
-            <span class="badge" :class="detailUser.status?'badge-success':'badge-danger'">{{ detailUser.status?'Active':'Khóa' }}</span>
+            <span class="badge" :class="detailUser.status?'badge-success':'badge-danger'">{{ detailUser.status?'Hoạt động':'Khóa' }}</span>
           </el-descriptions-item>
-          <el-descriptions-item label="Email XN">{{ detailUser.emailVerified?'✅ Đã xác nhận':'❌ Chưa' }}</el-descriptions-item>
+          <el-descriptions-item label="Xác nhận email">{{ detailUser.emailVerified?' Đã xác nhận':' Chưa' }}</el-descriptions-item>
           <el-descriptions-item label="Ngày tạo" :span="2">{{ detailUser.createdAt?.substring(0,10) || '--' }}</el-descriptions-item>
         </el-descriptions>
 
@@ -77,7 +78,7 @@
           </el-descriptions>
         </div>
         <div v-else style="margin-top:12px;padding:12px;background:var(--c-card2);border-radius:var(--radius);font-size:0.82rem;color:var(--c-text3)">
-          ℹ️ User chưa hoàn thiện hồ sơ
+          ℹ Người dùng chưa hoàn thiện hồ sơ
         </div>
       </div>
       <template #footer>
@@ -87,7 +88,7 @@
     </el-dialog>
 
     <!-- Reset PW Dialog -->
-    <el-dialog v-model="resetDialog" title="RESET MẬT KHẨU" width="380px" align-center>
+    <el-dialog v-model="resetDialog" title="ĐẶT LẠI MẬT KHẨU" width="380px" align-center append-to-body>
       <div style="margin-bottom:12px;color:var(--c-text2);font-size:0.85rem">
         Đặt lại mật khẩu cho: <strong>{{ resetTarget?.email }}</strong>
       </div>
@@ -98,7 +99,7 @@
       </el-form>
       <template #footer>
         <el-button @click="resetDialog=false">Hủy</el-button>
-        <el-button type="primary" @click="resetPassword">XÁC NHẬN RESET</el-button>
+        <el-button type="primary" @click="resetPassword">XÁC NHẬN ĐỔI</el-button>
       </template>
     </el-dialog>
   </div>
@@ -120,11 +121,14 @@ const detailUser   = ref(null)
 const detailProfile= ref(null)
 const resetTarget  = ref(null)
 const newPw        = ref('')
+const page         = ref(1)
+const pageSize     = ref(10)
 
 const filtered = computed(() => {
   const q = search.value.toLowerCase()
   return users.value.filter(u => (!q || u.fullName?.toLowerCase().includes(q) || u.email?.toLowerCase().includes(q) || u.phone?.includes(q)) && (!roleFilter.value || u.role === roleFilter.value) && (statusFilter.value === null || u.status === statusFilter.value))
 })
+const pagedUsers = computed(() => filtered.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value))
 
 async function load() {
   loading.value = true

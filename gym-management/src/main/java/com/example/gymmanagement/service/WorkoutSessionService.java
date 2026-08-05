@@ -119,6 +119,7 @@ public class WorkoutSessionService {
         WorkoutPlan plan = planRepo.findById(planId).orElseThrow();
         long enrolled  = sessionRepo.countEnrolledInWeek(user.getId(), planId, weekNumber);
         long completed = sessionRepo.countCompletedInWeek(user.getId(), planId, weekNumber);
+        long resolved  = sessionRepo.countResolvedInWeek(user.getId(), planId, weekNumber);
         int  target    = plan.getSessionsPerWeek();
         Double avgRate = sessionRepo.avgCompletionRateInWeek(user.getId(), planId, weekNumber);
 
@@ -130,8 +131,9 @@ public class WorkoutSessionService {
         r.put("enrolled",         enrolled);
         r.put("completed",        completed);
         r.put("target",           target);
-        r.put("isWeekDone",       completed >= target);
-        r.put("canGoNextWeek",    completed >= target && lastCheckedOut);
+        r.put("resolved",         resolved);
+        r.put("isWeekDone",       resolved >= target);
+        r.put("canGoNextWeek",    resolved >= target && lastCheckedOut);
         r.put("avgCompletionRate",avgRate);
         r.put("currentPlanWeek",  plan.getCurrentWeek());
         r.put("totalWeeks",       plan.getDurationWeeks());
@@ -193,6 +195,7 @@ public class WorkoutSessionService {
         if (isLastCompletedSession) {
             if (req.getCheckoutWeight() == null)
                 throw new RuntimeException("Đây là buổi cuối tuần! Vui lòng nhập cân nặng hiện tại.");
+            validateBodyWeight(req.getCheckoutWeight());
             // ── SỬA: chỉ bắt buộc Assessment cho giáo án AI. Admin có thể chọn
             // Goal.ENDURANCE nhưng không có Target Tracking -> không có Assessment. ──
             if (isAiPlan && plan.getGoal() == Goal.ENDURANCE
@@ -342,8 +345,8 @@ public class WorkoutSessionService {
 
     private boolean isLastCompletedSessionOfWeek(Long userId, WorkoutPlan plan, WorkoutSession current) {
         if (plan == null || current.getWeekNumber() == null || plan.getSessionsPerWeek() == null) return false;
-        long completedOthers = sessionRepo.countCompletedInWeek(userId, plan.getId(), current.getWeekNumber());
-        return (completedOthers + 1) >= plan.getSessionsPerWeek();
+        long resolvedOthers = sessionRepo.countResolvedInWeek(userId, plan.getId(), current.getWeekNumber());
+        return (resolvedOthers + 1) >= plan.getSessionsPerWeek();
     }
 
     private String buildOverLimitWarning(WorkoutSession s, List<ExerciseLogRequest> logs) {
@@ -407,9 +410,64 @@ public class WorkoutSessionService {
     @Transactional
     public WorkoutSessionResponse skipSession(String email, Long id, String notes) {
         WorkoutSession s = getOwned(email, id);
+        if (s.getStatus() == SessionStatus.COMPLETED)
+            throw new RuntimeException("Không thể bỏ qua buổi tập đã hoàn thành");
+        if (s.getStatus() == SessionStatus.SKIPPED)
+            throw new RuntimeException("Buổi tập này đã được bỏ qua trước đó");
         s.setStatus(SessionStatus.SKIPPED); s.setNotes(notes);
         sessionRepo.save(s);
-        return buildResponse(s);
+        WorkoutSessionResponse response = buildResponse(s);
+        WorkoutPlan plan = s.getWorkoutPlan();
+        boolean weekResolved = plan != null && s.getWeekNumber() != null
+                && sessionRepo.countResolvedInWeek(s.getUser().getId(), plan.getId(), s.getWeekNumber()) >= plan.getSessionsPerWeek();
+        response.setNeedWeeklyReview(weekResolved);
+        return response;
+    }
+
+    @Transactional
+    public WorkoutSessionResponse finishWeekAfterSkip(String email, Long id, CheckOutRequest req) {
+        User user = getUser(email);
+        WorkoutSession session = getOwned(email, id);
+        if (session.getStatus() != SessionStatus.SKIPPED)
+            throw new RuntimeException("Chỉ áp dụng cho buổi đã bỏ qua");
+        WorkoutPlan plan = session.getWorkoutPlan();
+        if (plan == null || session.getWeekNumber() == null
+                || sessionRepo.countResolvedInWeek(user.getId(), plan.getId(), session.getWeekNumber()) < plan.getSessionsPerWeek())
+            throw new RuntimeException("Tuần này chưa xử lý đủ số buổi yêu cầu");
+        if (req.getCheckoutWeight() == null)
+            throw new RuntimeException("Vui lòng nhập cân nặng hiện tại");
+        validateBodyWeight(req.getCheckoutWeight());
+        boolean isAiPlan = Boolean.TRUE.equals(plan.getIsAiGenerated());
+        if (isAiPlan && plan.getGoal() == Goal.ENDURANCE
+                && (req.getAssessmentMetricType() == null || req.getAssessmentValue() == null))
+            throw new RuntimeException("Vui lòng nhập kết quả đánh giá sức bền");
+
+        session.setCheckoutWeight(req.getCheckoutWeight());
+        session.setCheckoutBodyFat(req.getCheckoutBodyFat());
+        sessionRepo.save(session);
+        if (isAiPlan && plan.getGoal() == Goal.ENDURANCE)
+            applyAssessmentFromReview(user, req.getAssessmentMetricType(), req.getAssessmentValue());
+        progressService.autoSaveProgress(user, req.getCheckoutWeight(), req.getCheckoutBodyFat(),
+                "Tự động ghi nhận sau tuần " + session.getWeekNumber(), ProgressSource.WEEKLY_CHECKOUT, session.getSessionDate());
+        profileRepo.findByUserId(user.getId()).ifPresent(profile -> {
+            profile.setWeight(req.getCheckoutWeight());
+            if (req.getCheckoutBodyFat() != null) profile.setBodyFatPercentage(req.getCheckoutBodyFat());
+            profileRepo.save(profile);
+        });
+
+        boolean fitnessPlan = Boolean.TRUE.equals(plan.getIsFitnessImprovement());
+        boolean templatePlan = Boolean.FALSE.equals(plan.getIsAiGenerated()) && !fitnessPlan;
+        if (fitnessPlan) workoutPlanService.checkFitnessImprovementProgress(plan, email);
+        else if (templatePlan) advanceTemplatePlanWeek(plan);
+        else if (isAiPlan && membershipService.isVip(user))
+            workoutPlanService.adjustPlanAfterWeek(plan.getId(), email, req.getCheckoutWeight(), req.getCheckoutBodyFat());
+        else if (isAiPlan) workoutPlanService.advancePlanWeekWithoutAdjustment(plan.getId(), email);
+
+        notifService.sendToUser(user.getId(), "📊 Hoàn thành tuần " + session.getWeekNumber(),
+                "Đã ghi nhận cân nặng và chuyển sang tuần tiếp theo.", "SYSTEM");
+        WorkoutSessionResponse response = buildResponse(session);
+        response.setNeedWeeklyReview(false);
+        return response;
     }
 
     @Transactional
@@ -696,5 +754,11 @@ public class WorkoutSessionService {
             plan.setIsActive(false);
         }
         planRepo.save(plan);
+    }
+
+    private void validateBodyWeight(Double weight) {
+        if (weight == null || !Double.isFinite(weight) || weight < 30 || weight > 250) {
+            throw new RuntimeException("Cân nặng phải từ 30 đến 250 kg");
+        }
     }
 }

@@ -6,7 +6,7 @@
     </div>
 
     <el-card>
-      <div class="exercise-filters"><el-input v-model="keyword" placeholder="Tìm tên bài tập..." clearable/><el-select v-model="muscleFilter" placeholder="Nhóm cơ" clearable><el-option v-for="m in muscles" :key="m" :value="m"/></el-select><el-select v-model="activeFilter" placeholder="Trạng thái" clearable><el-option label="Active" :value="true"/><el-option label="Đã ẩn" :value="false"/></el-select></div>
+      <div class="exercise-filters"><el-input v-model="keyword" placeholder="Tìm tên bài tập..." clearable/><el-select v-model="muscleFilter" placeholder="Nhóm cơ" clearable><el-option v-for="m in muscles" :key="m" :value="m"/></el-select><el-select v-model="activeFilter" placeholder="Trạng thái" clearable><el-option label="Đang hiển thị" :value="true"/><el-option label="Đã ẩn" :value="false"/></el-select></div>
       <el-table :data="pagedExercises" v-loading="loading" stripe>
         <el-table-column label="STT" width="60" align="center"><template #default="{ $index }">{{ (page - 1) * pageSize + $index + 1 }}</template></el-table-column>
         <el-table-column label="Tên"  prop="name" min-width="150"/>
@@ -17,28 +17,28 @@
           </template>
         </el-table-column>
         <!-- Score columns -->
-        <el-table-column label="💪 Tăng cơ" width="85" align="center">
+        <el-table-column label=" Tăng cơ" width="85" align="center">
           <template #default="{row}">
             <span :style="{color: scoreColor(row.muscleGainScore), fontWeight:700}">{{ row.muscleGainScore }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="🔥 Giảm cân" width="90" align="center">
+        <el-table-column label=" Giảm cân" width="90" align="center">
           <template #default="{row}">
             <span :style="{color: scoreColor(row.weightLossScore), fontWeight:700}">{{ row.weightLossScore }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="🏃 Sức bền" width="85" align="center">
+        <el-table-column label=" Sức bền" width="85" align="center">
           <template #default="{row}">
             <span :style="{color: scoreColor(row.enduranceScore), fontWeight:700}">{{ row.enduranceScore }}</span>
           </template>
         </el-table-column>
         <!-- MỚI: cột thể lực tiêu hao -->
-        <el-table-column label="⚡ Thể lực" width="85" align="center">
+        <el-table-column label=" Thể lực" width="85" align="center">
           <template #default="{row}">
             <span style="color:#f59e0b;font-weight:700">{{ row.staminaCost ?? 10 }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="🏋️ Dùng tạ" width="90" align="center">
+        <el-table-column label=" Dùng tạ" width="90" align="center">
   <template #default="{row}">
     <span class="badge" :class="row.usesWeight ? 'badge-success' : 'badge-info'">
       {{ row.usesWeight ? 'Có' : 'Không' }}
@@ -47,7 +47,7 @@
     </el-table-column>
         <el-table-column label="Trạng thái" width="95" align="center">
           <template #default="{row}">
-            <span class="badge" :class="row.isActive?'badge-success':'badge-danger'">{{ row.isActive?'Active':'Ẩn' }}</span>
+            <span class="badge" :class="row.isActive?'badge-success':'badge-danger'">{{ row.isActive?'Hiển thị':'Ẩn' }}</span>
           </template>
         </el-table-column>
         <el-table-column label="Thao tác" width="130" align="center" fixed="right">
@@ -62,7 +62,7 @@
     </el-card>
 
     <!-- Add/Edit Dialog -->
-    <el-dialog v-model="formDialog" :title="editId?'SỬA BÀI TẬP':'THÊM BÀI TẬP'" width="580px" align-center>
+    <el-dialog v-model="formDialog" :title="editId?'SỬA BÀI TẬP':'THÊM BÀI TẬP'" width="580px" align-center append-to-body>
       <el-form :model="form" label-position="top">
         <!-- Thông tin cơ bản -->
         <el-form-item label="Tên bài tập">
@@ -79,9 +79,9 @@
           </el-form-item>
           <el-form-item label="Độ khó">
             <el-select v-model="form.difficulty" style="width:100%">
-              <el-option label="🟢 Dễ" value="EASY"/>
-              <el-option label="🟡 Trung bình" value="MEDIUM"/>
-              <el-option label="🔴 Khó" value="HARD"/>
+              <el-option label=" Dễ" value="EASY"/>
+              <el-option label=" Trung bình" value="MEDIUM"/>
+              <el-option label=" Khó" value="HARD"/>
             </el-select>
           </el-form-item>
         </div>
@@ -102,7 +102,7 @@
 
         <!-- MỚI: Thể lực (mana) tiêu hao khi tập bài này -->
         <div class="stamina-box">
-          <div style="font-weight:700;color:#b45309;margin-bottom:4px">⚡ THỂ LỰC TIÊU HAO (0–200)</div>
+          <div style="font-weight:700;color:#b45309;margin-bottom:4px"> THỂ LỰC TIÊU HAO (0–200)</div>
           <div style="font-size:0.78rem;color:var(--c-text3);margin-bottom:10px">
             Số thể lực (mana) sẽ bị trừ khi người dùng tập bài này với tỉ lệ hoàn thành 100%.
             Nếu hoàn thành thấp hơn, thể lực trừ sẽ tính theo tỉ lệ tương ứng.
@@ -115,34 +115,34 @@
         <!-- MỚI: Bài tập có dùng tạ/thiết bị tạ hay không -->
 <el-form-item label="Loại bài tập">
   <div style="display:flex;align-items:center;gap:10px">
-    <el-switch v-model="form.usesWeight" active-text="Dùng tạ 🏋️" inactive-text="Không dùng tạ (bodyweight)"/>
+    <el-switch v-model="form.usesWeight" active-text="Dùng tạ " inactive-text="Không dùng tạ (bodyweight)"/>
   </div>
 </el-form-item>
 
         <!-- Điểm hiệu quả theo mục tiêu -->
         <div class="score-section">
-          <div class="score-section-title">⭐ ĐIỂM HIỆU QUẢ THEO MỤC TIÊU (0–10)</div>
+          <div class="score-section-title"> ĐIỂM HIỆU QUẢ THEO MỤC TIÊU (0–10)</div>
           <div style="font-size:0.78rem;color:var(--c-text3);margin-bottom:14px">
             Điểm càng cao → bài tập càng được ưu tiên khi tạo giáo án với mục tiêu đó
           </div>
           <div class="score-inputs">
             <div class="score-input-item">
-              <div class="score-input-label">💪 Tăng cơ</div>
+              <div class="score-input-label"> Tăng cơ</div>
               <el-slider v-model="form.muscleGainScore" :min="0" :max="10" :step="1" show-stops/>
               <div class="score-input-val" :style="{color:scoreColor(form.muscleGainScore)}">{{ form.muscleGainScore }}/10</div>
             </div>
             <div class="score-input-item">
-              <div class="score-input-label">🔥 Giảm cân</div>
+              <div class="score-input-label"> Giảm cân</div>
               <el-slider v-model="form.weightLossScore" :min="0" :max="10" :step="1" show-stops/>
               <div class="score-input-val" :style="{color:scoreColor(form.weightLossScore)}">{{ form.weightLossScore }}/10</div>
             </div>
             <div class="score-input-item">
-              <div class="score-input-label">🤸 Sức bền</div>
+              <div class="score-input-label"> Sức bền</div>
               <el-slider v-model="form.flexibilityScore" :min="0" :max="10" :step="1" show-stops/>
               <div class="score-input-val" :style="{color:scoreColor(form.flexibilityScore)}">{{ form.flexibilityScore }}/10</div>
             </div>
             <div class="score-input-item">
-              <div class="score-input-label">⚖️ Duy trì</div>
+              <div class="score-input-label"> Duy trì</div>
               <el-slider v-model="form.maintenanceScore" :min="0" :max="10" :step="1" show-stops/>
               <div class="score-input-val" :style="{color:scoreColor(form.maintenanceScore)}">{{ form.maintenanceScore }}/10</div>
             </div>

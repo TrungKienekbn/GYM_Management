@@ -3,14 +3,14 @@
     <div class="page-header">
       <h2>LỊCH SỬ GIAO DỊCH</h2>
       <div style="display:flex;gap:8px">
-        <el-input v-model="search" placeholder="Tìm theo tên / email / mã GD..." prefix-icon="Search" style="width:280px" clearable/>
+        <el-input v-model="search" placeholder="Tìm theo tên / email / mã GD..." style="width:280px" clearable/>
         <el-select v-model="filterStatus" placeholder="Lọc trạng thái" clearable style="width:170px">
-          <el-option label="⏳ Chờ thanh toán" value="PENDING"/>
-          <el-option label="✅ Đã thanh toán" value="PAID"/>
-          <el-option label="⏰ Hết hạn" value="EXPIRED"/>
-          <el-option label="🚫 Đã hủy" value="CANCELLED"/>
-          <el-option label="❌ Thất bại" value="FAILED"/>
-          <el-option label="↩️ Hoàn tiền" value="REFUNDED"/>
+          <el-option label=" Chờ thanh toán" value="PENDING"/>
+          <el-option label=" Đã thanh toán" value="PAID"/>
+          <el-option label=" Hết hạn" value="EXPIRED"/>
+          <el-option label=" Đã hủy" value="CANCELLED"/>
+          <el-option label=" Thất bại" value="FAILED"/>
+          <el-option label="↩ Hoàn tiền" value="REFUNDED"/>
         </el-select>
       </div>
     </div>
@@ -21,19 +21,19 @@
         <div class="label">TỔNG DOANH THU ĐÃ TT</div>
         <div class="value">{{ formatM(totalRevenue) }}</div>
         <div class="sub">đồng</div>
-        <div class="icon">💰</div>
+        <div class="icon"></div>
       </div>
       <div class="stat-card">
         <div class="label">ĐANG CHỜ THANH TOÁN</div>
         <div class="value">{{ pendingCount }}</div>
         <div class="sub">hóa đơn pending</div>
-        <div class="icon">⏳</div>
+        <div class="icon"></div>
       </div>
       <div class="stat-card">
         <div class="label">TỔNG SỐ GIAO DỊCH</div>
         <div class="value">{{ all.length }}</div>
         <div class="sub">kể từ đầu</div>
-        <div class="icon">📋</div>
+        <div class="icon"></div>
       </div>
     </div>
 
@@ -92,7 +92,9 @@ const displayed = computed(() => {
 })
 
 const pendingCount  = computed(() => all.value.filter(i => i.status === 'PENDING').length)
-const totalRevenue  = computed(() => all.value.filter(i => i.status === 'PAID').reduce((s, i) => s + i.price, 0))
+const totalRevenue  = computed(() => all.value
+    .filter(i => i.status === 'PAID')
+    .reduce((sum, invoice) => sum + Number(invoice.price || 0), 0))
 
 async function load() {
   loading.value = true

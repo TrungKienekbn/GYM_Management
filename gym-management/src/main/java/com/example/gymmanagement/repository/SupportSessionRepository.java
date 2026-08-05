@@ -22,4 +22,5 @@ public interface SupportSessionRepository extends JpaRepository<SupportSession, 
 
     // Danh sách phiên theo trạng thái (cho admin)
     List<SupportSession> findByStatusInOrderByCreatedAtDesc(List<SupportStatus> statuses);
+    List<SupportSession> findAllByOrderByCreatedAtDesc();
 }

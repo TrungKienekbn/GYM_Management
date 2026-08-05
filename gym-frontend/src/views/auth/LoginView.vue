@@ -23,10 +23,10 @@
 
       <el-form :model="form" label-position="top">
         <el-form-item label="Email">
-          <el-input v-model="form.email" placeholder="you@email.com" type="email" size="large" prefix-icon="Message"/>
+          <el-input v-model="form.email" placeholder="you@email.com" type="email" size="large"/>
         </el-form-item>
         <el-form-item label="Mật khẩu">
-          <el-input v-model="form.password" placeholder="••••••••" type="password" size="large" prefix-icon="Lock" show-password @keyup.enter="handleLogin"/>
+          <el-input v-model="form.password" placeholder="••••••••" type="password" size="large" show-password @keyup.enter="handleLogin"/>
         </el-form-item>
         <el-button type="primary" size="large" style="width:100%;margin-top:8px;font-size:1rem;height:46px" :loading="auth.loading" @click="handleLogin">
           ĐĂNG NHẬP
@@ -40,17 +40,19 @@
       </div>
 
       <div class="demo-box">
-        <div style="font-size:0.72rem;font-weight:700;color:var(--c-text3);letter-spacing:0.1em;margin-bottom:4px">DEMO</div>
-        <div style="font-size:0.78rem;color:var(--c-text2)">Admin: <strong>admin@gym.com</strong> / <strong>admin123</strong></div>
-        <div style="font-size:0.78rem;color:var(--c-text2);margin-top:4px">Full Test 🧪: <strong>fulltest@gym.com</strong> / <strong>password</strong></div>
+        <div style="font-size:0.72rem;font-weight:700;color:var(--c-text3);letter-spacing:0.1em;margin-bottom:4px">TÀI KHOẢN THỬ NGHIỆM</div>
+        <div style="font-size:0.78rem;color:var(--c-text2)">Quản trị viên: <strong>admin@gym.com</strong> / <strong>admin123</strong></div>
+        <div style="font-size:0.78rem;color:var(--c-text2);margin-top:4px">Full Test : <strong>fulltest@gym.com</strong> / <strong>password</strong></div>
       </div>
     </div>
-    <el-dialog v-model="forgotDialog" title="ĐĂNG NHẬP BẰNG 4 SỐ CUỐI" width="400px" align-center>
+    <el-dialog v-model="forgotDialog" title="ĐẶT LẠI MẬT KHẨU" width="400px" align-center append-to-body>
       <el-form label-position="top">
         <el-form-item label="Email"><el-input v-model="forgot.email" type="email" /></el-form-item>
         <el-form-item label="4 số cuối số điện thoại"><el-input v-model="forgot.lastFourDigits" maxlength="4" inputmode="numeric" /></el-form-item>
+        <el-form-item label="Mật khẩu mới"><el-input v-model="forgot.newPassword" type="password" show-password maxlength="72" /></el-form-item>
+        <div style="font-size:.76rem;color:var(--c-text3)">Nhập sai 5 lần sẽ tạm khóa chức năng trong 15 phút.</div>
       </el-form>
-      <template #footer><el-button @click="forgotDialog=false">Hủy</el-button><el-button type="primary" @click="loginWithPhone">Xác nhận</el-button></template>
+      <template #footer><el-button @click="forgotDialog=false">Hủy</el-button><el-button type="primary" @click="resetPassword">Đổi mật khẩu</el-button></template>
     </el-dialog>
   </div>
 </template>
@@ -59,12 +61,14 @@
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { authAPI } from '@/api'
+import { ElMessage } from 'element-plus'
 
 const auth = useAuthStore()
 const router = useRouter()
 const form = reactive({ email: '', password: '' })
 const forgotDialog = ref(false)
-const forgot = reactive({ email:'', lastFourDigits:'' })
+const forgot = reactive({ email:'', lastFourDigits:'', newPassword:'' })
 
 async function handleLogin() {
   if (!form.email || !form.password) return
@@ -73,9 +77,15 @@ async function handleLogin() {
     router.push(data.role === 'ROLE_ADMIN' ? '/admin' : '/app')
   } catch {}
 }
-async function loginWithPhone() {
-  if (!forgot.email || !/^\d{4}$/.test(forgot.lastFourDigits)) return
-  try { const data = await auth.loginWithPhone(forgot); router.push(data.role === 'ROLE_ADMIN' ? '/admin' : '/app') } catch {}
+async function resetPassword() {
+  if (!forgot.email || !/^\d{4}$/.test(forgot.lastFourDigits) || forgot.newPassword.length < 6) {
+    ElMessage.warning('Vui lòng nhập đủ email, 4 số cuối và mật khẩu mới tối thiểu 6 ký tự')
+    return
+  }
+  await authAPI.resetPasswordWithPhone(forgot)
+  ElMessage.success('Đã đổi mật khẩu. Hãy đăng nhập bằng mật khẩu mới.')
+  form.email = forgot.email
+  forgotDialog.value = false
 }
 </script>
 

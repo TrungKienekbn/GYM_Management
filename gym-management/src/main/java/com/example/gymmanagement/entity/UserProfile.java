@@ -40,5 +40,18 @@ public class UserProfile {
 
     private String medicalConditions;
 
+    // Các ràng buộc dùng trực tiếp khi sinh giáo án cá nhân hóa.
+    private Integer trainingExperienceMonths;
+    private String dailyActivityLevel;       // SEDENTARY, LIGHT, MODERATE, HIGH
+    private String trainingLocation;         // HOME, GYM, BOTH
+    @Column(length = 1000)
+    private String availableEquipment;       // CSV mã thiết bị
+    @Column(length = 500)
+    private String preferredTrainingDays;    // CSV thứ trong tuần: 1..7
+    @Column(length = 1000)
+    private String injuryAreas;              // CSV: KNEE, LOWER_BACK, SHOULDER...
+    @Column(length = 1000)
+    private String dislikedExercises;        // CSV tên bài user muốn tránh
+
     private LocalDate dateOfBirth;
 }

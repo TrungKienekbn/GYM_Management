@@ -16,6 +16,13 @@ public class UserProfileRequest {
     private Integer availableDaysPerWeek;
     private Integer preferredSessionDuration;
     private String medicalConditions;
+    private Integer trainingExperienceMonths;
+    private String dailyActivityLevel;
+    private String trainingLocation;
+    private String availableEquipment;
+    private String preferredTrainingDays;
+    private String injuryAreas;
+    private String dislikedExercises;
 
     private Double bodyFatPercentage;
 }

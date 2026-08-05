@@ -33,4 +33,8 @@ public class SupportSession {
 
     private LocalDateTime acceptedAt;
     private LocalDateTime closedAt;
+    private Integer userRating;
+    @Column(length = 1000)
+    private String userRatingComment;
+    private LocalDateTime ratedAt;
 }

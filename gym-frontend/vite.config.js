@@ -16,10 +16,15 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    strictPort: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
-        changeOrigin: true
+        // Dùng IPv4 cụ thể để Node không thử đồng thời ::1 và 127.0.0.1 trên
+        // Windows (có thể gây AggregateError/EACCES không ổn định).
+        target: 'http://127.0.0.1:8080',
+        changeOrigin: true,
+        timeout: 30000,
+        proxyTimeout: 30000
       }
     }
   }

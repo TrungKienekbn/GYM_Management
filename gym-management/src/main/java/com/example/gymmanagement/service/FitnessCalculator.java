@@ -23,12 +23,13 @@ public class FitnessCalculator {
     // FIX: thêm gender để tính W_chuan chính xác hơn cho nữ.
     public double calculateFS(Integer age, Double height, Double weight, String gender) {
         if (age == null || height == null || weight == null) return 60.0;
+        if (!Double.isFinite(height) || !Double.isFinite(weight) || height <= 0 || weight <= 0) return 0.0;
         double sTuoi = calcSTuoi(age);
         double sCannang = calcSCannang(height, weight, gender);
         double wAge = systemConfigService.get("FS_WEIGHT_AGE", 0.4);
         double wWeight = systemConfigService.get("FS_WEIGHT_WEIGHT", 0.6);
         double fs = sTuoi * wAge + sCannang * wWeight;
-        return clamp(fs, 0, 100);
+        return Double.isFinite(fs) ? clamp(fs, 0, 100) : 0.0;
     }
 
     /** Overload giữ tương thích ngược cho code cũ chưa truyền gender. */

@@ -1,6 +1,6 @@
 <template>
   <div class="fade-in">
-    <div v-if="!isVip" class="vip-lock-banner"><div><b>🔒 Thống kê gói thường: 4 tuần gần nhất</b><span>VIP mở toàn bộ lịch sử, thống kê dài hạn và tự động điều chỉnh giáo án mỗi tuần.</span></div><el-button type="warning" @click="$router.push('/app/membership')">👑 Mở khóa VIP</el-button></div>
+    <div v-if="!isVip" class="vip-lock-banner"><div><b> Thống kê gói thường: 4 tuần gần nhất</b><span>VIP mở toàn bộ lịch sử, thống kê dài hạn và tự động điều chỉnh giáo án mỗi tuần.</span></div><el-button type="warning" @click="$router.push('/app/membership')"> Mở khóa VIP</el-button></div>
     <div v-if="loading">
       <el-skeleton :rows="6" animated style="background:var(--c-card);padding:24px;border-radius:12px"/>
     </div>
@@ -9,21 +9,51 @@
       <!-- ── MỚI: banner Fitness Improvement ── -->
       <el-card v-if="plan && plan.isFitnessImprovement" style="margin-bottom:24px;border-left:4px solid #dc2626">
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-          <el-tag type="danger" effect="dark">⏸️ Đang tập giáo án nâng cao thể lực</el-tag>
+          <el-tag type="danger" effect="dark"> Đang tập giáo án nâng cao thể lực</el-tag>
           <span style="font-size:0.85rem;color:var(--c-text2)">
             Giáo án đang được tạm dừng và sẽ tự động tiếp tục khi đủ thể lực.
           </span>
         </div>
       </el-card>
 
-      <!-- ===================== KHỐI LƯỢNG % HOÀN THÀNH TUẦN NÀY (không đổi) ===================== -->
+      <section class="analytics-section" v-if="dashboardStats">
+        <div class="analytics-heading">
+          <div><h2> Thống kê tháng {{ dayjs(selectedMonth).format('MM/YYYY') }}</h2><p>Được tổng hợp từ lịch sử checkout thực tế</p></div>
+          <div style="display:flex;gap:8px;align-items:center"><el-select v-model="selectedMonth" style="width:135px"><el-option v-for="m in dashboardMonths" :key="m" :label="dayjs(m).format('MM/YYYY')" :value="m" /></el-select><el-tag effect="plain">So với tháng trước</el-tag></div>
+        </div>
+        <div class="metric-grid">
+          <div class="metric-card"><span>Buổi hoàn thành</span><strong>{{ dashboardStats.currentMonthCompleted || 0 }}</strong><small :class="changeClass(dashboardStats.sessionChangePercent)">{{ changeText(dashboardStats.sessionChangePercent) }}</small></div>
+          <div class="metric-card"><span>Tỷ lệ duy trì</span><strong>{{ dashboardStats.currentMonthAdherencePercent || 0 }}%</strong><small :class="changeClass(dashboardStats.adherenceChangePercent)">{{ changeText(dashboardStats.adherenceChangePercent, ' điểm %') }}</small></div>
+          <div class="metric-card"><span>Thời gian tập</span><strong>{{ formatDuration(dashboardStats.currentMonthDurationMinutes) }}</strong><small>Trong tháng này</small></div>
+          <div class="metric-card"><span>Calo tiêu hao</span><strong>{{ (dashboardStats.currentMonthCalories || 0).toLocaleString('vi-VN') }}</strong><small>kcal đã ghi nhận</small></div>
+          <div class="metric-card"><span>Thay đổi cân nặng</span><strong>{{ dashboardStats.currentMonthWeightChange == null ? '--' : signed(dashboardStats.currentMonthWeightChange) + ' kg' }}</strong><small>Từ lần ghi đầu đến cuối tháng</small></div>
+        </div>
+
+        <div class="analytics-grid">
+          <el-card class="analytics-card wide"><template #header><b> Xu hướng 6 tháng</b></template><div class="analytics-chart"><canvas ref="monthlyChart"></canvas></div></el-card>
+          <el-card class="analytics-card"><template #header><b> Chất lượng buổi tập</b></template><div class="analytics-chart"><canvas ref="qualityChart"></canvas><div v-if="!hasQualityData" class="chart-empty">Chưa có dữ liệu</div></div></el-card>
+          <el-card class="analytics-card"><template #header><b> Phân bố nhóm cơ</b></template><div class="analytics-chart"><canvas ref="muscleChart"></canvas><div v-if="!hasMuscleData" class="chart-empty">Chưa có dữ liệu</div></div></el-card>
+          <el-card class="analytics-card insight-card"><template #header><b> Nhận xét tự động</b></template><p class="insight-main">{{ dashboardStats.monthlyInsight }}</p><ul><li v-for="item in dashboardStats.recommendations || []" :key="item">{{ item }}</li></ul><small>Nhận xét mang tính hỗ trợ luyện tập, không thay thế tư vấn y tế.</small></el-card>
+        </div>
+      </section>
+
+      <!-- Khối lượng hoàn thành theo tháng -->
       <el-card style="margin-bottom:24px">
         <template #header>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-weight:700">📊 KHỐI LƯỢNG % HOÀN THÀNH TUẦN NÀY</span>
-            <span v-if="volumeGapText" style="font-size:0.8rem;font-weight:600" :style="{color:volumeGapColor}">
-              {{ volumeGapText }}
-            </span>
+          <div class="volume-heading">
+            <span style="font-weight:700">KHỐI LƯỢNG % HOÀN THÀNH THÁNG {{ dayjs(selectedMonth).format('MM/YYYY') }}</span>
+            <div class="month-pagination" aria-label="Chọn tháng thống kê khối lượng">
+              <el-button size="small" plain :disabled="volumeMonthPage === 0" @click="changeVolumeMonthPage(-1)">Trước</el-button>
+              <el-button
+                v-for="month in visibleVolumeMonths"
+                :key="month"
+                size="small"
+                :type="month === selectedMonth ? 'primary' : 'default'"
+                @click="selectVolumeMonth(month)">
+                {{ dayjs(month).format('MM/YYYY') }}
+              </el-button>
+              <el-button size="small" plain :disabled="volumeMonthPage >= maxVolumeMonthPage" @click="changeVolumeMonthPage(1)">Sau</el-button>
+            </div>
           </div>
         </template>
         <div style="height:220px;position:relative">
@@ -32,81 +62,10 @@
         </div>
       </el-card>
 
-      <!-- ===================== LỊCH TẬP HÔM NAY | MÓN ĂN ĐỀ XUẤT (không đổi) ===================== -->
-      <div class="today-row">
-        <el-card>
-          <template #header>
-            <span style="font-weight:700">🏋️ LỊCH TẬP HÔM NAY</span>
-          </template>
-
-          <div v-if="!plan" class="empty-state" style="padding:16px">
-            Bạn chưa có giáo án nào.
-          </div>
-          <div v-else-if="!todayPlanDay" class="empty-state" style="padding:16px">
-            Hôm nay không có lịch tập theo kế hoạch.
-          </div>
-          <div v-else>
-
-            <!--<div style="font-weight:700;color:var(--c-accent);margin-bottom:10px">
-                              {{ todayPlanDay.dayName }} · {{ todayPlanDay.exercises?.length || 0 }} bài tập
-                            </div>-->
-            <div class="exercise-list">
-              <div v-for="ex in todayPlanDay.exercises" :key="ex.id" class="ex-row">
-                <div class="ex-info">
-                  <div class="ex-name">{{ ex.exerciseName }}</div>
-                  <div class="ex-sub">{{ muscleLabel(ex.muscleGroup) }}</div>
-                </div>
-                <div class="ex-meta">
-                  <div class="ex-sets">
-                    <span v-if="ex.reps">{{ ex.sets }}×{{ ex.reps }}</span>
-                    <span v-else-if="ex.durationSeconds">{{ ex.sets }}×{{ ex.durationSeconds }}s</span>
-                  </div>
-                  <div v-if="ex.restSeconds" style="font-size:0.7rem;color:var(--c-text3)">nghỉ {{ ex.restSeconds }}s</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </el-card>
-
-        <el-card>
-          <template #header>
-            <span style="font-weight:700">🍽️ MÓN ĂN ĐỀ XUẤT</span>
-          </template>
-
-          <div v-if="!plan" class="empty-state" style="padding:16px">
-            Bạn cần có giáo án để nhận đề xuất món ăn.
-          </div>
-          <template v-else>
-            <div style="font-size:0.82rem;color:var(--c-text2);margin-bottom:10px">
-              Mục tiêu: {{ goalLabel(foodGoalFor(plan.goal)) }}
-            </div>
-
-            <div v-if="loadingFoods" style="font-size:0.85rem;color:var(--c-text3)">Đang tải món ăn...</div>
-            <div v-else-if="foodError" style="font-size:0.85rem;color:var(--c-text3)">Không thể tải dữ liệu món ăn.</div>
-            <div v-else-if="!recommendedFoods.length" style="font-size:0.85rem;color:var(--c-text3)">
-              Chưa có món ăn đề xuất cho mục tiêu này.
-            </div>
-            <div v-else class="food-suggest-list">
-              <div v-for="f in recommendedFoods" :key="f.id" class="food-suggest-card">
-                <img v-if="f.imageUrl" :src="f.imageUrl" class="food-suggest-img" alt="" />
-                <div class="food-suggest-info">
-                  <div class="food-suggest-name">{{ f.name }}</div>
-                  <div class="food-suggest-meta">
-                    <span v-if="f.calories != null">🔥 {{ f.calories }} kcal</span>
-                    <span v-if="f.proteinGrams != null">🥩 Protein {{ f.proteinGrams }}g</span>
-                    <span v-if="f.fatGrams != null">🥑 Chất béo {{ f.fatGrams }}g</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </template>
-        </el-card>
-      </div>
-
       <!-- ===================== THỐNG KÊ CÁC BUỔI TẬP (MỚI) ===================== -->
       <el-card style="margin-top:24px" v-if="plan">
         <template #header>
-          <span style="font-weight:700">📋 THỐNG KÊ CÁC BUỔI TẬP{{ buoiStatsTitleSuffix }}</span>
+          <span style="font-weight:700"> THỐNG KÊ CÁC BUỔI TẬP{{ buoiStatsTitleSuffix }}</span>
         </template>
 
         <div v-if="!hasSelectedWeekData" class="empty-state" style="padding:16px">
@@ -126,12 +85,12 @@
                 </div>
                 <div class="buoi-stat-sub">{{ b.summary }}</div>
               </div>
-              <el-icon class="buoi-expand-icon" :class="{ open: expandedMap[b.buoiNumber] }"><ArrowDown/></el-icon>
+              
             </div>
 
             <div v-if="expandedMap[b.buoiNumber] && b.state === 'completed'" class="buoi-detail">
               <div v-if="b.shortCount > 0" class="detail-group">
-                <div class="detail-group-title short">⚠️ Cần cải thiện</div>
+                <div class="detail-group-title short"> Cần cải thiện</div>
                 <div v-for="ex in b.exercises.filter(e => e.status === 'short')" :key="ex.exerciseId" class="detail-ex-row">
                   <span class="detail-ex-name">{{ ex.exerciseName }}</span>
                   <span class="detail-ex-diff short">Thiếu {{ Math.abs(ex.diff) }} {{ ex.type === 'reps' ? 'reps' : 'giây' }}</span>
@@ -139,7 +98,7 @@
               </div>
 
               <div v-if="b.excessReps > 0 || b.excessSeconds > 0" class="detail-group">
-                <div class="detail-group-title excess">📈 Tập thừa</div>
+                <div class="detail-group-title excess"> Tập thừa</div>
                 <div v-for="ex in b.exercises.filter(e => e.status === 'excess')" :key="ex.exerciseId" class="detail-ex-row">
                   <span class="detail-ex-name">{{ ex.exerciseName }}</span>
                   <span class="detail-ex-diff excess">+{{ ex.diff }} {{ ex.type === 'reps' ? 'reps' : 'giây' }}</span>
@@ -147,60 +106,12 @@
               </div>
 
               <div class="detail-footer">
-                ✅ Đạt yêu cầu: {{ b.achievedCount }}/{{ b.totalExercises }} bài
+                 Đạt yêu cầu: {{ b.achievedCount }}/{{ b.totalExercises }} bài
               </div>
             </div>
           </div>
         </div>
       </el-card>
-            <!-- ===================== THỐNG KÊ THEO THỜI GIAN (MỚI) ===================== -->
-            <el-card style="margin-top:24px" v-if="plan">
-              <template #header>
-                <span style="font-weight:700">📈 THỐNG KÊ THEO THỜI GIAN (tỉ lệ hoàn thành trung bình)</span>
-              </template>
-
-              <el-radio-group v-model="timeViewMode" size="small" style="margin-bottom:16px">
-                <el-radio-button label="week">Theo tuần</el-radio-button>
-                <el-radio-button label="month">Theo tháng</el-radio-button>
-              </el-radio-group>
-
-              <div class="time-stats-scroll">
-                <template v-if="timeViewMode === 'week'">
-                  <div v-if="!weekStatsData.length" class="empty-state" style="padding:16px">
-                    Chưa có tuần nào được ghi nhận.
-                  </div>
-                  <div v-for="w in weekStatsData" :key="'w-'+w.weekNumber"
-                       class="time-stat-item"
-                       :class="{ 'time-stat-selected': w.weekNumber === effectiveWeekNumber }"
-                       :ref="w.isCurrent ? setCurrentStatRef : undefined"
-                       @click="selectWeek(w.weekNumber)">
-                    <div class="time-stat-label">Tuần {{ w.weekNumber }}</div>
-                    <div class="time-stat-bar-track">
-                      <div class="time-stat-bar-fill" :class="w.isCurrent ? 'bar-current' : 'bar-completed'"
-                           :style="{ height: (w.avgRate != null ? Math.min(w.avgRate,100) : 0) + '%' }"></div>
-                    </div>
-                    <div class="time-stat-percent">{{ w.avgRate != null ? Math.round(w.avgRate) + '%' : '--' }}</div>
-                    <div v-if="w.isCurrent" class="time-stat-tag">(đang tập)</div>
-                  </div>
-                </template>
-
-                <template v-else>
-                  <div v-if="!monthStatsData.length" class="empty-state" style="padding:16px">
-                    Chưa có tháng nào được ghi nhận.
-                  </div>
-                  <div v-for="m in monthStatsData" :key="'m-'+m.key"
-                       class="time-stat-item" :ref="m.isCurrent ? setCurrentStatRef : undefined">
-                    <div class="time-stat-label">Tháng {{ m.label }}</div>
-                    <div class="time-stat-bar-track">
-                      <div class="time-stat-bar-fill" :class="m.isCurrent ? 'bar-current' : 'bar-completed'"
-                           :style="{ height: (m.avgRate != null ? Math.min(m.avgRate,100) : 0) + '%' }"></div>
-                    </div>
-                    <div class="time-stat-percent">{{ m.avgRate != null ? Math.round(m.avgRate) + '%' : '--' }}</div>
-                    <div v-if="m.isCurrent" class="time-stat-tag">(đang tập)</div>
-                  </div>
-                </template>
-              </div>
-            </el-card>
     </template>
   </div>
 </template>
@@ -208,8 +119,7 @@
 <script setup>
 import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { Chart, registerables } from 'chart.js'
-import { planAPI, sessionAPI, foodAPI, membershipAPI } from '@/api'
-import { ArrowDown } from '@element-plus/icons-vue'
+import { planAPI, sessionAPI, membershipAPI, dashboardAPI } from '@/api'
 import dayjs from 'dayjs'
 
 Chart.register(...registerables)
@@ -217,72 +127,131 @@ Chart.register(...registerables)
 const plan         = ref(null)
 const allSessions  = ref([])
 const loading       = ref(true)
-const recommendedFoods = ref([])
-const loadingFoods      = ref(false)
-const foodError         = ref(false)
 const isVip             = ref(false)
+const dashboardStats    = ref(null)
+const serverDashboardStats = ref(null)
+const selectedMonth = ref(dayjs().startOf('month').format('YYYY-MM-DD'))
+const dashboardMonths = computed(() => {
+  const values = new Set([dayjs().startOf('month').format('YYYY-MM-DD')])
+  allSessions.value.forEach(s => { if (s.sessionDate) values.add(dayjs(s.sessionDate).startOf('month').format('YYYY-MM-DD')) })
+  return [...values].sort().reverse()
+})
+const monthlyChart      = ref(null)
+const qualityChart      = ref(null)
+const muscleChart       = ref(null)
+let monthlyInst = null, qualityInst = null, muscleInst = null
 
-// ── Khối lượng % hoàn thành tuần này — theo THỨ TỰ BUỔI trong giáo án (không đổi) ──
+const hasQualityData = computed(() => Object.values(dashboardStats.value?.sessionQualityDistribution || {}).some(v => v > 0))
+const hasMuscleData = computed(() => Object.values(dashboardStats.value?.muscleGroupDistribution || {}).some(v => v > 0))
+const signed = value => `${Number(value) > 0 ? '+' : ''}${value}`
+const changeText = (value, suffix = '%') => value == null ? 'Chưa đủ dữ liệu so sánh' : `${signed(value)}${suffix} so với tháng trước`
+const changeClass = value => Number(value) > 0 ? 'change-up' : Number(value) < 0 ? 'change-down' : ''
+const formatDuration = minutes => `${Math.floor((minutes || 0) / 60)}h ${(minutes || 0) % 60}p`
+
+function drawAnalyticsCharts() {
+  if (!dashboardStats.value) return
+  const text = '#4A3728', grid = 'rgba(196,154,108,.22)'
+  const months = Object.keys(dashboardStats.value.monthlyCompletedSessions || {})
+  monthlyInst?.destroy(); qualityInst?.destroy(); muscleInst?.destroy()
+  if (monthlyChart.value) monthlyInst = new Chart(monthlyChart.value, { type:'bar', data:{ labels:months, datasets:[
+    { label:'Số buổi hoàn thành', data:months.map(k => dashboardStats.value.monthlyCompletedSessions[k]), backgroundColor:'#d98b2b', borderRadius:6 }
+  ]}, options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{grid:{display:false},ticks:{color:text}},y:{beginAtZero:true,grid:{color:grid},ticks:{precision:0,color:text},title:{display:true,text:'Số buổi',color:text}}} } })
+  const quality = dashboardStats.value.sessionQualityDistribution || {}
+  if (qualityChart.value && hasQualityData.value) qualityInst = new Chart(qualityChart.value, { type:'doughnut', data:{labels:Object.keys(quality),datasets:[{data:Object.values(quality),backgroundColor:['#22c55e','#f59e0b','#ef4444','#94a3b8'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'bottom',labels:{color:text,boxWidth:10}}}} })
+  const muscles = dashboardStats.value.muscleGroupDistribution || {}
+  if (muscleChart.value && hasMuscleData.value) muscleInst = new Chart(muscleChart.value, { type:'bar', data:{labels:Object.keys(muscles).map(muscleLabel),datasets:[{label:'Số bài hoàn thành',data:Object.values(muscles),backgroundColor:'#1565c0',borderRadius:6}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,grid:{color:grid},ticks:{precision:0,color:text}},y:{grid:{display:false},ticks:{color:text}}}} })
+}
+
+function buildDashboardFallback(sessions, anchor = dayjs()) {
+  const now = dayjs(anchor).endOf('month')
+  const currentKey = now.format('YYYY-MM')
+  const previousKey = now.subtract(1, 'month').format('YYYY-MM')
+  const inMonth = key => sessions.filter(s => s.sessionDate && dayjs(s.sessionDate).format('YYYY-MM') === key)
+  const current = inMonth(currentKey)
+  const previous = inMonth(previousKey)
+  const completed = list => list.filter(s => s.status === 'COMPLETED')
+  const eligible = list => list.filter(s => !dayjs(s.sessionDate).isAfter(now, 'day'))
+  const adherence = list => eligible(list).length ? Math.round(completed(eligible(list)).length * 100 / eligible(list).length) : 0
+  const currentDone = completed(current), previousDone = completed(previous)
+  const monthlyCompletedSessions = {}, monthlyCaloriesBurned = {}, monthlyDurationMinutes = {}, monthlyCompletionPercent = {}
+  for (let i = 5; i >= 0; i--) {
+    const d = now.subtract(i, 'month'), key = d.format('YYYY-MM'), label = d.format('MM/YYYY')
+    const done = completed(inMonth(key))
+    monthlyCompletedSessions[label] = done.length
+    monthlyCaloriesBurned[label] = done.reduce((sum, s) => sum + (s.totalCaloriesBurned || 0), 0)
+    monthlyDurationMinutes[label] = done.reduce((sum, s) => sum + (s.durationMinutes || 0), 0)
+    monthlyCompletionPercent[label] = done.length ? Math.round(done.reduce((sum, s) => sum + (s.completionRate || 0), 0) / done.length) : null
+  }
+  const sessionQualityDistribution = { 'Hoàn thành tốt':0, 'Hoàn thành một phần':0, 'Bỏ buổi':0, 'Chưa hoàn thành':0 }
+  eligible(current).forEach(s => {
+    if (s.status === 'COMPLETED' && (s.completionRate || 0) >= 90) sessionQualityDistribution['Hoàn thành tốt']++
+    else if (s.status === 'COMPLETED') sessionQualityDistribution['Hoàn thành một phần']++
+    else if (s.status === 'SKIPPED') sessionQualityDistribution['Bỏ buổi']++
+    else sessionQualityDistribution['Chưa hoàn thành']++
+  })
+  const muscleByExercise = {}
+  ;(plan.value?.planDays || []).forEach(d => (d.exercises || []).forEach(e => { muscleByExercise[e.exerciseId] = e.muscleGroup }))
+  const muscleGroupDistribution = {}
+  currentDone.forEach(s => (s.exerciseLogs || []).filter(l => l.isCompleted !== false).forEach(l => {
+    const muscle = muscleByExercise[l.exerciseId]
+    if (muscle) muscleGroupDistribution[muscle] = (muscleGroupDistribution[muscle] || 0) + 1
+  }))
+  const currentRate = adherence(current), previousRate = adherence(previous)
+  return {
+    currentMonthSessions:current.length, previousMonthSessions:previous.length,
+    currentMonthCompleted:currentDone.length,
+    currentMonthCalories:currentDone.reduce((sum,s)=>sum+(s.totalCaloriesBurned||0),0),
+    currentMonthDurationMinutes:currentDone.reduce((sum,s)=>sum+(s.durationMinutes||0),0),
+    currentMonthAdherencePercent:currentRate, previousMonthAdherencePercent:previousRate,
+    sessionChangePercent:previousDone.length ? Math.round((currentDone.length-previousDone.length)*1000/previousDone.length)/10 : (currentDone.length ? 100 : 0),
+    adherenceChangePercent:currentRate-previousRate, currentMonthWeightChange:null,
+    monthlyCompletedSessions, monthlyCaloriesBurned, monthlyDurationMinutes, monthlyCompletionPercent,
+    muscleGroupDistribution, sessionQualityDistribution,
+    monthlyInsight:`Tháng này bạn đã hoàn thành ${currentDone.length}/${eligible(current).length} buổi (${currentRate}%).`,
+    recommendations: current.length ? ['Duy trì lịch tập đều và checkout đầy đủ để nhận phân tích chính xác hơn.'] : ['Bắt đầu và checkout buổi tập để hệ thống ghi nhận thống kê.']
+  }
+}
+
+// Khối lượng % hoàn thành theo tháng được chọn.
 const volChart = ref(null)
 let volInst = null
+const volumeMonthPage = ref(0)
+const volumeMonthsPerPage = 4
+const maxVolumeMonthPage = computed(() => Math.max(0, Math.ceil(dashboardMonths.value.length / volumeMonthsPerPage) - 1))
+const visibleVolumeMonths = computed(() => {
+  const start = volumeMonthPage.value * volumeMonthsPerPage
+  return dashboardMonths.value.slice(start, start + volumeMonthsPerPage)
+})
 
-function findSessionForBuoi(planDay) {
-  const weekNum = plan.value?.currentWeek
-  const planId  = plan.value?.id
-  return allSessions.value.find(s =>
-      s.planId === planId && s.weekNumber === weekNum && s.dayName === planDay.dayName
-  )
+function selectVolumeMonth(month) {
+  selectedMonth.value = month
+}
+
+function changeVolumeMonthPage(offset) {
+  volumeMonthPage.value = Math.min(maxVolumeMonthPage.value, Math.max(0, volumeMonthPage.value + offset))
 }
 
 const sessionProgress = computed(() => {
-  const planDays = plan.value?.planDays || []
-  const result = []
-  for (let i = 0; i < 7; i++) {
-    const buoiNumber = i + 1
-    const planDay = planDays[i]
-
-    if (!planDay) {
-      result.push({ buoiNumber, required: 0, actual: 0 })
-      continue
-    }
-
-    const session = findSessionForBuoi(planDay)
-    const actual = (session && session.status === 'COMPLETED' && session.completionRate != null)
-        ? session.completionRate
-        : 0
-
-    result.push({ buoiNumber, required: 100, actual })
-  }
-  return result
+  const monthKey = dayjs(selectedMonth.value).format('YYYY-MM')
+  return allSessions.value
+    .filter(s => s.sessionDate && dayjs(s.sessionDate).format('YYYY-MM') === monthKey)
+    .sort((a, b) => dayjs(a.sessionDate).valueOf() - dayjs(b.sessionDate).valueOf() || Number(a.id || 0) - Number(b.id || 0))
+    .map((session, index) => ({
+      buoiNumber: index + 1,
+      dateLabel: dayjs(session.sessionDate).format('DD/MM'),
+      required: 100,
+      actual: session.status === 'COMPLETED' ? Number(session.completionRate ?? 100) : 0
+    }))
 })
 
-const noVolume = computed(() => !plan.value || (plan.value.planDays || []).length === 0)
-
-const todayDow = computed(() => {
-  const d = dayjs().day()
-  return d === 0 ? 7 : d
-})
-
-const todayBuoiNumber = computed(() => {
-  const planDays = plan.value?.planDays || []
-  const idx = planDays.findIndex(d => d.dayOfWeek === todayDow.value)
-  return idx >= 0 ? idx + 1 : null
-})
-
-
-const volumeGapColor = computed(() => {
-  if (!todayBuoiNumber.value) return 'var(--c-text3)'
-  const item = sessionProgress.value[todayBuoiNumber.value - 1]
-  if (!item || !item.required) return 'var(--c-text3)'
-  return item.actual >= item.required ? 'var(--c-success)' : 'var(--c-warning)'
-})
+const noVolume = computed(() => sessionProgress.value.length === 0)
 
 function drawVolumeChart() {
   const GRID = 'rgba(196,154,108,0.3)', TICK = '#4A3728'
   if (!volChart.value) return
   if (volInst) volInst.destroy()
 
-  const labels       = sessionProgress.value.map(r => 'Buổi ' + r.buoiNumber)
+  const labels       = sessionProgress.value.map(r => `Buổi ${r.buoiNumber} (${r.dateLabel})`)
   const actualData    = sessionProgress.value.map(r => r.actual)
   const requiredData  = sessionProgress.value.map(r => r.required)
 
@@ -306,58 +275,9 @@ function drawVolumeChart() {
   })
 }
 
-// ── Lịch tập hôm nay (không đổi) ──
-const todayPlanDay = computed(() => {
-  return (plan.value?.planDays || []).find(d => d.dayOfWeek === todayDow.value) || null
-})
-
-function foodGoalFor(goal) {
-  return goal === 'ENDURANCE' ? 'MAINTENANCE' : goal
-}
-
-async function loadRecommendedFoods() {
-  if (!plan.value?.goal) return
-  loadingFoods.value = true
-  foodError.value = false
-  try {
-    const res = await foodAPI.getAll({ goal: foodGoalFor(plan.value.goal) })
-    recommendedFoods.value = (res.data || []).slice(0, 3)
-  } catch (err) {
-    foodError.value = true
-    recommendedFoods.value = []
-  } finally {
-    loadingFoods.value = false
-  }
-}
-
-// ═══════════════════ MỚI: THỐNG KÊ THEO THỜI GIAN (Tuần / Tháng) ═══════════════════
-const timeViewMode = ref('week') // 'week' | 'month'
-const currentTimeStatRef = ref(null)
-
-function setCurrentStatRef(el) {
-  if (el) currentTimeStatRef.value = el
-}
-
-function scrollToCurrentStat() {
-  nextTick(() => {
-    if (currentTimeStatRef.value && currentTimeStatRef.value.scrollIntoView) {
-      currentTimeStatRef.value.scrollIntoView({ behavior: 'smooth', inline: 'end', block: 'nearest' })
-    }
-  })
-}
-
-watch(timeViewMode, () => {
-  currentTimeStatRef.value = null
-  scrollToCurrentStat()
-})
-
 const selectedWeekNumber = ref(null) // null = chưa chọn -> dùng tuần hiện tại
 
-function selectWeek(weekNumber) {
-  selectedWeekNumber.value = weekNumber
-}
-
-// Tuần đang được xem trong "📋 Thống kê các buổi tập"
+// Tuần đang được xem trong " Thống kê các buổi tập"
 const effectiveWeekNumber = computed(() => {
   return selectedWeekNumber.value != null ? selectedWeekNumber.value : plan.value?.currentWeek
 })
@@ -375,54 +295,6 @@ const hasSelectedWeekData = computed(() => {
 })
 
 
-// Theo tuần — CHỈ tính trên giáo án đang active hiện tại (planId trùng plan.value.id).
-// weekNumber là tương đối theo từng giáo án nên không được gộp giáo án khác vào.
-const weekStatsData = computed(() => {
-  if (!plan.value) return []
-  const planId = plan.value.id
-  const currentWeek = plan.value.currentWeek
-  const byWeek = {}
-
-  allSessions.value.forEach(s => {
-    if (s.planId !== planId || s.weekNumber == null) return
-    if (!byWeek[s.weekNumber]) byWeek[s.weekNumber] = []
-    byWeek[s.weekNumber].push(s)
-  })
-
-  return Object.keys(byWeek).map(Number).sort((a, b) => a - b).map(w => {
-    const sessions = byWeek[w]
-    const completed = sessions.filter(s => s.status === 'COMPLETED' && s.completionRate != null)
-    const avgRate = completed.length
-        ? completed.reduce((sum, s) => sum + s.completionRate, 0) / completed.length
-        : null
-    return { weekNumber: w, avgRate, isCurrent: w === currentWeek }
-  })
-})
-
-// Theo tháng — TOÀN BỘ lịch sử (mọi giáo án), nhóm theo tháng dương lịch thật (session.sessionDate).
-const monthStatsData = computed(() => {
-  const byMonth = {}
-
-  allSessions.value.forEach(s => {
-    if (!s.sessionDate) return
-    const d = dayjs(s.sessionDate)
-    const key = d.format('YYYY-MM')
-    if (!byMonth[key]) byMonth[key] = { sessions: [], month: d.month() + 1, year: d.year() }
-    byMonth[key].sessions.push(s)
-  })
-
-  const nowKey = dayjs().format('YYYY-MM')
-
-  return Object.keys(byMonth).sort().map(key => {
-    const group = byMonth[key]
-    const completed = group.sessions.filter(s => s.status === 'COMPLETED' && s.completionRate != null)
-    const avgRate = completed.length
-        ? completed.reduce((sum, s) => sum + s.completionRate, 0) / completed.length
-        : null
-    return { key, label: `${group.month}/${group.year}`, avgRate, isCurrent: key === nowKey }
-  })
-})
-
 // ═══════════════════ MỚI: THỐNG KÊ CÁC BUỔI TẬP ═══════════════════
 const expandedMap = ref({})
 function toggleExpand(buoiNumber) {
@@ -436,7 +308,7 @@ function rateBadgeClass(rate) {
   return 'badge-low'
 }
 
-// MỚI — dùng riêng cho "📋 Thống kê các buổi tập", lọc theo tuần được chọn.
+// MỚI — dùng riêng cho " Thống kê các buổi tập", lọc theo tuần được chọn.
 // Khác findSessionForBuoi gốc (vốn cố định theo plan.currentWeek, phục vụ biểu đồ
 // "Khối lượng % hoàn thành tuần này" — KHÔNG đổi hàm đó).
 function findSessionForBuoiInSelectedWeek(planDay) {
@@ -540,30 +412,21 @@ const buoiStats = computed(() => {
 async function load() {
   loading.value = true
   try {
-    const [planRes, sessRes] = await Promise.all([
+    const [planRes, sessRes, dashboardRes] = await Promise.all([
       planAPI.getActive().catch(() => ({ data: null })),
-      sessionAPI.getAll().catch(() => ({ data: [] }))
+      sessionAPI.getAll().catch(() => ({ data: [] })),
+      dashboardAPI.get().catch(() => ({ data: null }))
     ])
     plan.value = planRes.data
     allSessions.value = sessRes.data || []
+    serverDashboardStats.value = dashboardRes.data?.monthlyCompletedSessions ? dashboardRes.data : null
+    dashboardStats.value = serverDashboardStats.value || { ...buildDashboardFallback(allSessions.value), ...(dashboardRes.data || {}) }
 
-    if (plan.value?.goal) {
-      await loadRecommendedFoods()
-    }
   } finally {
     loading.value = false
     nextTick(drawVolumeChart)
-    scrollToCurrentStat()
+    nextTick(drawAnalyticsCharts)
   }
-}
-
-function goalLabel(g) {
-  return {
-    WEIGHT_LOSS: '🔥 Giảm cân',
-    MUSCLE_GAIN: '💪 Tăng cơ',
-    ENDURANCE: '🏃 Sức bền',
-    MAINTENANCE: '⚖️ Duy trì'
-  }[g] || g
 }
 
 function muscleLabel(m) {
@@ -573,6 +436,16 @@ function muscleLabel(m) {
   }[m] || m
 }
 
+watch(selectedMonth, async value => {
+  const isCurrent = dayjs(value).isSame(dayjs(), 'month')
+  dashboardStats.value = isCurrent && serverDashboardStats.value
+    ? serverDashboardStats.value
+    : buildDashboardFallback(allSessions.value, dayjs(value))
+  await nextTick()
+  drawAnalyticsCharts()
+  drawVolumeChart()
+})
+
 onMounted(async () => {
   try { const r = await membershipAPI.getActive(); isVip.value = r.data?.membershipType === 'VIP' && r.data?.paymentStatus === 'PAID' } catch { isVip.value = false }
   load()
@@ -580,46 +453,13 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.analytics-section{margin-bottom:24px}.analytics-heading{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}.analytics-heading h2{margin:0;color:var(--c-text);font-size:1.15rem}.analytics-heading p{margin:4px 0 0;color:var(--c-text3);font-size:.8rem}.metric-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px}.metric-card{padding:16px;background:linear-gradient(145deg,var(--c-card),var(--c-card2));border:1px solid var(--c-border2);border-radius:12px;display:flex;flex-direction:column;gap:6px}.metric-card span{font-size:.76rem;color:var(--c-text2)}.metric-card strong{font-size:1.45rem;color:var(--c-text)}.metric-card small{color:var(--c-text3);font-size:.7rem}.metric-card .change-up{color:#15803d}.metric-card .change-down{color:#dc2626}.analytics-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:16px}.analytics-card{min-width:0}.analytics-card.wide{grid-column:span 1}.analytics-chart{height:260px;position:relative}.insight-card{background:linear-gradient(145deg,#fffaf2,var(--c-card))}.insight-main{font-weight:600;line-height:1.55;color:var(--c-text)}.insight-card ul{padding-left:18px;color:var(--c-text2);font-size:.85rem;line-height:1.55}.insight-card li{margin-bottom:8px}.insight-card small{color:var(--c-text3)}@media(max-width:1050px){.metric-grid{grid-template-columns:repeat(3,1fr)}}@media(max-width:768px){.analytics-grid{grid-template-columns:1fr}.metric-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:480px){.metric-grid{grid-template-columns:1fr}}
 .vip-lock-banner{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:14px 18px;margin-bottom:20px;border:1px solid #e7bd52;background:#fff8dc;border-radius:10px;color:#6b4b00}.vip-lock-banner span{display:block;font-size:.8rem;margin-top:4px}@media(max-width:650px){.vip-lock-banner{align-items:flex-start;flex-direction:column}}
 .chart-empty { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--c-text3); font-size:0.85rem; }
 
-.today-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-@media (max-width:768px) { .today-row { grid-template-columns:1fr; } }
-
-.exercise-list { display:flex; flex-direction:column; gap:6px; }
-.ex-row {
-  display:flex; align-items:center; gap:10px; padding:8px 10px;
-  background:var(--c-card2); border-radius:var(--radius);
-}
-.ex-info { flex:1; min-width:0; }
-.ex-name { font-size:0.875rem; font-weight:600; color:var(--c-text); }
-.ex-sub  { font-size:0.72rem; color:var(--c-text3); margin-top:1px; }
-.ex-meta { text-align:right; flex-shrink:0; }
-.ex-sets { font-size:0.82rem; color:var(--c-accent); font-family:var(--font-mono); font-weight:700; }
-
-.food-suggest-list { display:flex; flex-direction:column; gap:8px; }
-.food-suggest-card { display:flex; gap:10px; align-items:center; background:var(--c-card2); border-radius:8px; padding:8px 10px; }
-.food-suggest-img { width:44px; height:44px; object-fit:cover; border-radius:8px; flex-shrink:0; }
-.food-suggest-info { flex:1; min-width:0; }
-.food-suggest-name { font-size:0.85rem; font-weight:600; color:var(--c-text); }
-.food-suggest-meta { display:flex; gap:10px; flex-wrap:wrap; font-size:0.72rem; color:var(--c-text3); margin-top:3px; }
-
-/* ── Thống kê theo thời gian ── */
-.time-stats-scroll { display:flex; gap:14px; overflow-x:auto; padding:10px 4px 14px; }
-
-.time-stat-item { flex:0 0 auto; width:64px; display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer; border-radius:8px; padding:4px; transition:background .15s; }
-.time-stat-item:hover { background:var(--c-card2); }
-.time-stat-selected { background:#FFF8F0; outline:2px solid var(--c-accent); }
-.time-stat-label { font-size:0.75rem; font-weight:700; color:var(--c-text); white-space:nowrap; }
-.time-stat-bar-track {
-  width:28px; height:120px; background:#f1f5f9; border-radius:6px;
-  display:flex; align-items:flex-end; overflow:hidden;
-}
-.time-stat-bar-fill { width:100%; border-radius:6px; transition:height .3s; }
-.bar-completed { background:#22c55e; }
-.bar-current   { background:#1565C0; }
-.time-stat-percent { font-size:0.78rem; font-weight:700; color:var(--c-text); }
-.time-stat-tag { font-size:0.68rem; color:#1565C0; font-weight:600; }
+.volume-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.month-pagination{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.month-pagination .el-button+.el-button{margin-left:0}
+@media(max-width:700px){.volume-heading{align-items:flex-start;flex-direction:column}.month-pagination{width:100%}}
 
 /* ── Thống kê các buổi tập ── */
 .buoi-stats-list { display:flex; flex-direction:column; gap:8px; }

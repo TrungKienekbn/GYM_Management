@@ -8,45 +8,23 @@
       </div>
 
       <el-menu :default-active="route.path" router class="sidebar-menu" :collapse="collapsed">
-        <el-menu-item index="/admin/dashboard"><el-icon>
-            <DataAnalysis />
-          </el-icon><template #title>Dashboard</template></el-menu-item>
-        <el-menu-item index="/admin/users"><el-icon>
-            <UserFilled />
-          </el-icon><template #title>Người dùng</template></el-menu-item>
-        <el-menu-item index="/admin/memberships"><el-icon>
-            <CreditCard />
-          </el-icon><template #title>Hóa đơn</template></el-menu-item>
-        <el-menu-item index="/admin/invoices"><el-icon>
-            <Tickets />
-          </el-icon><template #title>Lịch sử giao dịch</template></el-menu-item>
-        <el-menu-item index="/admin/exercises"><el-icon>
-            <Trophy />
-          </el-icon><template #title>Bài tập</template></el-menu-item>
-        <el-menu-item index="/admin/foods"><el-icon>
-            <Food />
-          </el-icon><template #title>Món ăn</template></el-menu-item>
-        <el-menu-item index="/admin/plans"><el-icon>
-            <Calendar />
-          </el-icon><template #title>Giáo án</template></el-menu-item>
-        <el-menu-item index="/admin/ratings"><el-icon>
-            <Star />
-          </el-icon><template #title>Đánh giá</template></el-menu-item>
+        <el-menu-item index="/admin/dashboard"><template #title>Thống kê</template></el-menu-item>
+        <el-menu-item index="/admin/users"><template #title>Người dùng</template></el-menu-item>
+        <el-menu-item index="/admin/invoices"><template #title>Lịch sử giao dịch</template></el-menu-item>
+        <el-menu-item index="/admin/exercises"><template #title>Bài tập</template></el-menu-item>
+        <el-menu-item index="/admin/foods"><template #title>Món ăn</template></el-menu-item>
+        <el-menu-item index="/admin/shop"><template #title>Cửa hàng</template></el-menu-item>
+        <el-menu-item index="/admin/plans"><template #title>Giáo án</template></el-menu-item>
+        <el-menu-item index="/admin/ratings"><template #title>Đánh giá</template></el-menu-item>
         <el-menu-item index="/admin/support">
           <el-badge :value="supportBadge" :max="9" :hidden="!supportBadge" class="menu-badge">
-            <el-icon>
-              <ChatDotRound />
-            </el-icon>
+            <el-icon><ChatDotRound /></el-icon>
           </el-badge>
           <template #title>Hỗ trợ chat</template>
         </el-menu-item>
-        <el-menu-item index="/admin/notify"><el-icon>
-            <Bell />
-          </el-icon><template #title>Thông báo</template></el-menu-item>
+        <el-menu-item index="/admin/notify"><template #title>Thông báo</template></el-menu-item>
         <el-menu-item index="/admin/system-configs">
-          <el-icon>
-            <Setting />
-          </el-icon>
+          
           <template #title>Công thức hệ thống</template>
         </el-menu-item>
       </el-menu>
@@ -60,9 +38,7 @@
           </div>
         </div>
         <el-button text @click="auth.logout(); router.push('/login')" class="logout-btn">
-          <el-icon>
-            <SwitchButton />
-          </el-icon>
+          
           <span v-show="!collapsed" style="margin-left:6px">Đăng xuất</span>
         </el-button>
       </div>
@@ -71,10 +47,7 @@
     <div class="main-area">
       <header class="topbar">
         <el-button text @click="collapsed = !collapsed" class="toggle-btn">
-          <el-icon size="20">
-            <Fold v-if="!collapsed" />
-            <Expand v-else />
-          </el-icon>
+          <el-icon size="20"><Fold v-if="!collapsed"/><Expand v-else/></el-icon>
         </el-button>
         <div class="topbar-title display">ADMIN PANEL</div>
         <div style="flex:1" />
@@ -94,6 +67,7 @@
 </template>
 
 <script setup>
+import { ChatDotRound, Fold, Expand } from '@element-plus/icons-vue'
 import { ref, computed, h, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
@@ -179,7 +153,7 @@ function contentVNodes(text) {
 // Thông báo khi user gửi tin nhắn mới trong một phiên đang chat
 function notifyNewMessage(s) {
   const inst = ElNotification({
-    title: '💬 Tin nhắn mới',
+    title: ' Tin nhắn mới',
     type: 'info',
     duration: 6000,
     customClass: 'support-notify',

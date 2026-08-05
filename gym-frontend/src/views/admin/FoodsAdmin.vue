@@ -8,7 +8,7 @@
     <el-card style="margin-bottom:16px">
       <el-input v-model="keyword" placeholder="Tìm theo tên món ăn..." clearable
                 @input="load" style="max-width:320px">
-        <template #prefix><el-icon><Search/></el-icon></template>
+        <template #prefix></template>
       </el-input>
     </el-card>
 
@@ -31,8 +31,8 @@
         <el-table-column label="Trên 100g" width="150" align="center">
           <template #default="{row}">
             <div v-if="row.weightGrams" style="font-size:0.72rem;line-height:1.5;text-align:left">
-              🔥 {{ row.caloriesPer100g ?? 0 }} kcal<br/>
-              🥩 {{ row.proteinPer100g ?? 0 }}g · 🥑 {{ row.fatPer100g ?? 0 }}g
+               {{ row.caloriesPer100g ?? 0 }} kcal<br/>
+               {{ row.proteinPer100g ?? 0 }}g ·  {{ row.fatPer100g ?? 0 }}g
             </div>
             <span v-else style="color:var(--c-text3)">—</span>
           </template>
@@ -55,7 +55,7 @@
     </el-card>
 
     <!-- Add/Edit Dialog -->
-    <el-dialog v-model="formDialog" :title="editId ? 'SỬA MÓN ĂN' : 'THÊM MÓN ĂN'" width="620px" align-center>
+    <el-dialog v-model="formDialog" :title="editId ? 'SỬA MÓN ĂN' : 'THÊM MÓN ĂN'" width="620px" align-center append-to-body>
       <el-form :model="form" label-position="top">
         <el-form-item label="Tên món ăn">
           <el-input v-model="form.name" placeholder="VD: Ức gà áp chảo sốt chanh"/>
@@ -76,15 +76,16 @@
           </el-form-item>
         </div>
         <div v-if="previewPer100g" class="nutrition-preview">
-          <b>Quy đổi chuẩn trên 100g:</b> 🔥 {{ previewPer100g.cal }} kcal · 🥩 {{ previewPer100g.pro }}g protein · 🥑 {{ previewPer100g.fat }}g béo
+          <b>Quy đổi chuẩn trên 100g:</b>  {{ previewPer100g.cal }} kcal ·  {{ previewPer100g.pro }}g protein ·  {{ previewPer100g.fat }}g béo
           <small>Số liệu nhập phía trên là cho toàn bộ một khẩu phần.</small>
         </div>
 
         <el-form-item label="Phù hợp cho mục tiêu">
           <el-checkbox-group v-model="form.suitableGoals">
-            <el-checkbox label="WEIGHT_LOSS">🔥 Giảm cân</el-checkbox>
-            <el-checkbox label="MUSCLE_GAIN">💪 Tăng cân</el-checkbox>
-            <el-checkbox label="MAINTENANCE">⚖️ Duy trì</el-checkbox>
+            <el-checkbox label="WEIGHT_LOSS"> Giảm cân</el-checkbox>
+            <el-checkbox label="MUSCLE_GAIN"> Tăng cân</el-checkbox>
+            <el-checkbox label="MAINTENANCE"> Tổng hợp</el-checkbox>
+            <el-checkbox label="ENDURANCE"> Sức bền</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
 
@@ -179,8 +180,8 @@ async function remove(id) {
   await foodAPI.delete(id); ElMessage.success('Đã xóa món ăn'); load()
 }
 
-function goalLabel(g) { return { WEIGHT_LOSS:'Giảm cân', MUSCLE_GAIN:'Tăng cân', MAINTENANCE:'Duy trì' }[g] || g }
-function goalBadge(g) { return { WEIGHT_LOSS:'badge-danger', MUSCLE_GAIN:'badge-success', MAINTENANCE:'badge-warning' }[g] || '' }
+function goalLabel(g) { return { WEIGHT_LOSS:'Giảm cân', MUSCLE_GAIN:'Tăng cân', MAINTENANCE:'Tổng hợp', ENDURANCE:'Sức bền' }[g] || 'Khác' }
+function goalBadge(g) { return { WEIGHT_LOSS:'badge-danger', MUSCLE_GAIN:'badge-success', MAINTENANCE:'badge-warning', ENDURANCE:'badge-info' }[g] || '' }
 
 onMounted(load)
 </script>

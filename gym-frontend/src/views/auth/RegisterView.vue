@@ -13,16 +13,16 @@
 
       <el-form :model="form" label-position="top">
         <el-form-item label="Họ và tên">
-          <el-input v-model="form.fullName" placeholder="Nguyễn Văn A" size="large" prefix-icon="User"/>
+          <el-input v-model="form.fullName" placeholder="Nguyễn Văn A" size="large"/>
         </el-form-item>
         <el-form-item label="Email">
-          <el-input v-model="form.email" placeholder="you@email.com" type="email" size="large" prefix-icon="Message"/>
+          <el-input v-model="form.email" placeholder="you@email.com" type="email" size="large"/>
         </el-form-item>
         <el-form-item label="Số điện thoại">
-          <el-input v-model="form.phone" placeholder="0901234567" size="large" prefix-icon="Phone"/>
+          <el-input v-model="form.phone" placeholder="0901234567" size="large"/>
         </el-form-item>
         <el-form-item label="Mật khẩu">
-          <el-input v-model="form.password" placeholder="Tối thiểu 6 ký tự" type="password" size="large" prefix-icon="Lock" show-password @keyup.enter="handleRegister"/>
+          <el-input v-model="form.password" placeholder="Tối thiểu 6 ký tự" type="password" size="large" show-password @keyup.enter="handleRegister"/>
         </el-form-item>
         <el-button type="primary" size="large" style="width:100%;margin-top:8px;font-size:1rem;height:46px" :loading="auth.loading" @click="handleRegister">
           TẠO TÀI KHOẢN

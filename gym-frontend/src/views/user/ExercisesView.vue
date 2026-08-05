@@ -11,11 +11,11 @@
           <el-option v-for="m in muscles" :key="m.v" :label="m.l" :value="m.v"/>
         </el-select>
         <el-select v-model="filterDiff" placeholder="Độ khó" clearable style="width:140px" @change="load">
-          <el-option label="🟢 Dễ" value="EASY"/>
-          <el-option label="🟡 Trung bình" value="MEDIUM"/>
-          <el-option label="🔴 Khó" value="HARD"/>
+          <el-option label=" Dễ" value="EASY"/>
+          <el-option label=" Trung bình" value="MEDIUM"/>
+          <el-option label=" Khó" value="HARD"/>
         </el-select>
-        <el-input v-model="search" placeholder="Tìm bài tập..." prefix-icon="Search" style="width:220px" clearable/>
+        <el-input v-model="search" placeholder="Tìm bài tập..." style="width:220px" clearable/>
         <span class="muted" style="font-size:0.82rem;color:var(--c-text3)">{{ filtered.length }} bài tập</span>
       </div>
     </el-card>
@@ -29,7 +29,7 @@
         <div class="ex-desc">{{ ex.description }}</div>
         <div class="ex-footer">
           <span class="badge" :class="diffBadge(ex.difficulty)">{{ diffLabel(ex.difficulty) }}</span>
-          <span style="font-size:0.75rem;color:var(--c-text3)" v-if="ex.caloriesBurned">🔥 {{ ex.caloriesBurned }} kcal/set</span>
+          <span style="font-size:0.75rem;color:var(--c-text3)" v-if="ex.caloriesBurned"> {{ ex.caloriesBurned }} kcal/set</span>
         </div>
         <div class="ex-sets">
           <span v-if="ex.defaultReps">{{ ex.defaultSets }}×{{ ex.defaultReps }} reps</span>
@@ -41,7 +41,7 @@
     <div v-if="!loading && !filtered.length" class="empty-state">Không tìm thấy bài tập nào</div>
 
     <!-- Detail Dialog with YouTube embed -->
-    <el-dialog v-model="detailDialog" :title="sel?.name" width="600px" align-center v-if="sel">
+    <el-dialog v-model="detailDialog" :title="sel?.name" width="600px" align-center append-to-body v-if="sel">
       <!-- YouTube video embed -->
       <div v-if="sel.videoUrl" class="video-wrap">
         <iframe
@@ -52,7 +52,7 @@
             style="width:100%;height:280px;border-radius:8px"
         ></iframe>
       </div>
-      <div v-else class="no-video">📹 Chưa có video hướng dẫn</div>
+      <div v-else class="no-video"> Chưa có video hướng dẫn</div>
 
       <el-descriptions :column="2" border size="small" style="margin-top:16px">
         <el-descriptions-item label="Nhóm cơ">{{ muscleLabel(sel.muscleGroup) }}</el-descriptions-item>
@@ -64,13 +64,13 @@
           <span v-if="sel.defaultReps">{{ sel.defaultReps }} reps</span>
           <span v-else>{{ sel.defaultDurationSeconds }}s</span>
         </el-descriptions-item>
-        <el-descriptions-item label="Calories/set">{{ sel.caloriesBurned || '--' }} kcal</el-descriptions-item>
+        <el-descriptions-item label="Calo mỗi hiệp">{{ sel.caloriesBurned || '--' }} kcal</el-descriptions-item>
         <el-descriptions-item label="Nghỉ">{{ sel.restSeconds || '--' }}s</el-descriptions-item>
         <el-descriptions-item label="Động tác" :span="2">{{ sel.description || 'Chưa có chi tiết động tác' }}</el-descriptions-item>
       </el-descriptions>
       <template #footer>
         <el-button @click="detailDialog=false">Đóng</el-button>
-        <el-button type="primary" @click="addToExtraSession">➕ Thêm vào buổi tập phụ</el-button>
+        <el-button type="primary" @click="addToExtraSession"> Thêm vào buổi tập phụ</el-button>
       </template>
     </el-dialog>
   </div>
@@ -81,6 +81,7 @@ import { ref, computed, onMounted } from 'vue'
 import { exerciseAPI, membershipAPI } from '@/api'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 const exercises    = ref([])
 const loading      = ref(true)
@@ -91,12 +92,14 @@ const sel          = ref(null)
 const detailDialog = ref(false)
 const isVip = ref(false)
 const router = useRouter()
+const auth = useAuthStore()
+const extraStorageKey = computed(() => `gym-extra-exercises-${auth.user?.userId || 'anonymous'}`)
 
 const muscles = [
-  { v:'CHEST', l:'💪 Ngực' }, { v:'BACK', l:'🔙 Lưng' },
-  { v:'SHOULDERS', l:'🔝 Vai' }, { v:'ARMS', l:'💪 Tay' },
-  { v:'LEGS', l:'🦵 Chân' }, { v:'CORE', l:'🎯 Cơ lõi' },
-  { v:'CARDIO', l:'❤️ Cardio' }, { v:'FULL_BODY', l:'⭐ Toàn thân' },
+  { v:'CHEST', l:' Ngực' }, { v:'BACK', l:' Lưng' },
+  { v:'SHOULDERS', l:' Vai' }, { v:'ARMS', l:' Tay' },
+  { v:'LEGS', l:' Chân' }, { v:'CORE', l:' Cơ lõi' },
+  { v:'CARDIO', l:' Cardio' }, { v:'FULL_BODY', l:' Toàn thân' },
 ]
 
 const filtered = computed(() => {
@@ -120,7 +123,7 @@ function open(ex) { sel.value = ex; detailDialog.value = true }
 
 function addToExtraSession() {
   let list = []
-  try { list = JSON.parse(localStorage.getItem('gym-extra-exercises') || '[]') } catch {}
+  try { list = JSON.parse(localStorage.getItem(extraStorageKey.value) || '[]') } catch {}
   if (list.some(ex => ex.id === sel.value.id)) { ElMessage.info('Bài tập này đã có trong buổi tập phụ'); return }
   if (!isVip.value && list.length >= 2) {
     ElMessageBox.confirm('Gói thường chỉ được chọn tối đa 2 bài cho buổi tập phụ. Nâng cấp VIP để thêm không giới hạn.', 'TÍNH NĂNG VIP', { confirmButtonText:'Xem gói VIP', cancelButtonText:'Để sau', type:'warning' })
@@ -128,7 +131,7 @@ function addToExtraSession() {
     return
   }
   list.push(sel.value)
-  localStorage.setItem('gym-extra-exercises', JSON.stringify(list))
+  localStorage.setItem(extraStorageKey.value, JSON.stringify(list))
   ElMessage.success(`Đã thêm ${sel.value.name} vào buổi tập phụ`)
   detailDialog.value = false
 }

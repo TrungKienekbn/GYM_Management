@@ -2,7 +2,7 @@ package com.example.gymmanagement.service;
 
 import com.example.gymmanagement.dto.request.LoginRequest;
 import com.example.gymmanagement.dto.request.RegisterRequest;
-import com.example.gymmanagement.dto.request.PhoneLast4LoginRequest;
+import com.example.gymmanagement.dto.request.ResetPasswordByPhoneRequest;
 import com.example.gymmanagement.dto.response.AuthResponse;
 import com.example.gymmanagement.entity.Role;
 import com.example.gymmanagement.entity.User;
@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -87,19 +88,32 @@ public class AuthService {
                 .build();
     }
 
-    public AuthResponse loginWithPhoneLast4(PhoneLast4LoginRequest request) {
+    public String resetPasswordWithPhoneLast4(ResetPasswordByPhoneRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Email không tồn tại"));
+        LocalDateTime now = LocalDateTime.now();
+        if (user.getPasswordResetBlockedUntil() != null && user.getPasswordResetBlockedUntil().isAfter(now))
+            throw new RuntimeException("Bạn đã nhập sai quá nhiều lần. Vui lòng thử lại sau 15 phút.");
         String phone = user.getPhone() == null ? "" : user.getPhone().replaceAll("\\D", "");
         String last4 = request.getLastFourDigits() == null ? "" : request.getLastFourDigits().trim();
         if (!last4.matches("\\d{4}") || phone.length() < 4 || !phone.endsWith(last4)) {
+            int attempts = (user.getPasswordResetAttempts() == null ? 0 : user.getPasswordResetAttempts()) + 1;
+            user.setPasswordResetAttempts(attempts);
+            if (attempts >= 5) {
+                user.setPasswordResetBlockedUntil(now.plusMinutes(15));
+                user.setPasswordResetAttempts(0);
+            }
+            userRepository.save(user);
             throw new RuntimeException("4 số cuối điện thoại không đúng");
         }
         if (!Boolean.TRUE.equals(user.getStatus())) throw new RuntimeException("Tài khoản đã bị khóa");
-        String token = jwtService.generateToken(user.getEmail());
-        return AuthResponse.builder().token(token).role(user.getRole().getRoleName())
-                .userId(user.getId()).fullName(user.getFullName()).email(user.getEmail())
-                .emailVerified(user.getEmailVerified()).build();
+        if (request.getNewPassword() == null || request.getNewPassword().length() < 6)
+            throw new RuntimeException("Mật khẩu mới phải có ít nhất 6 ký tự");
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        user.setPasswordResetAttempts(0);
+        user.setPasswordResetBlockedUntil(null);
+        userRepository.save(user);
+        return "Đặt lại mật khẩu thành công";
     }
 
     public String verifyEmail(String token) {

@@ -90,11 +90,4 @@ public class RatingController {
                 ratingService.adminReply(id, reply, file, removeAttachment), "Đã gửi phản hồi!"));
     }
 
-    // Admin xóa đánh giá của bất kỳ ai
-    @DeleteMapping("/admin/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<ApiResponse<String>> adminDeleteRating(@PathVariable Long id) {
-        ratingService.adminDeleteRating(id);
-        return ResponseEntity.ok(ApiResponse.success("Đã xóa đánh giá", "OK"));
-    }
 }

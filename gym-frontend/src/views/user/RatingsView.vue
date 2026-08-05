@@ -38,13 +38,13 @@
           </div>
           <!-- Admin reply -->
           <div v-if="r.adminReply || r.replyAttachmentUrl" class="admin-reply">
-            <span class="reply-label">💬 Admin:</span>
+            <span class="reply-label"> Quản trị viên:</span>
             <MessageBody :message="replyBody(r)"/>
           </div>
           <!-- Sửa / xóa đánh giá của chính mình -->
           <div class="rating-actions">
-            <el-button size="small" plain @click="openEdit(r)">✏️ Sửa</el-button>
-            <el-button size="small" type="danger" plain @click="removeRating(r)">🗑️ Xóa</el-button>
+            <el-button size="small" plain @click="openEdit(r)"> Sửa</el-button>
+            <el-button size="small" type="danger" plain @click="removeRating(r)"> Xóa</el-button>
           </div>
         </div>
       </div>
@@ -72,7 +72,7 @@
             <MessageBody :message="commentBody(r)"/>
           </div>
           <div v-if="r.adminReply || r.replyAttachmentUrl" class="admin-reply">
-            <span class="reply-label">💬 Admin:</span>
+            <span class="reply-label"> Quản trị viên:</span>
             <MessageBody :message="replyBody(r)"/>
           </div>
         </div>
@@ -81,7 +81,7 @@
     </el-card>
 
     <!-- Add / Edit Dialog -->
-    <el-dialog v-model="addDialog" :title="editingId ? 'SỬA ĐÁNH GIÁ' : 'VIẾT ĐÁNH GIÁ'" width="460px" align-center>
+    <el-dialog v-model="addDialog" :title="editingId ? 'SỬA ĐÁNH GIÁ' : 'VIẾT ĐÁNH GIÁ'" width="460px" align-center append-to-body>
       <el-form :model="form" label-position="top">
         <el-form-item label="Tiêu đề">
           <el-input v-model="form.title" maxlength="120" show-word-limit
@@ -90,10 +90,8 @@
         <el-form-item label="Dịch vụ đánh giá (không bắt buộc)">
           <el-select v-model="form.serviceType" style="width:100%" clearable
                      placeholder="Chưa chọn dịch vụ">
-            <el-option label="📋 Giáo án tập" value="WORKOUT_PLAN"/>
-            <el-option label="🥗 Dinh dưỡng" value="NUTRITION"/>
-            <el-option label="🏟️ Cơ sở vật chất" value="FACILITY"/>
-            <el-option label="👟 Huấn luyện viên" value="TRAINER"/>
+            <el-option label=" Giáo án tập" value="WORKOUT_PLAN"/>
+            <el-option label=" Dinh dưỡng" value="NUTRITION"/>
           </el-select>
         </el-form-item>
         <el-form-item label="Số sao">
@@ -105,23 +103,23 @@
         </el-form-item>
         <el-form-item label="Đính kèm ảnh / video / tài liệu">
           <div v-if="pickedFile" class="file-chip">
-            <el-icon :size="18"><Document/></el-icon>
+            
             <span class="fc-name">{{ pickedFile.name }}</span>
             <span class="fc-size">{{ prettyFileSize(pickedFile.size) }}</span>
             <el-button text class="fc-remove" @click="pickedFile=null" title="Bỏ file">
-              <el-icon><Close/></el-icon>
+              <el-icon><Close /></el-icon>
             </el-button>
           </div>
           <div v-else-if="existingAttachment && !removeAttachment" class="file-chip">
-            <el-icon :size="18"><Document/></el-icon>
+            
             <span class="fc-name">{{ existingAttachment.name || 'Tệp đính kèm' }}</span>
             <span class="fc-size">{{ prettyFileSize(existingAttachment.size) }}</span>
             <el-button text class="fc-remove" @click="removeAttachment=true" title="Gỡ file">
-              <el-icon><Close/></el-icon>
+              <el-icon><Close /></el-icon>
             </el-button>
           </div>
           <el-button v-else plain size="small" @click="fileInput?.click()">
-            <el-icon><Paperclip/></el-icon><span style="margin-left:6px">Chọn file</span>
+            <span style="margin-left:6px">Chọn file</span>
           </el-button>
         </el-form-item>
         <el-form-item label="Hiển thị công khai">
@@ -134,7 +132,7 @@
       <template #footer>
         <el-button @click="addDialog=false">Hủy</el-button>
         <el-button type="primary" @click="submit" :loading="submitting">
-          {{ editingId ? 'LƯU THAY ĐỔI' : 'GỬI ĐÁNH GIÁ ⭐' }}
+          {{ editingId ? 'LƯU THAY ĐỔI' : 'GỬI ĐÁNH GIÁ ' }}
         </el-button>
       </template>
     </el-dialog>
@@ -142,6 +140,7 @@
 </template>
 
 <script setup>
+import { Close } from '@element-plus/icons-vue'
 import { ref, reactive, onMounted, watch, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { ratingAPI } from '@/api'
@@ -272,7 +271,7 @@ async function submit() {
       ElMessage.success('Đã cập nhật đánh giá')
     } else {
       await ratingAPI.add(fd)
-      ElMessage.success('Cảm ơn bạn đã đánh giá! ⭐')
+      ElMessage.success('Cảm ơn bạn đã đánh giá! ')
     }
     addDialog.value = false
     editingId.value = null
@@ -295,7 +294,7 @@ async function removeRating(r) {
   } catch { /* lỗi đã hiển thị qua interceptor */ }
 }
 
-function serviceLabel(s) { return { WORKOUT_PLAN:'Giáo án', NUTRITION:'Dinh dưỡng', FACILITY:'Cơ sở', TRAINER:'HLV' }[s] || s }
+function serviceLabel(s) { return { WORKOUT_PLAN:'Giáo án', NUTRITION:'Dinh dưỡng' }[s] || s }
 function fmtDate(d) { return d ? dayjs(d).format('DD/MM/YYYY HH:mm') : '' }
 
 onMounted(async () => {

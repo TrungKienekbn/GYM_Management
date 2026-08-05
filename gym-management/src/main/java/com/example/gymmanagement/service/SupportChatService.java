@@ -2,6 +2,7 @@ package com.example.gymmanagement.service;
 
 import com.example.gymmanagement.dto.response.SupportMessageResponse;
 import com.example.gymmanagement.dto.response.SupportSessionResponse;
+import com.example.gymmanagement.dto.request.SupportRatingRequest;
 import com.example.gymmanagement.entity.SupportMessage;
 import com.example.gymmanagement.entity.SupportSession;
 import com.example.gymmanagement.entity.User;
@@ -132,6 +133,28 @@ public class SupportChatService {
         notifyClosed(session, "Người dùng " + name + " đã kết thúc cuộc trò chuyện", null);
     }
 
+    @Transactional
+    public SupportSessionResponse rateByUser(String email, Long sessionId, SupportRatingRequest request) {
+        SupportSession session = getOwnedSession(email, sessionId);
+        if (session.getStatus() != SupportStatus.CLOSED) {
+            throw new RuntimeException("Chỉ có thể đánh giá sau khi kết thúc cuộc trò chuyện");
+        }
+        if (session.getAdmin() == null) throw new RuntimeException("Phiên này chưa có quản trị viên hỗ trợ");
+        if (session.getUserRating() != null) throw new RuntimeException("Bạn đã đánh giá phiên hỗ trợ này");
+        if (request.getRating() == null || request.getRating() < 1 || request.getRating() > 5) {
+            throw new RuntimeException("Số sao phải từ 1 đến 5");
+        }
+        session.setUserRating(request.getRating());
+        session.setUserRatingComment(request.getComment() == null || request.getComment().isBlank()
+                ? null : request.getComment().trim());
+        session.setRatedAt(LocalDateTime.now());
+        sessionRepository.save(session);
+        notificationService.sendToUser(session.getAdmin().getId(), "⭐ Bạn vừa nhận đánh giá hỗ trợ",
+                session.getUser().getFullName() + " đã đánh giá " + request.getRating() + "/5 sao",
+                "SYSTEM", "SUPPORT", session.getId());
+        return toSessionResponse(session);
+    }
+
     /** Lấy phiên và đảm bảo nó thuộc về user hiện tại. */
     private SupportSession getOwnedSession(String email, Long sessionId) {
         User user = getUser(email);
@@ -190,7 +213,7 @@ public class SupportChatService {
 
     /** Danh sách các phiên đang chờ + đang hoạt động (cho admin). */
     public List<SupportSessionResponse> listOpenSessions() {
-        return sessionRepository.findByStatusInOrderByCreatedAtDesc(OPEN)
+        return sessionRepository.findAllByOrderByCreatedAtDesc()
                 .stream()
                 .map(this::toSessionResponse)
                 .collect(Collectors.toList());
@@ -409,6 +432,10 @@ public class SupportChatService {
                 .lastMessage(lastMessageText(last))
                 .lastMessageAt(last != null ? last.getCreatedAt() : null)
                 .lastMessageRole(last != null ? last.getSenderRole() : null)
+                .closedAt(s.getClosedAt())
+                .userRating(s.getUserRating())
+                .userRatingComment(s.getUserRatingComment())
+                .ratedAt(s.getRatedAt())
                 .build();
     }
 

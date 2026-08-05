@@ -33,6 +33,16 @@ public class NotificationService {
         notificationRepository.saveAll(unread);
     }
 
+    public void deleteMine(String email, Long notificationId) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy thông báo"));
+        if (notification.getUser() == null || !notification.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Bạn không có quyền xóa thông báo này");
+        }
+        notificationRepository.delete(notification);
+    }
+
     public void sendToUser(Long userId, String title, String message, String type) {
         sendToUser(userId, title, message, type, null, null);
     }

@@ -104,6 +104,10 @@ public class InvoiceService {
             throw new RuntimeException("Hóa đơn đã hết hạn quá nhiều lần. Vui lòng tạo đơn hàng mới.");
         }
 
+        if (invoice.getInvoiceType() == com.example.gymmanagement.pet.InvoiceType.MEMBERSHIP
+                && invoice.getMembershipType() != null) {
+            invoice.setPrice(membershipService.getPrice(invoice.getMembershipType()));
+        }
         return generateQr(invoice);
     }
 
@@ -227,15 +231,21 @@ public class InvoiceService {
         return overdue.size();
     }
 
+    @Transactional
     public List<InvoiceResponse> getMyInvoices(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return invoiceRepository.findByUserIdOrderByCreatedAtDesc(user.getId())
-                .stream().map(this::buildResponse).collect(Collectors.toList());
+                .stream()
+                .map(this::syncUnpaidMembershipPrice)
+                .map(this::buildResponse)
+                .collect(Collectors.toList());
     }
 
+    @Transactional
     public InvoiceResponse getInvoice(Long id, String email) {
-        return buildResponse(getOwnedInvoice(id, email));
+        Invoice invoice = syncUnpaidMembershipPrice(getOwnedInvoice(id, email));
+        return buildResponse(invoice);
     }
 
     public List<InvoiceResponse> getAllInvoices() {
@@ -252,6 +262,33 @@ public class InvoiceService {
                 .orElseThrow(() -> new RuntimeException("Invoice not found"));
         if (!invoice.getUser().getEmail().equalsIgnoreCase(email)) {
             throw new RuntimeException("Bạn không có quyền truy cập hóa đơn này");
+        }
+        return invoice;
+    }
+
+    /**
+     * Hóa đơn đã thanh toán là lịch sử bất biến. Riêng hóa đơn gói tập chưa thanh toán
+     * phải luôn theo bảng giá hiện hành; nếu giá đã đổi thì QR cũ cũng phải được tạo lại
+     * để số tiền trên màn hình và số tiền ngân hàng khớp nhau.
+     */
+    private Invoice syncUnpaidMembershipPrice(Invoice invoice) {
+        if (invoice.getInvoiceType() != com.example.gymmanagement.pet.InvoiceType.MEMBERSHIP
+                || invoice.getMembershipType() == null
+                || invoice.getStatus() == PaymentStatus.PAID
+                || invoice.getStatus() == PaymentStatus.CANCELLED) {
+            return invoice;
+        }
+
+        double currentPrice = membershipService.getPrice(invoice.getMembershipType());
+        if (invoice.getPrice() != null && Double.compare(invoice.getPrice(), currentPrice) == 0) {
+            return invoice;
+        }
+
+        invoice.setPrice(currentPrice);
+        if (invoice.getStatus() == PaymentStatus.PENDING) {
+            generateQr(invoice);
+        } else {
+            invoiceRepository.save(invoice);
         }
         return invoice;
     }

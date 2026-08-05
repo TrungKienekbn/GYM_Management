@@ -1,6 +1,7 @@
 package com.example.gymmanagement.dto.response;
 import lombok.*;
 import java.util.Map;
+import java.util.List;
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class DashboardResponse {
     // User stats
@@ -34,4 +35,24 @@ public class DashboardResponse {
     private Map<String, Integer> weeklyDurationTarget;
     private Map<String, Integer> dailyVolumeTarget;
     private Map<String, Integer> weeklyVolumeTarget;
+
+    // Thống kê phân tích theo tháng cho người dùng
+    private Integer currentMonthSessions;
+    private Integer previousMonthSessions;
+    private Integer currentMonthCompleted;
+    private Integer currentMonthCalories;
+    private Long currentMonthDurationMinutes;
+    private Integer currentMonthAdherencePercent;
+    private Integer previousMonthAdherencePercent;
+    private Double sessionChangePercent;
+    private Double adherenceChangePercent;
+    private Double currentMonthWeightChange;
+    private Map<String, Integer> monthlyCompletedSessions;
+    private Map<String, Integer> monthlyCaloriesBurned;
+    private Map<String, Integer> monthlyDurationMinutes;
+    private Map<String, Integer> monthlyCompletionPercent;
+    private Map<String, Integer> muscleGroupDistribution;
+    private Map<String, Integer> sessionQualityDistribution;
+    private String monthlyInsight;
+    private List<String> recommendations;
 }

@@ -4,22 +4,23 @@
       <div class="sidebar-logo" @click="router.push('/app/dashboard')">
         <span class="display" style="color:var(--c-text-inv);font-size:1.8rem">GYM</span>
         <span class="display accent" style="font-size:1.8rem" v-show="!collapsed">PRO</span>
-        <span v-if="isVip" class="vip-badge" v-show="!collapsed">👑 VIP</span>
+        <span v-if="isVip" class="vip-badge" v-show="!collapsed"> VIP</span>
       </div>
 
       <el-menu :default-active="route.path" router class="sidebar-menu" :collapse="collapsed">
-        <el-menu-item index="/app/dashboard"><el-icon><DataAnalysis/></el-icon><template #title>Dashboard</template></el-menu-item>
-        <el-menu-item index="/app/profile"><el-icon><User/></el-icon><template #title>Hồ sơ</template></el-menu-item>
-        <el-menu-item index="/app/plan"><el-icon><Calendar/></el-icon><template #title>Giáo án</template></el-menu-item>
-        <el-menu-item index="/app/sessions"><el-icon><Timer/></el-icon><template #title>Buổi tập</template></el-menu-item>
-        <el-menu-item index="/app/progress"><el-icon><TrendCharts/></el-icon><template #title>Tiến độ</template></el-menu-item>
-        <el-menu-item index="/app/foods"><el-icon><Dish/></el-icon><template #title>Món ăn</template></el-menu-item>
-        <el-menu-item index="/app/membership"><el-icon><CreditCard/></el-icon><template #title>Gói tập</template></el-menu-item>
-        <el-menu-item index="/app/exercises"><el-icon><Trophy/></el-icon><template #title>Bài tập</template></el-menu-item>
-        <el-menu-item index="/app/ratings"><el-icon><Star/></el-icon><template #title>Đánh giá</template></el-menu-item>
+        <el-menu-item index="/app/dashboard"><template #title>Thống kê</template></el-menu-item>
+        <el-menu-item index="/app/profile"><template #title>Hồ sơ</template></el-menu-item>
+        <el-menu-item index="/app/plan"><template #title>Giáo án</template></el-menu-item>
+        <el-menu-item index="/app/sessions"><template #title>Buổi tập</template></el-menu-item>
+        <el-menu-item index="/app/progress"><template #title>Tiến độ</template></el-menu-item>
+        <el-menu-item index="/app/foods"><template #title>Món ăn</template></el-menu-item>
+        <el-menu-item index="/app/shop"><template #title>Cửa hàng</template></el-menu-item>
+        <el-menu-item index="/app/membership"><template #title>Gói tập</template></el-menu-item>
+        <el-menu-item index="/app/exercises"><template #title>Bài tập</template></el-menu-item>
+        <el-menu-item index="/app/ratings"><template #title>Đánh giá</template></el-menu-item>
         <el-menu-item index="/app/chat">
           <el-badge :value="unreadCount" :max="9" :hidden="!unreadCount" class="menu-badge">
-            <el-icon><ChatDotRound/></el-icon>
+            <el-icon><ChatDotRound /></el-icon>
           </el-badge>
           <template #title>Trợ lý</template>
         </el-menu-item>
@@ -30,11 +31,11 @@
           <div class="user-avatar">{{ initials }}</div>
           <div class="user-meta">
             <div class="user-name">{{ auth.user?.fullName }}</div>
-            <div class="user-role">{{ isVip ? '👑 Thành viên VIP' : 'Gói thường' }}</div>
+            <div class="user-role">{{ isVip ? ' Thành viên VIP' : 'Gói thường' }}</div>
           </div>
         </div>
         <el-button text @click="auth.logout(); router.push('/login')" class="logout-btn">
-          <el-icon><SwitchButton/></el-icon>
+          
           <span v-show="!collapsed" style="margin-left:6px">Đăng xuất</span>
         </el-button>
       </div>
@@ -47,12 +48,12 @@
         </el-button>
         <div class="topbar-title display">{{ pageTitle }}</div>
         <div style="flex:1"/>
-        <el-button v-if="!isVip" class="upgrade-topbar" size="small" @click="router.push('/app/membership')">👑 Nâng cấp VIP</el-button>
+        <el-button v-if="!isVip" class="upgrade-topbar" size="small" @click="router.push('/app/membership')"> Nâng cấp VIP</el-button>
         <NotificationBell/>
       </header>
 
       <div v-if="pendingInvoice && !route.path.startsWith('/app/payment')" class="pending-payment-banner">
-        <span>⏳ Bạn có hóa đơn <strong>#{{ pendingInvoice.id }}</strong> ({{ pendingProductName }} - {{ formatMoney(pendingInvoice.price) }}) đang chờ thanh toán</span>
+        <span> Bạn có hóa đơn <strong>#{{ pendingInvoice.id }}</strong> ({{ pendingProductName }} - {{ formatMoney(pendingInvoice.price) }}) đang chờ thanh toán</span>
         <el-button size="small" type="primary" @click="goContinuePayment">Tiếp tục thanh toán</el-button>
       </div>
 
@@ -68,6 +69,7 @@
 </template>
 
 <script setup>
+import { ChatDotRound, Fold, Expand } from '@element-plus/icons-vue'
 import { ref, computed, onMounted, onUnmounted, watch, h } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
@@ -137,7 +139,7 @@ async function pollSupport() {
 
 function notifyNewAdminMessage(s) {
   const inst = ElNotification({
-    title: `💬 ${s.adminName || 'Admin'} vừa nhắn`,
+    title: ` ${s.adminName || 'Admin'} vừa nhắn`,
     type: 'success',
     duration: 6000,
     message: h('div', {
@@ -166,7 +168,7 @@ watch(() => route.path, (path) => {
 })
 
 const titles = {
-  '/app/dashboard':'Dashboard', '/app/profile':'Hồ sơ cá nhân',
+  '/app/dashboard':'Thống kê', '/app/profile':'Hồ sơ cá nhân',
   '/app/plan':'Giáo án tập', '/app/sessions':'Lịch sử buổi tập',
   '/app/progress':'Theo dõi tiến độ', '/app/nutrition':'Dinh dưỡng',
   '/app/membership':'Gói tập', '/app/exercises':'Thư viện bài tập', '/app/ratings':'Đánh giá',

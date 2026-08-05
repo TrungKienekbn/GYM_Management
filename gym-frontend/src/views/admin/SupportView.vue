@@ -1,12 +1,12 @@
 <template>
   <div class="fade-in">
     <div class="page-header">
-      <h2>HỖ TRỢ / CHAT VỚI USER</h2>
+      <h2>HỖ TRỢ / TRÒ CHUYỆN VỚI NGƯỜI DÙNG</h2>
       <div style="display:flex;gap:10px;align-items:center">
         <el-tag v-if="pending.length" type="warning" effect="dark" round>
           {{ pending.length }} yêu cầu chờ
         </el-tag>
-        <el-button type="primary" @click="openStartDialog">✉️ Nhắn tin cho user</el-button>
+        <el-button type="primary" @click="openStartDialog"><el-icon><Plus /></el-icon>Nhắn tin cho người dùng</el-button>
       </div>
     </div>
 
@@ -14,7 +14,7 @@
     <input ref="startFileInput" type="file" hidden @change="onStartFile"/>
 
     <!-- Admin chủ động mở cuộc trò chuyện -->
-    <el-dialog v-model="startDialog" title="NHẮN TIN CHO USER" width="480px" align-center>
+    <el-dialog v-model="startDialog" title="NHẮN TIN CHO NGƯỜI DÙNG" width="480px" align-center append-to-body>
       <el-form :model="startForm" label-position="top">
         <el-form-item label="Người nhận">
           <el-select v-model="startForm.userId" filterable style="width:100%"
@@ -33,15 +33,15 @@
         </el-form-item>
         <el-form-item label="Đính kèm">
           <div v-if="startFile" class="file-chip">
-            <el-icon :size="18"><Document/></el-icon>
+            
             <span class="fc-name">{{ startFile.name }}</span>
             <span class="fc-size">{{ prettyFileSize(startFile.size) }}</span>
             <el-button text class="fc-remove" @click="startFile=null" title="Bỏ file">
-              <el-icon><Close/></el-icon>
+              <el-icon><Close /></el-icon>
             </el-button>
           </div>
           <el-button v-else plain size="small" @click="startFileInput?.click()">
-            <el-icon><Paperclip/></el-icon><span style="margin-left:6px">Chọn file</span>
+            <span style="margin-left:6px">Chọn file</span>
           </el-button>
         </el-form-item>
       </el-form>
@@ -86,6 +86,16 @@
             <span v-if="isUnread(s)" class="unread-dot" title="Có tin nhắn mới"/>
           </div>
         </div>
+
+        <div class="list-section-title">Đánh giá đã nhận ({{ rated.length }})</div>
+        <div v-if="!rated.length" class="empty-mini">Chưa có đánh giá phiên hỗ trợ</div>
+        <div v-for="s in rated" :key="'rated-'+s.id" class="session-item">
+          <div class="session-info"><div class="avatar">{{ nameInitials(s.userName) }}</div><div>
+            <div class="s-name ellipsis">{{ s.userName || s.userEmail }}</div>
+            <el-rate :model-value="s.userRating" disabled size="small" />
+            <div class="s-meta ellipsis">{{ s.userRatingComment || 'Không có nhận xét' }}</div>
+          </div></div>
+        </div>
       </el-card>
 
       <!-- Khung chat -->
@@ -117,17 +127,17 @@
           <div class="input-bar">
             <input ref="fileInput" type="file" hidden @change="onFile"/>
             <el-button class="attach-btn" text :loading="uploading" @click="pickFile" title="Đính kèm file">
-              <el-icon :size="20"><Paperclip/></el-icon>
+              <el-icon><Paperclip /></el-icon>
             </el-button>
-            <el-input v-model="draft" placeholder="Nhập tin nhắn gửi user…" @keyup.enter="send" clearable/>
+            <el-input v-model="draft" placeholder="Nhập tin nhắn gửi người dùng…" @keyup.enter="send" clearable/>
             <el-button type="primary" :disabled="!draft.trim()" @click="send">
-              <el-icon><Promotion/></el-icon>
+              <el-icon><Promotion /></el-icon>
             </el-button>
           </div>
         </template>
 
         <div v-else class="empty-state pick">
-          <el-icon :size="40"><ChatLineRound/></el-icon>
+          
           <div>Chọn một cuộc trò chuyện để bắt đầu</div>
         </div>
       </el-card>
@@ -143,6 +153,7 @@ import { ElMessage } from 'element-plus'
 import MessageBody from '@/components/common/MessageBody.vue'
 import { setSessions, markRead, isUnread } from '@/stores/supportUnread'
 import dayjs from 'dayjs'
+import { Plus, Close, Paperclip, Promotion } from '@element-plus/icons-vue'
 
 const route      = useRoute()
 const sessions   = ref([])
@@ -168,6 +179,7 @@ const startForm = reactive({ userId: null, subject: '', content: '' })
 
 const pending = computed(() => sessions.value.filter(s => s.status === 'PENDING'))
 const active  = computed(() => sessions.value.filter(s => s.status === 'ACTIVE'))
+const rated   = computed(() => sessions.value.filter(s => s.status === 'CLOSED' && s.userRating != null))
 
 // Chỉ hiện trạng thái gửi khi tin nhắn cuối là của admin
 const showSent = computed(() => {
@@ -176,7 +188,7 @@ const showSent = computed(() => {
 })
 const sentText = computed(() =>
   sendStatus.value === 'sending' ? 'Đang gửi…'
-  : sendStatus.value === 'failed' ? '⚠ Gửi lỗi, thử lại' : 'Đã gửi ✓')
+  : sendStatus.value === 'failed' ? ' Gửi lỗi, thử lại' : 'Đã gửi ')
 
 async function loadSessions() {
   try { const res = await adminSupportAPI.sessions(); sessions.value = res.data || []; setSessions(sessions.value) }

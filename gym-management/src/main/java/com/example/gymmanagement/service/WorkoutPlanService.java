@@ -68,10 +68,18 @@ public class WorkoutPlanService {
                                                       Double enduranceTargetValue) {
         User user = getUser(email);
         UserProfile profile = profileRepo.findByUserId(user.getId()).orElse(null);
+        LowCompletionContext lowCompletion = findLowCompletionContext(user);
 
         FitnessLevel level = levelParam != null ? levelParam
                 : (profile != null && profile.getFitnessLevel() != null
                    ? profile.getFitnessLevel() : FitnessLevel.BEGINNER);
+        level = adjustLevelByProfile(level, profile, goal);
+
+        // Nếu gói thường đã có 2 tuần liên tiếp dưới 40%, dùng cả hồ sơ vừa cập nhật
+        // và lịch sử đó để hạ tải giáo án mới. Đây là gợi ý, không chặn việc tập.
+        if (!membershipService.isVip(user) && lowCompletion.triggered) {
+            level = lowerLevel(level);
+        }
 
         daysPerWeek = calcSessionsPerWeek(goal, daysPerWeek, profile);
 
@@ -162,7 +170,7 @@ public class WorkoutPlanService {
         deactivateAndCleanOldPlan(user.getId());
 
         double manaMultiplier = systemConfigService.get("MANA_MAX_MULTIPLIER", 2.0);
-        int maxMana = (int) Math.round(fs * manaMultiplier);
+        int maxMana = Math.max(1, (int) Math.round(fs * manaMultiplier));
 
         WorkoutPlan plan = WorkoutPlan.builder()
                 .user(user)
@@ -188,6 +196,15 @@ public class WorkoutPlanService {
         planRepo.save(plan);
 
         List<WorkoutPlanDay> days = buildPlanDaysNew(plan, goal, level, fsLevel, bodyType, daysPerWeek, profile, fs);
+        if (!membershipService.isVip(user) && lowCompletion.triggered) {
+            reducePlanLoad(days);
+            plan.setDifficultyAdjustment(-1);
+            plan.setSetsAdjustment(-1);
+            plan.setRepsAdjustment(-2);
+            plan.setWeightAdjustmentNote("Đã giảm tải theo tỷ lệ hoàn thành tuần "
+                    + lowCompletion.week1 + " (" + lowCompletion.rate1 + "%) và tuần "
+                    + lowCompletion.week2 + " (" + lowCompletion.rate2 + "%).");
+        }
         dayRepo.saveAll(days);
         plan.setPlanDays(days);
 
@@ -557,7 +574,7 @@ public class WorkoutPlanService {
                 profile.getBmi(), profile.getGender(), profile.getBodyFatPercentage())
                 : FitnessCalculator.BodyType.CAN_DOI;
         double manaMultiplier = systemConfigService.get("MANA_MAX_MULTIPLIER", 2.0);
-        int maxMana = (int) Math.round(fs * manaMultiplier);
+        int maxMana = Math.max(1, (int) Math.round(fs * manaMultiplier));
 
         // ── Goal/Level LẤY TỪ AI PLAN GỐC — không lấy từ Template ──
         Goal originalGoal = originalPlan.getGoal();
@@ -685,7 +702,7 @@ public class WorkoutPlanService {
                 profile.getBmi(), profile.getGender(), profile.getBodyFatPercentage())
                 : FitnessCalculator.BodyType.CAN_DOI;
         double manaMultiplier = systemConfigService.get("MANA_MAX_MULTIPLIER", 2.0);
-        int maxMana = (int) Math.round(fs * manaMultiplier);
+        int maxMana = Math.max(1, (int) Math.round(fs * manaMultiplier));
 
         deactivateAndCleanOldPlan(user.getId());
 
@@ -851,8 +868,10 @@ public class WorkoutPlanService {
             case ENDURANCE  -> 4 ;
         };
 
-        val = Math.max(val, minRequired);
-        return Math.max(minRequired, Math.min(maxRequired, val));
+        // Lịch rảnh là ràng buộc cứng, không ép user tập nhiều hơn số ngày đã khai báo.
+        int available = Math.max(1, Math.min(7, fromProfile));
+        val = Math.min(val, available);
+        return Math.max(1, Math.min(maxRequired, val));
     }
 
     private FitnessLevel adjustLevelByBmi(FitnessLevel level, Double bmi, Goal goal) {
@@ -864,6 +883,17 @@ public class WorkoutPlanService {
         return level;
     }
 
+    private FitnessLevel adjustLevelByProfile(FitnessLevel requested, UserProfile profile, Goal goal) {
+        if (profile == null) return requested;
+        FitnessLevel safe = adjustLevelByBmi(requested, profile.getBmi(), goal);
+        Integer months = profile.getTrainingExperienceMonths();
+        if (months != null && months < 3) safe = FitnessLevel.BEGINNER;
+        if ("SEDENTARY".equals(profile.getDailyActivityLevel()) && safe == FitnessLevel.ADVANCED) {
+            safe = FitnessLevel.INTERMEDIATE;
+        }
+        return safe;
+    }
+
     private List<WorkoutPlanDay> buildPlanDaysNew(WorkoutPlan plan, Goal goal,
                                                   FitnessLevel level,
                                                   FitnessCalculator.FsLevel fsLevel,
@@ -872,7 +902,7 @@ public class WorkoutPlanService {
                                                   UserProfile profile,
                                                   double fs) {
         List<Map<MuscleGroup, Integer>> weekPlan = MuscleGroupSplitPlanner.buildWeekPlan(goal, level, sessions);
-        List<Integer> defaultSchedule = ScheduleCatalog.recommendedFor(sessions);
+        List<Integer> defaultSchedule = resolveSchedule(profile, sessions);
         String[] names = {"", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 
         List<WorkoutPlanDay> days = new ArrayList<>();
@@ -941,7 +971,7 @@ public class WorkoutPlanService {
         for (Map.Entry<MuscleGroup, Integer> entry : groupCounts.entrySet()) {
             MuscleGroup mg = entry.getKey();
             int need = entry.getValue();
-            List<Exercise> cands = getExercisesByLevelAndGoal(mg, goal, level, need);
+            List<Exercise> cands = getExercisesByLevelAndGoal(mg, goal, level, need, profile);
             for (Exercise ex : cands) {
                 String note = buildNote(ex, goal);
                 if (srResult.loadHint() != com.example.gymmanagement.service.setrep.SetRepModels.LoadHint.NONE) {
@@ -970,7 +1000,11 @@ public class WorkoutPlanService {
                         .build());
             }
         }
-        return result;
+        int duration = profile != null && profile.getPreferredSessionDuration() != null
+                ? profile.getPreferredSessionDuration() : 60;
+        int maxExercises = Math.max(2, Math.min(10, duration / 10));
+        return result.size() > maxExercises
+                ? new ArrayList<>(result.subList(0, maxExercises)) : result;
     }
 
     private Double computeRecommendedWeightKg(MuscleGroup mg, Boolean usesWeight, double fs,
@@ -1048,7 +1082,7 @@ public class WorkoutPlanService {
     }
 
     private List<Exercise> getExercisesByLevelAndGoal(MuscleGroup mg, Goal goal,
-                                                      FitnessLevel level, int need) {
+                                                      FitnessLevel level, int need, UserProfile profile) {
         List<Exercise> result = new ArrayList<>();
 
         List<Difficulty> priorityOrder = switch (level) {
@@ -1061,6 +1095,7 @@ public class WorkoutPlanService {
             if (result.size() >= need) break;
             List<Exercise> pool = exerciseRepo
                     .findByMuscleGroupAndDifficultyAndIsActiveTrue(mg, diff);
+            pool = pool.stream().filter(ex -> isExerciseAllowed(ex, profile)).collect(Collectors.toList());
             pool.sort((a, b) -> {
                 int cmp = Integer.compare(getGoalScore(b, goal), getGoalScore(a, goal));
                 return cmp != 0 ? cmp : Long.compare(a.getId(), b.getId());
@@ -1071,6 +1106,64 @@ public class WorkoutPlanService {
             }
         }
         return result;
+    }
+
+    private List<Integer> resolveSchedule(UserProfile profile, int sessions) {
+        if (profile != null && profile.getPreferredTrainingDays() != null
+                && !profile.getPreferredTrainingDays().isBlank()) {
+            List<Integer> selected = Arrays.stream(profile.getPreferredTrainingDays().split(","))
+                    .map(String::trim).filter(s -> s.matches("[1-7]"))
+                    .map(Integer::valueOf).distinct().sorted().collect(Collectors.toList());
+            if (selected.size() >= sessions) return new ArrayList<>(selected.subList(0, sessions));
+        }
+        return ScheduleCatalog.recommendedFor(sessions);
+    }
+
+    /** Lọc cứng trước khi chấm điểm: thiếu thiết bị, chấn thương hoặc user từ chối thì loại. */
+    private boolean isExerciseAllowed(Exercise ex, UserProfile profile) {
+        if (profile == null) return true;
+        String name = Optional.ofNullable(ex.getName()).orElse("").toLowerCase(Locale.ROOT);
+
+        if (profile.getDislikedExercises() != null && !profile.getDislikedExercises().isBlank()) {
+            boolean disliked = Arrays.stream(profile.getDislikedExercises().toLowerCase(Locale.ROOT).split(","))
+                    .map(String::trim).filter(s -> !s.isBlank()).anyMatch(name::contains);
+            if (disliked) return false;
+        }
+
+        Set<String> injuries = csvSet(profile.getInjuryAreas());
+        if (injuries.contains("KNEE") && containsAny(name, "squat", "lunge", "leg press", "jump")) return false;
+        if (injuries.contains("LOWER_BACK") && containsAny(name, "deadlift", "good morning", "back extension")) return false;
+        if (injuries.contains("SHOULDER") && containsAny(name, "shoulder press", "overhead press", "lateral raise", "dip")) return false;
+        if (injuries.contains("WRIST") && containsAny(name, "push up", "push-up", "bench press", "plank")) return false;
+        if (injuries.contains("ELBOW") && containsAny(name, "curl", "tricep", "dip")) return false;
+        if (injuries.contains("ANKLE") && containsAny(name, "jump", "calf raise", "lunge", "running")) return false;
+        if (injuries.contains("NECK") && containsAny(name, "shrug", "neck")) return false;
+
+        Set<String> equipment = csvSet(profile.getAvailableEquipment());
+        if (equipment.isEmpty() || "GYM".equals(profile.getTrainingLocation())
+                || "BOTH".equals(profile.getTrainingLocation())) return true;
+        String required = inferRequiredEquipment(name);
+        return "BODYWEIGHT".equals(required) || equipment.contains(required);
+    }
+
+    private Set<String> csvSet(String csv) {
+        if (csv == null || csv.isBlank()) return Collections.emptySet();
+        return Arrays.stream(csv.split(",")).map(String::trim).map(String::toUpperCase)
+                .filter(s -> !s.isBlank()).collect(Collectors.toSet());
+    }
+
+    private boolean containsAny(String text, String... values) {
+        return Arrays.stream(values).anyMatch(text::contains);
+    }
+
+    private String inferRequiredEquipment(String name) {
+        if (containsAny(name, "cable", "pulldown", "pushdown")) return "CABLE";
+        if (containsAny(name, "barbell", "deadlift")) return "BARBELL";
+        if (name.contains("dumbbell")) return "DUMBBELL";
+        if (name.contains("bench press")) return "BENCH";
+        if (containsAny(name, "leg press", "machine", "leg curl", "leg extension")) return "MACHINE";
+        if (containsAny(name, "pull up", "pull-up", "chin up", "chin-up")) return "PULL_UP_BAR";
+        return "BODYWEIGHT";
     }
 
     private int getGoalScore(Exercise ex, Goal goal) {
@@ -1136,6 +1229,8 @@ public class WorkoutPlanService {
                 ? ScheduleCatalog.recommendedFor(plan.getSessionsPerWeek())
                 : null;
         String note = buildScheduleNote(plan.getGoal(), plan.getSessionsPerWeek());
+        LowCompletionContext lowCompletion = plan.getUser() != null
+                ? findLowCompletionContext(plan.getUser()) : new LowCompletionContext();
 
         Double liveTargetCurrentValue = plan.getTargetCurrentValue();
         if (plan.getGoal() == Goal.ENDURANCE && plan.getUser() != null && plan.getTargetMetricType() != null) {
@@ -1190,7 +1285,64 @@ public class WorkoutPlanService {
                 .originalPlanId(plan.getOriginalPlanId())
                 .isFitnessImprovement(plan.getIsFitnessImprovement())
                 .requiredMaxSessionManaCost(plan.getRequiredMaxSessionManaCost())
+                .lowCompletionWarning(lowCompletion.triggered)
+                .lowCompletionWeek1(lowCompletion.week1)
+                .lowCompletionRate1(lowCompletion.rate1)
+                .lowCompletionWeek2(lowCompletion.week2)
+                .lowCompletionRate2(lowCompletion.rate2)
+                .lowCompletionMessage(lowCompletion.triggered
+                        ? "Hai tuần gần nhất đều dưới 40%. Bạn có thể cập nhật số liệu để tạo giáo án nhẹ và phù hợp hơn, hoặc tiếp tục giáo án hiện tại."
+                        : null)
                 .build();
+    }
+
+    private LowCompletionContext findLowCompletionContext(User user) {
+        LowCompletionContext result = new LowCompletionContext();
+        if (user == null || membershipService.isVip(user)) return result;
+        WorkoutPlan active = planRepo.findByUserIdAndIsActiveTrue(user.getId()).orElse(null);
+        if (active == null || active.getId() == null) return result;
+
+        Map<Integer, List<WorkoutSession>> byWeek = sessionRepo.findByPlanOrderBySessionDate(user.getId(), active.getId())
+                .stream().filter(s -> s.getWeekNumber() != null)
+                .collect(Collectors.groupingBy(WorkoutSession::getWeekNumber));
+        List<Map.Entry<Integer, Integer>> finishedWeeks = byWeek.entrySet().stream()
+                .filter(e -> !e.getValue().isEmpty() && e.getValue().stream().allMatch(s ->
+                        s.getStatus() == SessionStatus.COMPLETED || s.getStatus() == SessionStatus.SKIPPED))
+                .map(e -> Map.entry(e.getKey(), (int) Math.round(e.getValue().stream()
+                        .mapToInt(s -> s.getStatus() == SessionStatus.COMPLETED
+                                ? Optional.ofNullable(s.getCompletionRate()).orElse(0) : 0)
+                        .average().orElse(0))))
+                .sorted(Map.Entry.<Integer, Integer>comparingByKey().reversed())
+                .limit(2).collect(Collectors.toList());
+
+        if (finishedWeeks.size() == 2 && finishedWeeks.get(0).getKey() - finishedWeeks.get(1).getKey() == 1
+                && finishedWeeks.get(0).getValue() < 40 && finishedWeeks.get(1).getValue() < 40) {
+            Map.Entry<Integer, Integer> older = finishedWeeks.get(1), newer = finishedWeeks.get(0);
+            result.triggered = true; result.week1 = older.getKey(); result.rate1 = older.getValue();
+            result.week2 = newer.getKey(); result.rate2 = newer.getValue();
+        }
+        return result;
+    }
+
+    private FitnessLevel lowerLevel(FitnessLevel level) {
+        if (level == FitnessLevel.ADVANCED) return FitnessLevel.INTERMEDIATE;
+        return FitnessLevel.BEGINNER;
+    }
+
+    private void reducePlanLoad(List<WorkoutPlanDay> days) {
+        for (WorkoutPlanDay day : days) {
+            for (WorkoutPlanExercise exercise : Optional.ofNullable(day.getExercises()).orElse(Collections.emptyList())) {
+                if (exercise.getSets() != null) exercise.setSets(Math.max(1, exercise.getSets() - 1));
+                if (exercise.getReps() != null) exercise.setReps(Math.max(1, (int) Math.round(exercise.getReps() * 0.8)));
+                if (exercise.getDurationSeconds() != null)
+                    exercise.setDurationSeconds(Math.max(10, (int) Math.round(exercise.getDurationSeconds() * 0.8)));
+            }
+        }
+    }
+
+    private static class LowCompletionContext {
+        boolean triggered;
+        Integer week1, rate1, week2, rate2;
     }
 
     private WorkoutPlanDayResponse buildDayResponse(WorkoutPlanDay day) {
@@ -1226,6 +1378,7 @@ public class WorkoutPlanService {
                 .orderIndex(pe.getOrderIndex())
                 .notes(pe.getNotes())
                 .videoUrl(ex.getVideoUrl())
+                .description(ex.getDescription())
                 .caloriesBurned(ex.getCaloriesBurned())
                 .baseWeightKg(pe.getBaseWeightKg())
                 .currentWeightKg(pe.getCurrentWeightKg())

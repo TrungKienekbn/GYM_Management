@@ -32,6 +32,9 @@ public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession, 
     @Query("SELECT COUNT(s) FROM WorkoutSession s WHERE s.user.id=:uid AND s.workoutPlan.id=:planId AND s.weekNumber=:week AND s.status='COMPLETED'")
     long countCompletedInWeek(@Param("uid") Long uid, @Param("planId") Long planId, @Param("week") Integer week);
 
+    @Query("SELECT COUNT(s) FROM WorkoutSession s WHERE s.user.id=:uid AND s.workoutPlan.id=:planId AND s.weekNumber=:week AND s.status IN ('COMPLETED','SKIPPED')")
+    long countResolvedInWeek(@Param("uid") Long uid, @Param("planId") Long planId, @Param("week") Integer week);
+
     @Query("SELECT AVG(s.completionRate) FROM WorkoutSession s WHERE s.user.id=:uid AND s.workoutPlan.id=:planId AND s.weekNumber=:week AND s.status='COMPLETED' AND s.completionRate IS NOT NULL")
     Double avgCompletionRateInWeek(@Param("uid") Long uid, @Param("planId") Long planId, @Param("week") Integer week);
 

@@ -11,12 +11,12 @@
           <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--c-accent);font-weight:700;margin-bottom:4px">GÓI ĐANG ACTIVE</div>
           <div class="display" style="font-size:2rem;color:var(--c-text)">
             {{ active.membershipType }}
-            <span v-if="active.membershipType==='VIP'" class="vip-chip">👑 VIP</span>
+            <span v-if="active.membershipType==='VIP'" class="vip-chip"> VIP</span>
           </div>
           <div style="color:var(--c-text2);font-size:0.85rem;margin-top:4px">{{ active.startDate }} → {{ active.endDate }}</div>
           <div style="margin-top:10px">
             <span class="badge" :class="active.paymentStatus==='PAID'?'badge-success':'badge-warning'">
-              {{ active.paymentStatus === 'PAID' ? '✅ Đã thanh toán' : '⏳ Chờ thanh toán' }}
+              {{ active.paymentStatus === 'PAID' ? ' Đã thanh toán' : ' Chờ thanh toán' }}
             </span>
           </div>
         </div>
@@ -32,7 +32,6 @@
     </el-card>
 
     <!-- Package grid: chỉ 2 gói - FREE (mặc định) và VIP (duy nhất trả phí) -->
-    <h3 class="display" style="font-size:1.4rem;color:var(--c-text-inv);margin-bottom:16px">GÓI TẬP</h3>
     <div class="packages-grid">
       <!-- FREE -->
       <div class="pkg-card">
@@ -40,20 +39,20 @@
         <div class="pkg-price"><span class="accent">0</span> <span style="font-size:0.8rem;color:var(--c-text2)">đ - mãi mãi</span></div>
         <ul class="pkg-features"><li v-for="f in freeFeatures" :key="f.text" :class="{limited:f.limited}">{{ f.icon }} {{ f.text }}</li></ul>
         <el-button style="width:100%;margin-top:auto" disabled>
-          {{ active && active.membershipType === 'FREE' ? '✓ Gói hiện tại' : 'Gói mặc định' }}
+          {{ active && active.membershipType === 'FREE' ? ' Gói hiện tại' : 'Gói mặc định' }}
         </el-button>
       </div>
 
       <!-- VIP -->
       <div class="pkg-card featured">
         <div class="pkg-badge">DUY NHẤT TRẢ PHÍ</div>
-        <div class="pkg-type display">VIP 👑</div>
+        <div class="pkg-type display">VIP </div>
         <div class="pkg-price"><span class="accent">{{ vipPrice.toLocaleString() }}</span> <span style="font-size:0.8rem;color:var(--c-text2)">đ / tháng</span></div>
-        <ul class="pkg-features"><li v-for="f in vipFeatures" :key="f" class="highlight">✓ {{ f }}</li></ul>
+        <ul class="pkg-features"><li v-for="f in vipFeatures" :key="f" class="highlight"> {{ f }}</li></ul>
         <el-button type="primary" style="width:100%;margin-top:auto"
                    :disabled="active && active.membershipType==='VIP'"
                    @click="purchaseDialog=true">
-          {{ active && active.membershipType==='VIP' ? '✓ Đang dùng VIP' : 'Nâng cấp lên VIP' }}
+          {{ active && active.membershipType==='VIP' ? ' Đang dùng VIP' : 'Nâng cấp lên VIP' }}
         </el-button>
       </div>
     </div>
@@ -64,7 +63,7 @@
       <el-table :data="memberships" stripe>
         <el-table-column label="Loại gói" width="110">
           <template #default="{row}">
-            {{ row.membershipType }} <span v-if="row.membershipType==='VIP'">👑</span>
+            {{ row.membershipType }} <span v-if="row.membershipType==='VIP'"></span>
           </template>
         </el-table-column>
         <el-table-column label="Bắt đầu" prop="startDate" width="110"/>
@@ -72,7 +71,9 @@
         <el-table-column label="Giá (đ)" width="140" align="right">
           <template #default="{row}">{{ Number(row.price).toLocaleString() }}</template>
         </el-table-column>
-        <el-table-column label="Hình thức TT" prop="paymentMethod" width="130" align="center"/>
+        <el-table-column label="Hình thức thanh toán" width="170" align="center">
+          <template #default="{row}">{{ paymentMethodLabel(row.paymentMethod) }}</template>
+        </el-table-column>
         <el-table-column label="Trạng thái" width="140" align="center">
           <template #default="{row}">
             <span class="badge" :class="payBadge(row.paymentStatus)">{{ payLabel(row.paymentStatus) }}</span>
@@ -82,18 +83,13 @@
     </el-card>
 
     <!-- Purchase Dialog - chỉ có 1 gói duy nhất để mua (VIP) -->
-    <el-dialog v-model="purchaseDialog" title="NÂNG CẤP LÊN GÓI VIP" width="420px" align-center>
+    <el-dialog v-model="purchaseDialog" title="NÂNG CẤP LÊN GÓI VIP" width="420px" align-center append-to-body>
       <p style="color:var(--c-text2);font-size:0.85rem;margin-bottom:12px">
         VIP mở khóa điều chỉnh giáo án tự động mỗi tuần, bài tập phụ không giới hạn và toàn bộ lịch sử thống kê.
       </p>
-      <el-form-item label="Phương thức thanh toán" style="margin-top:8px">
-        <el-select v-model="paymentMethod" style="width:100%">
-          <el-option label="💳 Thẻ ngân hàng" value="CARD"/>
-          <el-option label="📱 MoMo" value="MOMO"/>
-          <el-option label="🏦 VNPay" value="VNPAY"/>
-          <el-option label="💵 Tiền mặt tại quầy" value="CASH"/>
-        </el-select>
-      </el-form-item>
+      <div class="bank-method-box">
+        <span></span><div><b>Chuyển khoản ngân hàng</b><small>Quét mã VietQR và chuyển đúng nội dung để hệ thống tự động xác nhận.</small></div>
+      </div>
       <div class="price-summary">
         <span>Tổng thanh toán:</span>
         <strong class="accent">{{ vipPrice.toLocaleString() }} đ</strong>
@@ -117,16 +113,15 @@ const memberships    = ref([])
 const active         = ref(null)
 const purchaseDialog = ref(false)
 const purchasing     = ref(false)
-const paymentMethod  = ref('MOMO')
 
-const vipPrice = 299000
+const vipPrice = 99000
 
 const freeFeatures = [
-  { icon:'✓', text:'Tạo hoặc đổi giáo án 1 lần/tháng' },
-  { icon:'✓', text:'Thư viện bài tập và dinh dưỡng cơ bản' },
-  { icon:'✓', text:'Theo dõi tiến độ 4 tuần gần nhất' },
-  { icon:'⚠', text:'Buổi tập phụ tối đa 2 bài', limited:true },
-  { icon:'⚠', text:'Chuyển tuần nhưng giữ nguyên mức bài', limited:true }
+  { icon:'', text:'Tạo hoặc đổi giáo án 1 lần/tháng' },
+  { icon:'', text:'Thư viện bài tập và dinh dưỡng cơ bản' },
+  { icon:'', text:'Theo dõi tiến độ 4 tuần gần nhất' },
+  { icon:'', text:'Buổi tập phụ tối đa 2 bài', limited:true },
+  { icon:'', text:'Chuyển tuần nhưng giữ nguyên mức bài', limited:true }
 ]
 const vipFeatures  = [
   'Tất cả tính năng của gói thường',
@@ -134,7 +129,7 @@ const vipFeatures  = [
   'Tự động điều chỉnh giáo án sau mỗi tuần',
   'Buổi tập phụ không giới hạn bài',
   'Xem toàn bộ lịch sử và thống kê dài hạn',
-  'Huy hiệu VIP và truy cập đầy đủ Dashboard'
+  'Huy hiệu VIP và truy cập đầy đủ trang tổng quan'
 ]
 
 const daysPercent = computed(() => {
@@ -170,6 +165,9 @@ async function purchase() {
 
 function payBadge(s) { return { PAID:'badge-success', PENDING:'badge-warning', FAILED:'badge-danger', REFUNDED:'badge-info' }[s]||'' }
 function payLabel(s) { return { PAID:'Đã TT', PENDING:'Chờ TT', FAILED:'Thất bại', REFUNDED:'Hoàn tiền' }[s]||s }
+function paymentMethodLabel(method) {
+  return { BANK_TRANSFER:'Chuyển khoản', TEST:'Chuyển khoản (kiểm thử)' }[method] || 'Chuyển khoản'
+}
 
 onMounted(load)
 </script>
@@ -180,6 +178,7 @@ onMounted(load)
 .days-num  { font-family:var(--font-display); font-size:3rem; line-height:1; color:var(--c-accent); }
 .days-lbl  { font-size:0.75rem; color:var(--c-text3); text-transform:uppercase; letter-spacing:0.08em; }
 .vip-chip { font-size:0.9rem; background:var(--c-accent); color:#fff; padding:2px 10px; border-radius:20px; margin-left:8px; vertical-align:middle; }
+.bank-method-box{display:flex;gap:12px;align-items:flex-start;margin:16px 0;padding:13px 14px;background:var(--c-card2);border:1px solid var(--c-border2);border-radius:10px}.bank-method-box>span{font-size:1.4rem}.bank-method-box b{display:block;color:var(--c-text)}.bank-method-box small{display:block;margin-top:4px;color:var(--c-text3);line-height:1.45}
 
 .packages-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:16px; margin-bottom:8px; max-width:600px; }
 .pkg-card {
