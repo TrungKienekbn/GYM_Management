@@ -23,6 +23,12 @@ public class Exercise {
     @Enumerated(EnumType.STRING)
     private MuscleGroup muscleGroup;
 
+    /** CSV các nhóm cơ tham gia hỗ trợ, ví dụ: SHOULDERS,ARMS. */
+    private String secondaryMuscleGroups;
+
+    /** CSV vùng chấn thương mà bài tập không phù hợp, ví dụ: SHOULDER,WRIST. */
+    private String contraindicatedInjuries;
+
     @Enumerated(EnumType.STRING)
     private Difficulty difficulty;
 

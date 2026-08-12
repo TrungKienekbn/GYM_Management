@@ -170,7 +170,7 @@ watch(() => route.path, (path) => {
 const titles = {
   '/app/dashboard':'Thống kê', '/app/profile':'Hồ sơ cá nhân',
   '/app/plan':'Giáo án tập', '/app/sessions':'Lịch sử buổi tập',
-  '/app/progress':'Theo dõi tiến độ', '/app/nutrition':'Dinh dưỡng',
+  '/app/progress':'Theo dõi tiến độ', '/app/foods':'Món ăn', '/app/shop':'Cửa hàng',
   '/app/membership':'Gói tập', '/app/exercises':'Thư viện bài tập', '/app/ratings':'Đánh giá',
   '/app/chat':'Trợ lý',
 }
@@ -196,9 +196,10 @@ const pageTitle = computed(() => titles[route.path] || 'GymPro')
   border-bottom: 1px solid rgba(255,255,255,0.1);
   flex-shrink:0;
 }
+.sidebar-logo .accent { color:var(--c-accent); }
 .vip-badge {
   font-size:0.65rem; font-weight:700; letter-spacing:0.04em;
-  background:linear-gradient(135deg,#f5c518,#d4892a);
+  background:linear-gradient(135deg,#facc15,#f97316);
   color:#2b1b17; padding:2px 8px; border-radius:20px;
   white-space:nowrap;
 }

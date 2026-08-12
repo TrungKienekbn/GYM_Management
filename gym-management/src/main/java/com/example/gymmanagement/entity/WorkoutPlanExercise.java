@@ -43,4 +43,7 @@ public class WorkoutPlanExercise {
 
     @Builder.Default
     private Boolean isAssessment = false;
+
+    // Log gần nhất đã được dùng để điều chỉnh bài; tránh dùng chồng cặp (lần 2,3) sau khi lần 1,2 đã xử lý.
+    private Long lastLowAdjustmentLogId;
 }

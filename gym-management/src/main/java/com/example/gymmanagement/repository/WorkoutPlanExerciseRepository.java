@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface WorkoutPlanExerciseRepository extends JpaRepository<WorkoutPlanExercise, Long> {
 
+    List<WorkoutPlanExercise> findByPlanDay_WorkoutPlan_Id(Long planId);
+
     // Dùng để cập nhật currentWeightKg cho mọi bài tập cùng nhóm cơ trong 1 giáo án
     List<WorkoutPlanExercise> findByPlanDay_WorkoutPlan_IdAndExercise_MuscleGroup(Long planId, MuscleGroup mg);
 }

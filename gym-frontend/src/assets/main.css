@@ -1,38 +1,39 @@
 /* ═══════════════════════════════════════════
-   GYMPRO — FIXED Warm Brown Theme
+   GYMPRO — Professional Navy & Energy Orange Theme
 ═══════════════════════════════════════════ */
 
 :root {
   /* Backgrounds */
-  --c-bg:        #F5ECE3;   /* nền chính sáng */
-  --c-bg2:       #6B4226;   /* sidebar nâu */
-  --c-bg3:       #8C5C3E;
+  --c-bg:        #F4F6F8;
+  --c-bg2:       #172033;
+  --c-bg3:       #2A354A;
 
   /* Cards */
   --c-card:      #FFFFFF;
-  --c-card2:     #F8F4F0;
+  --c-card2:     #F8FAFC;
 
   /* Borders */
-  --c-border:    #C49A6C;
-  --c-border2:   #E8D5C0;
+  --c-border:    #CBD5E1;
+  --c-border2:   #E2E8F0;
 
   /* Text */
-  --c-text:      #1A0F0A;
-  --c-text2:     #4A3728;
-  --c-text3:     #8C7060;
+  --c-text:      #1E293B;
+  --c-text2:     #475569;
+  --c-text3:     #64748B;
 
-  --c-text-inv:  #FFF8F3;
-  --c-text-inv2: #E8D5C0;
+  --c-text-inv:  #F8FAFC;
+  --c-text-inv2: #CBD5E1;
 
   /* Accent */
-  --c-accent:    #D4892A;
-  --c-accent2:   #B8651A;
+  --c-accent:    #F97316;
+  --c-accent2:   #EA580C;
+  --c-accent-soft:#FFF7ED;
 
   /* Status */
-  --c-success:   #2E7D32;
-  --c-danger:    #C62828;
-  --c-warning:   #E65100;
-  --c-info:      #1565C0;
+  --c-success:   #16A34A;
+  --c-danger:    #DC2626;
+  --c-warning:   #F59E0B;
+  --c-info:      #2563EB;
 
   --radius-sm:   8px;
   --radius:      10px;
@@ -40,8 +41,8 @@
   --radius-xl:   22px;
   --radius-pill: 999px;
 
-  --shadow:      0 2px 12px rgba(107,66,38,0.12);
-  --shadow-lg:   0 8px 32px rgba(107,66,38,0.18);
+  --shadow:      0 2px 12px rgba(15,23,42,0.08);
+  --shadow-lg:   0 12px 32px rgba(15,23,42,0.14);
 
   --transition:  0.2s ease;
 
@@ -80,7 +81,7 @@ body,
 }
 
 ::-webkit-scrollbar-track {
-  background: #E8D5C0;
+  background: #E2E8F0;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -165,7 +166,7 @@ a {
 }
 
 .el-table tr:hover td {
-  background: #FDF6EE !important;
+  background: #F8FAFC !important;
 }
 
 /* INPUT */
@@ -192,7 +193,7 @@ a {
 
 .el-input__wrapper.is-focus {
   border-color: var(--c-accent) !important;
-  box-shadow: 0 0 0 2px rgba(212,137,42,0.2) !important;
+  box-shadow: 0 0 0 3px rgba(249,115,22,0.16) !important;
 }
 
 .el-input__inner {
@@ -279,7 +280,7 @@ a {
   margin-bottom: 24px;
   padding-bottom: 16px;
 
-  border-bottom: 2px solid var(--c-border);
+  border-bottom: 2px solid var(--c-accent);
 }
 
 .page-header h2 {

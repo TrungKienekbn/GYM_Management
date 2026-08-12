@@ -99,6 +99,13 @@ const router = createRouter({
                 },
 
                 {
+                    path: 'shop',
+                    name: 'UserShop',
+                    component: () =>
+                        import('@/views/user/ShopView.vue')
+                },
+
+                {
                     path: 'membership',
                     name: 'Membership',
                     component: () =>
@@ -173,7 +180,6 @@ const router = createRouter({
                     path: 'memberships',
                     redirect: '/admin/invoices'
                 },
-                { path: 'shop', name: 'Shop', component: () => import('@/views/user/ShopView.vue') },
                 {
                     path: 'invoices',
                     name: 'AdminInvoices',

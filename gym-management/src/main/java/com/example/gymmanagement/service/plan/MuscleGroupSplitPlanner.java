@@ -173,6 +173,14 @@ public final class MuscleGroupSplitPlanner {
      */
     public static List<Map<MuscleGroup, Integer>> buildWeekPlan(Goal goal, FitnessLevel level, int sessions) {
         List<List<MuscleGroup>> dayGroups = dayGroupsFor(goal, sessions);
+        return buildWeekPlan(goal, level, sessions, dayGroups);
+    }
+
+    public static List<Map<MuscleGroup, Integer>> buildWeekPlan(Goal goal, FitnessLevel level, int sessions,
+                                                                 List<List<MuscleGroup>> dayGroups) {
+        if (dayGroups == null || dayGroups.size() != sessions) {
+            throw new IllegalArgumentException("Cấu hình nhóm cơ không khớp số buổi/tuần.");
+        }
         int baseQuota = baseQuotaFor(goal, level);
 
         // group -> danh sách dayIndex mà nhóm cơ đó xuất hiện (theo thứ tự tăng dần)
@@ -267,6 +275,10 @@ public final class MuscleGroupSplitPlanner {
                     + ", sessions=" + sessions + " — thêm vào MuscleGroupSplitPlanner.DAY_MUSCLE_GROUPS.");
         }
         return byGoal.get(sessions);
+    }
+
+    public static List<List<MuscleGroup>> defaultDayGroupsFor(Goal goal, int sessions) {
+        return dayGroupsFor(goal, sessions);
     }
 
     private static int baseQuotaFor(Goal goal, FitnessLevel level) {

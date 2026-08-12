@@ -51,6 +51,7 @@ public class WorkoutSessionService {
     private final WorkoutPlanMuscleGroupWeightRepository mgWeightRepo;
     private final WorkoutPlanExerciseRepository planExerciseRepo;
     private final MembershipService membershipService;
+    private final TrainingConfigService trainingConfigService;
 
     @Transactional
     public WorkoutSessionResponse enrollSession(String email, EnrollSessionRequest req) {
@@ -226,6 +227,9 @@ public class WorkoutSessionService {
                     .build();
         }).collect(Collectors.toList());
         logRepo.saveAll(logs);
+
+        // Điều chỉnh ở cấp từng bài: chỉ bài có 2 lần thực hiện gần nhất đều dưới ngưỡng mới bị đổi/giảm.
+        workoutPlanService.adjustRepeatedLowCompletionExercises(s.getWorkoutPlan(), s.getUser());
 
         double avgSessionRate = logs.stream()
                 .filter(l -> l.getCompletionPercent() != null)
@@ -566,7 +570,7 @@ public class WorkoutSessionService {
 
         if (isAi) {
             // AI: kiểm tra theo lịch khuyến nghị của hệ thống
-            List<Integer> recommended = ScheduleCatalog.recommendedFor(plan.getSessionsPerWeek());
+            List<Integer> recommended = trainingConfigService.recommendedDays(plan.getSessionsPerWeek());
             dayMismatch = !recommended.contains(actualDow);
         } else {
             // Admin: kiểm tra theo đúng ngày Admin đã cấu hình

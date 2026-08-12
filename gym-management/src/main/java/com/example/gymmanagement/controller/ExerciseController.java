@@ -58,6 +58,8 @@ public class ExerciseController {
                 .name(req.getName()).description(req.getDescription())
                 .videoUrl(req.getVideoUrl()).imageUrl(req.getImageUrl())
                 .muscleGroup(req.getMuscleGroup()).difficulty(req.getDifficulty())
+                .secondaryMuscleGroups(req.getSecondaryMuscleGroups())
+                .contraindicatedInjuries(req.getContraindicatedInjuries())
                 .caloriesBurned(req.getCaloriesBurned())
                 .defaultSets(req.getDefaultSets()).defaultReps(req.getDefaultReps())
                 .defaultDurationSeconds(req.getDefaultDurationSeconds())
@@ -82,6 +84,8 @@ public class ExerciseController {
         if (req.getName()        != null) ex.setName(req.getName());
         if (req.getDescription() != null) ex.setDescription(req.getDescription());
         if (req.getMuscleGroup() != null) ex.setMuscleGroup(req.getMuscleGroup());
+        if (req.getSecondaryMuscleGroups() != null) ex.setSecondaryMuscleGroups(req.getSecondaryMuscleGroups());
+        if (req.getContraindicatedInjuries() != null) ex.setContraindicatedInjuries(req.getContraindicatedInjuries());
         if (req.getDifficulty()  != null) ex.setDifficulty(req.getDifficulty());
         if (req.getCaloriesBurned()         != null) ex.setCaloriesBurned(req.getCaloriesBurned());
         if (req.getDefaultSets()            != null) ex.setDefaultSets(req.getDefaultSets());

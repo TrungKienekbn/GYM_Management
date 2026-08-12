@@ -255,6 +255,7 @@ onUnmounted(() => { if (supportTimer) clearInterval(supportTimer) })
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   flex-shrink: 0;
 }
+.sidebar-logo .accent { color:var(--c-accent); }
 
 .admin-badge {
   font-family: var(--font-mono);

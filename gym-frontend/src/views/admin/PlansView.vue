@@ -15,6 +15,7 @@
         <el-button type="primary" @click="openCreate">
           + Tạo giáo án mẫu
         </el-button>
+        <el-button @click="openTrainingConfig">Cấu hình lịch & nhóm cơ</el-button>
       </div>
     </div>
 
@@ -207,6 +208,54 @@
       </template>
     </el-dialog>
 
+    <el-dialog v-model="configVisible" title="CẤU HÌNH SINH GIÁO ÁN" width="760px" append-to-body>
+      <el-tabs v-model="configTab">
+        <el-tab-pane label="Lịch tập khuyến nghị" name="schedule">
+          <div class="config-note">Chọn số buổi user đăng ký, sau đó chọn đúng số ngày được khuyến nghị.</div>
+          <el-form label-position="top">
+            <el-form-item label="Số buổi mỗi tuần">
+              <el-select v-model="scheduleSessions" style="width:220px" @change="loadScheduleSelection">
+                <el-option v-for="n in 7" :key="n" :label="`${n} buổi/tuần`" :value="n" />
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="`Ngày tập (đã chọn ${scheduleDays.length}/${scheduleSessions})`">
+              <el-checkbox-group v-model="scheduleDays" class="weekday-picker">
+                <el-checkbox-button v-for="d in dowOptions" :key="d.value" :value="d.value" :label="d.value">
+                  {{ d.label }}
+                </el-checkbox-button>
+              </el-checkbox-group>
+            </el-form-item>
+          </el-form>
+          <el-button type="primary" :loading="configSaving" @click="saveScheduleConfig">Lưu lịch khuyến nghị</el-button>
+        </el-tab-pane>
+
+        <el-tab-pane label="Nhóm cơ từng buổi" name="split">
+          <div class="config-note">Cấu hình này quyết định hệ thống chọn nhóm cơ nào cho từng buổi khi tự sinh giáo án.</div>
+          <div class="grid-2">
+            <el-form-item label="Mục tiêu">
+              <el-select v-model="splitGoal" style="width:100%" @change="onSplitGoalChange">
+                <el-option label="Tăng cơ" value="MUSCLE_GAIN"/><el-option label="Giảm cân" value="WEIGHT_LOSS"/>
+                <el-option label="Sức bền" value="ENDURANCE"/><el-option label="Duy trì" value="MAINTENANCE"/>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="Số buổi mỗi tuần">
+              <el-select v-model="splitSessions" style="width:100%" @change="loadSplitConfig">
+                <el-option v-for="n in validSplitSessions" :key="n" :label="`${n} buổi/tuần`" :value="n"/>
+              </el-select>
+            </el-form-item>
+          </div>
+          <div class="split-editor">
+            <el-form-item v-for="(_, index) in splitDayGroups" :key="index" :label="`Buổi ${index + 1}`">
+              <el-select v-model="splitDayGroups[index]" multiple style="width:100%" placeholder="Chọn ít nhất một nhóm cơ">
+                <el-option v-for="m in muscleOptions" :key="m.value" :label="m.label" :value="m.value"/>
+              </el-select>
+            </el-form-item>
+          </div>
+          <el-button type="primary" :loading="configSaving" @click="saveSplitConfig">Lưu nhóm cơ</el-button>
+        </el-tab-pane>
+      </el-tabs>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -224,6 +273,15 @@ const categoryFilter = ref('')
 const dialogVisible = ref(false)
 const editing = ref(false)
 const editingId = ref(null)
+const configVisible = ref(false)
+const configTab = ref('schedule')
+const configSaving = ref(false)
+const scheduleConfigs = ref([])
+const scheduleSessions = ref(4)
+const scheduleDays = ref([])
+const splitGoal = ref('MUSCLE_GAIN')
+const splitSessions = ref(4)
+const splitDayGroups = ref([])
 
 const dowOptions = [
   { value: 1, label: 'Thứ Hai' },
@@ -235,6 +293,56 @@ const dowOptions = [
   { value: 7, label: 'Chủ Nhật' }
 ]
 const dowNames = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
+const muscleOptions = [
+  ['CHEST','Ngực'],['BACK','Lưng'],['SHOULDERS','Vai'],['ARMS','Tay'],
+  ['LEGS','Chân'],['CORE','Cơ lõi'],['CARDIO','Cardio'],['FULL_BODY','Toàn thân']
+].map(([value,label]) => ({ value,label }))
+const sessionsByGoal = { MUSCLE_GAIN:[4,5,6], WEIGHT_LOSS:[4,5,6], ENDURANCE:[2,3,4], MAINTENANCE:[3,4,5] }
+const validSplitSessions = computed(() => sessionsByGoal[splitGoal.value] || [])
+
+async function openTrainingConfig() {
+  configVisible.value = true
+  const res = await adminAPI.getRecommendedSchedules()
+  scheduleConfigs.value = res.data || res || []
+  loadScheduleSelection()
+  await loadSplitConfig()
+}
+function loadScheduleSelection() {
+  const row = scheduleConfigs.value.find(x => x.sessionsPerWeek === scheduleSessions.value)
+  scheduleDays.value = [...(row?.days || [])]
+}
+async function saveScheduleConfig() {
+  if (scheduleDays.value.length !== scheduleSessions.value) {
+    ElMessage.warning(`Vui lòng chọn đúng ${scheduleSessions.value} ngày`); return
+  }
+  configSaving.value = true
+  try {
+    const res = await adminAPI.saveRecommendedSchedule(scheduleSessions.value, scheduleDays.value)
+    const saved = res.data || res
+    const i = scheduleConfigs.value.findIndex(x => x.sessionsPerWeek === scheduleSessions.value)
+    if (i >= 0) scheduleConfigs.value[i] = saved
+    ElMessage.success('Đã cập nhật lịch tập khuyến nghị')
+  } finally { configSaving.value = false }
+}
+function onSplitGoalChange() {
+  splitSessions.value = validSplitSessions.value[0]
+  loadSplitConfig()
+}
+async function loadSplitConfig() {
+  const res = await adminAPI.getMuscleSplit(splitGoal.value, splitSessions.value)
+  const data = res.data || res
+  splitDayGroups.value = (data.dayGroups || []).map(x => [...x])
+}
+async function saveSplitConfig() {
+  if (splitDayGroups.value.length !== splitSessions.value || splitDayGroups.value.some(x => !x.length)) {
+    ElMessage.warning('Mỗi buổi phải chọn ít nhất một nhóm cơ'); return
+  }
+  configSaving.value = true
+  try {
+    await adminAPI.saveMuscleSplit({ goal: splitGoal.value, sessionsPerWeek: splitSessions.value, dayGroups: splitDayGroups.value })
+    ElMessage.success('Đã cập nhật nhóm cơ cho từng buổi')
+  } finally { configSaving.value = false }
+}
 
 function blankExercise() {
   return { exerciseId: null, sets: 3, reps: 12, durationSeconds: null, restSeconds: 60, notes: '' }
@@ -454,6 +562,10 @@ onMounted(load)
 <style scoped>
 .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
 .grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+.config-note { color:var(--c-text3); margin-bottom:18px; }
+.weekday-picker { display:flex; flex-wrap:wrap; gap:8px; }
+.weekday-picker :deep(.el-checkbox-button__inner) { border:1px solid var(--c-border2); border-radius:var(--radius); }
+.split-editor { max-height:390px; overflow:auto; padding-right:8px; margin-bottom:12px; }
 
 /* Vùng chứa các cột ngày: cho phép cuộn ngang riêng khi nhiều ngày,
    không phụ thuộc vào chiều rộng dialog */

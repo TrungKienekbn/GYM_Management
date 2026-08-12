@@ -16,11 +16,13 @@ public final class ScheduleCatalog {
     // 1=Monday ... 7=Sunday (ISO dayOfWeek)
     private static final Map<Integer, List<Integer>> RECOMMENDED = new HashMap<>();
     static {
+        RECOMMENDED.put(1, List.of(1));
         RECOMMENDED.put(2, List.of(1, 4));            // Monday - Thursday
         RECOMMENDED.put(3, List.of(1, 3, 5));         // Monday-Wednesday-Friday
         RECOMMENDED.put(4, List.of(1, 2, 4, 5));      // Monday-Tuesday-Thursday-Friday
         RECOMMENDED.put(5, List.of(1, 2, 3, 5, 6));   // Monday-Tuesday-Wednesday-Friday-Saturday
         RECOMMENDED.put(6, List.of(1, 2, 3, 4, 5, 6));// Monday-Tuesday-Wednesday-Thursday-Friday-Saturday
+        RECOMMENDED.put(7, List.of(1, 2, 3, 4, 5, 6, 7));
     }
 
     /** Trả về lịch khuyến nghị DUY NHẤT cho 1 số buổi/tuần cho trước. */

@@ -131,6 +131,12 @@ export const exerciseAPI = {
     delete:   (id)     => api.delete(`/exercises/${id}`)
     ,restore: (id)     => api.patch(`/exercises/${id}/restore`)
 }
+export const injuryAreaAPI = {
+    getAll: () => api.get('/injury-areas'),
+    create: (label) => api.post('/injury-areas', { label }),
+    update: (id, label) => api.put(`/injury-areas/${id}`, { label }),
+    delete: (id) => api.delete(`/injury-areas/${id}`)
+}
 // ── Foods (Món ăn) ────────────────────────────
 export const foodAPI = {
     getAll:   (params) => api.get('/foods', { params }), // params: { keyword, goal }
@@ -240,6 +246,10 @@ export const adminAPI = {
     createTemplate:     (data)       => api.post('/admin/workout-plans/templates', data),
     updateTemplate:     (id, data)   => api.put(`/admin/workout-plans/templates/${id}`, data),
     deleteTemplate:     (id)         => api.delete(`/admin/workout-plans/templates/${id}`),
+    getRecommendedSchedules: () => api.get('/admin/training-config/schedules'),
+    saveRecommendedSchedule: (sessions, days) => api.put(`/admin/training-config/schedules/${sessions}`, { days }),
+    getMuscleSplit: (goal, sessions) => api.get('/admin/training-config/splits', { params: { goal, sessions } }),
+    saveMuscleSplit: (data) => api.put('/admin/training-config/splits', data),
     broadcast:          (data)       => api.post('/admin/notifications/broadcast', data),
     sendToUser:         (uid, data)  => api.post(`/admin/notifications/user/${uid}`, data)
 }

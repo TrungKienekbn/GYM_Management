@@ -27,7 +27,7 @@
       </div>
       <el-progress
           v-if="active.membershipType!=='FREE'"
-          :percentage="daysPercent" :color="active.daysRemaining < 7 ? '#C62828' : '#D4892A'"
+          :percentage="daysPercent" :color="active.daysRemaining < 7 ? '#DC2626' : '#F97316'"
           style="margin-top:16px" :show-text="false" :stroke-width="6"/>
     </el-card>
 

@@ -28,6 +28,14 @@ Trả lời:
 
 > Phiên bản hiện tại chủ yếu là hệ thống đề xuất theo luật, công thức và trọng số, chưa gọi mô hình học máy bên ngoài. Trong báo cáo nên gọi chính xác là “tạo giáo án thông minh/rule-based”. Hướng phát triển là huấn luyện hoặc tích hợp mô hình khi có đủ dữ liệu thực tế.
 
+### 6.1. Hai tài khoản demo chứng minh cá nhân hóa như thế nào?
+
+> Full Test 1 là nam, tăng cơ, trình độ trung bình, tập phòng gym 4 buổi và có đầy đủ thiết bị nên nhận giáo án chia nhóm cơ với Bench Press, Deadlift, Lat Pulldown, Leg Press và thời gian nghỉ dài hơn. Full Test 2 là nữ mới tập, giảm cân, tập tại nhà 3 buổi và đau đầu gối nên bài máy, Squat, Lunge, Leg Press và Burpee bị loại; giáo án dùng Push Up, Crunch, Plank, Lateral Raise theo circuit nghỉ ngắn. Sự khác biệt truy ngược được về từng trường hồ sơ.
+
+### 6.2. Lõi thuật toán tạo giáo án nằm ở đâu và chạy thế nào?
+
+> `WorkoutPlanService` điều phối toàn bộ luồng. `MuscleGroupSplitPlanner` chia nhóm cơ theo mục tiêu/số buổi. Repository lấy bài theo nhóm cơ và độ khó. Service lọc thiết bị, chấn thương và bài không thích; sau đó sắp theo điểm mục tiêu trong bảng Exercise. `FitnessCalculator` sinh sets/reps theo thể lực, còn service tính nghỉ, mức tạ và giới hạn số bài theo thời lượng.
+
 ### 7. Vì sao phải hỏi trước khi chuyển tuần?
 
 > Hoàn thành buổi cuối không đồng nghĩa người dùng luôn muốn chuyển ngay. Bước xác nhận giúp người dùng xem lại kết quả, tránh thay đổi trạng thái ngoài ý muốn và làm luồng nghiệp vụ rõ ràng hơn.

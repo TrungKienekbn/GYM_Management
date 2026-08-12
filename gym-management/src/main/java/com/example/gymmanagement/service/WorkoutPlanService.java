@@ -27,6 +27,7 @@ public class WorkoutPlanService {
     private final ExerciseRepository        exerciseRepo;
     private final UserProfileRepository     profileRepo;
     private final WorkoutSessionRepository  sessionRepo;
+    private final SessionExerciseLogRepository logRepo;
     private final FitnessCalculator fitnessCalculator;
     private final WorkoutPlanExerciseRepository planExerciseRepo;
     private final MembershipRepository membershipRepo;
@@ -36,6 +37,8 @@ public class WorkoutPlanService {
     private final EstimatedWeeksCalculator estimatedWeeksCalculator;
     private final ManaService manaService;
     private final SystemConfigService systemConfigService;   // MỚI
+    private final InjuryAreaOptionRepository injuryAreaOptionRepo;
+    private final TrainingConfigService trainingConfigService;
     private static final int FREE_PLAN_LIMIT_PER_MONTH = 1;
 
     private void checkPlanGenerationLimit(User user) {
@@ -279,6 +282,7 @@ public class WorkoutPlanService {
         String note = null;
         boolean endPlanNow = false;
 
+
         if (plan.getEstimatedWeeks() == null) {
             // ── Giáo án cũ (tạo trước Patch 7) — chạy nguyên logic cũ (LOCKED) ──
             long completed = sessionRepo.countCompletedInWeek(user.getId(), planId, week);
@@ -356,6 +360,90 @@ public class WorkoutPlanService {
                 profileRepo.findByUserId(user.getId()).orElse(null));
         if (note != null) resp.setScheduleNote(note);
         return resp;
+    }
+
+    @Transactional
+    public List<String> adjustRepeatedLowCompletionExercises(WorkoutPlan plan, User user) {
+        if (!membershipService.isVip(user)) return List.of();
+        double threshold = systemConfigService.get("LOW_COMPLETION_THRESHOLD", 40.0);
+        int action = (int) Math.round(systemConfigService.get("LOW_COMPLETION_ACTION", 1.0));
+        UserProfile profile = profileRepo.findByUserId(user.getId()).orElse(null);
+        List<WorkoutPlanExercise> items = planExerciseRepo.findByPlanDay_WorkoutPlan_Id(plan.getId());
+        List<String> changes = new ArrayList<>();
+
+        for (WorkoutPlanExercise pe : items) {
+            List<SessionExerciseLog> recent = logRepo.findRecentExerciseLogs(user.getId(), plan.getId(),
+                    pe.getExercise().getId(), org.springframework.data.domain.PageRequest.of(0, 2));
+            if (recent.size() < 2 || recent.get(0).getCompletionPercent() >= threshold
+                    || recent.get(1).getCompletionPercent() >= threshold) continue;
+            Long lastProcessed = pe.getLastLowAdjustmentLogId();
+            if (lastProcessed != null && recent.get(1).getId() <= lastProcessed) continue;
+
+            String oldName = pe.getExercise().getName();
+            boolean adjusted = false;
+            if (action == 2) {
+                adjusted = reduceOneExerciseVolume(pe, plan);
+                if (adjusted) {
+                    changes.add(oldName + ": đã giảm sets/reps trong ngưỡng mục tiêu");
+                } else {
+                    Exercise replacement = findEasierReplacement(pe, items, profile);
+                    if (replacement != null) {
+                        pe.setExercise(replacement); adjusted = true;
+                        changes.add(oldName + " → " + replacement.getName() + " (đã chạm sàn sets/reps)");
+                    }
+                }
+            } else {
+                Exercise replacement = findEasierReplacement(pe, items, profile);
+                if (replacement != null) {
+                    pe.setExercise(replacement); adjusted = true;
+                    changes.add(oldName + " → " + replacement.getName());
+                } else {
+                    adjusted = reduceOneExerciseVolume(pe, plan);
+                    if (adjusted) changes.add(oldName + ": không có bài dễ phù hợp, đã giảm trong ngưỡng mục tiêu");
+                }
+            }
+            if (!adjusted) continue;
+            pe.setLastLowAdjustmentLogId(recent.get(0).getId());
+            planExerciseRepo.save(pe);
+        }
+        return changes;
+    }
+
+    private boolean reduceOneExerciseVolume(WorkoutPlanExercise pe, WorkoutPlan plan) {
+        int setsDown = Math.max(0, (int) Math.round(systemConfigService.get("LOW_COMPLETION_SETS_REDUCTION", 1.0)));
+        int repsDown = Math.max(0, (int) Math.round(systemConfigService.get("LOW_COMPLETION_REPS_REDUCTION", 2.0)));
+        FitnessCalculator.FsLevel fsLevel = plan.getFitnessLevel() != null ? plan.getFitnessLevel()
+                : switch (plan.getTargetLevel()) {
+                    case BEGINNER -> FitnessCalculator.FsLevel.WEAK;
+                    case INTERMEDIATE -> FitnessCalculator.FsLevel.AVERAGE;
+                    case ADVANCED -> FitnessCalculator.FsLevel.GOOD;
+                };
+        FitnessCalculator.BodyType bodyType = plan.getBodyType() != null
+                ? plan.getBodyType() : FitnessCalculator.BodyType.CAN_DOI;
+        var baseline = fitnessCalculator.resolveFinalSetsReps(fsLevel, plan.getGoal(), bodyType);
+        int setFloor = baseline.sets();
+        int repFloor = com.example.gymmanagement.service.setrep.TrainingZone.of(plan.getGoal()).repFloor();
+        boolean changed = false;
+        if (pe.getSets() != null) {
+            int next = Math.max(setFloor, pe.getSets() - setsDown);
+            changed |= next < pe.getSets(); pe.setSets(next);
+        }
+        if (pe.getReps() != null) {
+            int next = Math.max(repFloor, pe.getReps() - repsDown);
+            changed |= next < pe.getReps(); pe.setReps(next);
+        }
+        return changed;
+    }
+
+    private Exercise findEasierReplacement(WorkoutPlanExercise pe, List<WorkoutPlanExercise> all, UserProfile profile) {
+        Difficulty current = pe.getExercise().getDifficulty();
+        Difficulty easier = current == Difficulty.HARD ? Difficulty.MEDIUM : current == Difficulty.MEDIUM ? Difficulty.EASY : null;
+        if (easier == null) return null;
+        Set<Long> used = all.stream().map(x -> x.getExercise().getId()).collect(Collectors.toSet());
+        List<Exercise> candidates = exerciseRepo.findByMuscleGroupAndDifficultyAndIsActiveTrue(
+                pe.getExercise().getMuscleGroup(), easier).stream()
+                .filter(e -> !used.contains(e.getId())).filter(e -> isExerciseAllowed(e, profile)).toList();
+        return candidates.isEmpty() ? null : candidates.get(java.util.concurrent.ThreadLocalRandom.current().nextInt(candidates.size()));
     }
 
     @Transactional
@@ -887,10 +975,9 @@ public class WorkoutPlanService {
         if (profile == null) return requested;
         FitnessLevel safe = adjustLevelByBmi(requested, profile.getBmi(), goal);
         Integer months = profile.getTrainingExperienceMonths();
-        if (months != null && months < 3) safe = FitnessLevel.BEGINNER;
-        if ("SEDENTARY".equals(profile.getDailyActivityLevel()) && safe == FitnessLevel.ADVANCED) {
-            safe = FitnessLevel.INTERMEDIATE;
-        }
+        // Số tháng tính từ lần tập gần đây nhất: nghỉ trên 1 năm thì hạ một bậc.
+        // BEGINNER đã là mức thấp nhất nên được giữ nguyên.
+        if (months != null && months > 12) safe = lowerLevel(safe);
         return safe;
     }
 
@@ -901,7 +988,8 @@ public class WorkoutPlanService {
                                                   int sessions,
                                                   UserProfile profile,
                                                   double fs) {
-        List<Map<MuscleGroup, Integer>> weekPlan = MuscleGroupSplitPlanner.buildWeekPlan(goal, level, sessions);
+        List<Map<MuscleGroup, Integer>> weekPlan = MuscleGroupSplitPlanner.buildWeekPlan(
+                goal, level, sessions, trainingConfigService.dayGroups(goal, sessions));
         List<Integer> defaultSchedule = resolveSchedule(profile, sessions);
         String[] names = {"", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 
@@ -1116,7 +1204,7 @@ public class WorkoutPlanService {
                     .map(Integer::valueOf).distinct().sorted().collect(Collectors.toList());
             if (selected.size() >= sessions) return new ArrayList<>(selected.subList(0, sessions));
         }
-        return ScheduleCatalog.recommendedFor(sessions);
+        return trainingConfigService.recommendedDays(sessions);
     }
 
     /** Lọc cứng trước khi chấm điểm: thiếu thiết bị, chấn thương hoặc user từ chối thì loại. */
@@ -1130,7 +1218,21 @@ public class WorkoutPlanService {
             if (disliked) return false;
         }
 
-        Set<String> injuries = csvSet(profile.getInjuryAreas());
+        Set<String> injuries = new HashSet<>(csvSet(profile.getInjuryAreas()));
+        injuryAreaOptionRepo.findAll().stream()
+                .filter(option -> injuries.contains(option.getCode().toUpperCase(Locale.ROOT)))
+                .map(InjuryAreaOption::getLabel)
+                .map(value -> value.toUpperCase(Locale.ROOT))
+                .forEach(injuries::add);
+        Set<String> contraindications = new HashSet<>(csvSet(ex.getContraindicatedInjuries()));
+        Set<String> secondaryGroups = new HashSet<>(csvSet(ex.getSecondaryMuscleGroups()));
+        Set<String> standardMuscleGroups = Arrays.stream(MuscleGroup.values())
+                .map(Enum::name).collect(Collectors.toSet());
+        secondaryGroups.removeAll(standardMuscleGroups);
+        contraindications.addAll(secondaryGroups);
+        if (!Collections.disjoint(injuries, contraindications)) return false;
+
+        // Dự phòng cho các bài tập cũ chưa được admin khai báo vùng chấn thương cần tránh.
         if (injuries.contains("KNEE") && containsAny(name, "squat", "lunge", "leg press", "jump")) return false;
         if (injuries.contains("LOWER_BACK") && containsAny(name, "deadlift", "good morning", "back extension")) return false;
         if (injuries.contains("SHOULDER") && containsAny(name, "shoulder press", "overhead press", "lateral raise", "dip")) return false;
@@ -1193,7 +1295,7 @@ public class WorkoutPlanService {
     }
 
     public List<Integer> suggestDays(int sessions) {
-        return ScheduleCatalog.recommendedFor(sessions);
+        return trainingConfigService.recommendedDays(sessions);
     }
 
     private String buildScheduleNote(Goal goal, int sessions) {
@@ -1226,7 +1328,7 @@ public class WorkoutPlanService {
                 .map(this::buildDayResponse).collect(Collectors.toList());
 
         List<Integer> suggested = Boolean.TRUE.equals(plan.getIsAiGenerated())
-                ? ScheduleCatalog.recommendedFor(plan.getSessionsPerWeek())
+                ? trainingConfigService.recommendedDays(plan.getSessionsPerWeek())
                 : null;
         String note = buildScheduleNote(plan.getGoal(), plan.getSessionsPerWeek());
         LowCompletionContext lowCompletion = plan.getUser() != null

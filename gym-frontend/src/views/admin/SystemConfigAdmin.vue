@@ -28,9 +28,14 @@
 
           <el-table-column label="Giá trị hiện tại" width="220" align="center">
             <template #default="{row}">
-              <el-input-number
+              <el-select v-if="row.configKey === 'LOW_COMPLETION_ACTION'" v-model="row.configValue" style="width:200px">
+                <el-option label="Đổi sang bài dễ hơn" :value="1" />
+                <el-option label="Giảm sets và reps" :value="2" />
+              </el-select>
+              <el-input-number v-else
                 v-model="row.configValue"
-                :precision="4" :step="0.05"
+                :precision="configPrecision(row.configKey)" :step="configStep(row.configKey)"
+                :min="configMin(row.configKey)" :max="configMax(row.configKey)"
                 controls-position="right" style="width:160px"/>
             </template>
           </el-table-column>
@@ -75,9 +80,28 @@ const VN_LABELS = {
   REST_MULTIPLIER_WEIGHT_LOSS: 'Hệ số thời gian nghỉ (Giảm cân)',
   EXERCISE_DURATION_BEGINNER:  'Hệ số thời lượng bài tập (Mới bắt đầu)',
   EXERCISE_DURATION_ADVANCED:  'Hệ số thời lượng bài tập (Nâng cao)',
+  LOW_COMPLETION_THRESHOLD:    'Ngưỡng hoàn thành thấp (%)',
+  LOW_COMPLETION_ACTION:       'Cách xử lý khi hoàn thành thấp',
+  LOW_COMPLETION_SETS_REDUCTION: 'Số sets cần giảm',
+  LOW_COMPLETION_REPS_REDUCTION: 'Số reps cần giảm',
 }
 function vnLabel(key) {
   return VN_LABELS[key] || key
+}
+function configPrecision(key) {
+  return key.startsWith('LOW_COMPLETION_') ? 0 : 4
+}
+function configStep(key) {
+  return key === 'LOW_COMPLETION_THRESHOLD' ? 5 : key.startsWith('LOW_COMPLETION_') ? 1 : 0.05
+}
+function configMin(key) {
+  if (key === 'LOW_COMPLETION_THRESHOLD') return 1
+  if (key.startsWith('LOW_COMPLETION_')) return 0
+  return undefined
+}
+function configMax(key) {
+  if (key === 'LOW_COMPLETION_THRESHOLD') return 100
+  return undefined
 }
 
 const categories = computed(() => [...new Set(configs.value.map(c => c.category))])

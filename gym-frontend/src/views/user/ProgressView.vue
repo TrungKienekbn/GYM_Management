@@ -220,10 +220,10 @@ function drawChart() {
       datasets: [{
         label: 'Cân nặng (kg)',
         data: chartData.map(p => p.weight),
-        borderColor: '#D4892A',
+        borderColor: '#F97316',
         backgroundColor: 'rgba(212,137,42,0.1)',
         tension: 0.4,
-        pointBackgroundColor: '#D4892A',
+        pointBackgroundColor: '#F97316',
         pointRadius: 5,
         fill: true
       }]

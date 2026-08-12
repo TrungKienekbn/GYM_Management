@@ -274,7 +274,7 @@ onMounted(async () => {
 .rating-title + .rating-comment { margin-top:14px; }
 .rating-comment { font-size:0.875rem; color:var(--c-text2); line-height:1.5; margin-bottom:10px; }
 .admin-reply-show {
-  background:#FFF8F0; border:1px solid #F0D9B5; border-radius:var(--radius);
+  background:var(--c-accent-soft); border:1px solid #FED7AA; border-radius:var(--radius);
   padding:8px 12px; font-size:0.82rem; color:var(--c-text2); margin-bottom:10px;
 }
 .reply-label { font-weight:700; color:var(--c-accent); margin-right:6px; }

@@ -54,7 +54,7 @@ async function handleRegister() {
 <style scoped>
 .auth-page { min-height:100vh; display:flex; }
 .auth-bg {
-  flex:1; background:linear-gradient(135deg, #4A2810 0%, #6B4226 50%, #8C5C3E 100%);
+  flex:1; background:linear-gradient(135deg, #0F172A 0%, #172033 55%, #24324A 100%);
   display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative;
 }
 .bg-text { font-family:var(--font-display); font-size:12vw; line-height:1; color:rgba(255,255,255,0.08); }

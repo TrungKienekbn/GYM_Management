@@ -42,7 +42,8 @@
       <div class="demo-box">
         <div style="font-size:0.72rem;font-weight:700;color:var(--c-text3);letter-spacing:0.1em;margin-bottom:4px">TÀI KHOẢN THỬ NGHIỆM</div>
         <div style="font-size:0.78rem;color:var(--c-text2)">Quản trị viên: <strong>admin@gym.com</strong> / <strong>admin123</strong></div>
-        <div style="font-size:0.78rem;color:var(--c-text2);margin-top:4px">Full Test : <strong>fulltest@gym.com</strong> / <strong>password</strong></div>
+        <div class="demo-account"><b>Demo 1 · VIP tăng cơ tại phòng gym</b><span><strong>fulltest@gym.com</strong> / <strong>password</strong></span></div>
+        <div class="demo-account"><b>Demo 2 · Gói thường giảm cân tại nhà</b><span><strong>fulltest2@gym.com</strong> / <strong>password</strong></span></div>
       </div>
     </div>
     <el-dialog v-model="forgotDialog" title="ĐẶT LẠI MẬT KHẨU" width="400px" align-center append-to-body>
@@ -93,7 +94,7 @@ async function resetPassword() {
 .auth-page { min-height:100vh; display:flex; }
 .auth-bg {
   flex:1; position:relative; overflow:hidden;
-  background: linear-gradient(135deg, #4A2810 0%, #6B4226 50%, #8C5C3E 100%);
+  background: linear-gradient(135deg, #0F172A 0%, #172033 55%, #24324A 100%);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
 }
 .bg-overlay {
@@ -114,4 +115,6 @@ async function resetPassword() {
   border-radius:var(--radius-lg); text-align:center;
 }
 .forgot-link{border:0;background:none;color:var(--c-accent);cursor:pointer;margin-top:12px;align-self:flex-end;font-family:inherit}
+.demo-account{display:flex;flex-direction:column;gap:2px;margin-top:8px;padding-top:8px;border-top:1px solid var(--c-border2);font-size:.76rem;color:var(--c-text2)}
+.demo-account b{color:var(--c-text)}
 </style>

@@ -21,13 +21,29 @@ public class DataInitializer implements CommandLineRunner {
     private final ExerciseRepository exerciseRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final SystemConfigRepository systemConfigRepository;
+    private final InjuryAreaOptionRepository injuryAreaOptionRepository;
     @Override
     public void run(String... args) {
         initRoles();
         initAdminUser();
         initExercises();
         initSystemConfigs();
+        initInjuryAreas();
         log.info("Data initialization complete.");
+    }
+
+    private void initInjuryAreas() {
+        if (injuryAreaOptionRepository.count() == 0) {
+            injuryAreaOptionRepository.saveAll(List.of(
+                    new InjuryAreaOption(null, "KNEE", "Đầu gối"),
+                    new InjuryAreaOption(null, "LOWER_BACK", "Lưng dưới"),
+                    new InjuryAreaOption(null, "SHOULDER", "Vai"),
+                    new InjuryAreaOption(null, "WRIST", "Cổ tay"),
+                    new InjuryAreaOption(null, "ELBOW", "Khuỷu tay"),
+                    new InjuryAreaOption(null, "ANKLE", "Cổ chân"),
+                    new InjuryAreaOption(null, "NECK", "Cổ")
+            ));
+        }
     }
 
     private void initRoles() {

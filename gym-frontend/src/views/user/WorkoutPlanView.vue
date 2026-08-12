@@ -1497,13 +1497,13 @@ onMounted(async () => {
   text-align:center; cursor:pointer; transition:all var(--transition); background:var(--c-card2);
 }
 .goal-card:hover  { border-color:var(--c-accent); }
-.goal-card.selected { border-color:var(--c-accent); background:#FFF8F0; }
+.goal-card.selected { border-color:var(--c-accent); background:var(--c-accent-soft); }
 .goal-icon  { font-size:1.8rem; margin-bottom:6px; }
 .goal-label { font-weight:700; font-size:0.82rem; color:var(--c-text); margin-bottom:3px; }
 .goal-desc  { font-size:0.72rem; color:var(--c-text3); }
 
 .info-box {
-  padding:12px 14px; background:#FFF8F0; border:1px solid var(--c-border); border-radius:var(--radius-lg); margin-top:12px;
+  padding:12px 14px; background:var(--c-accent-soft); border:1px solid var(--c-border); border-radius:var(--radius-lg); margin-top:12px;
 }
 .target-progress-box {
   background:#eff6ff; border:1px solid #bfdbfe; padding:12px 14px; border-radius:8px; margin-top:8px;
@@ -1525,7 +1525,7 @@ onMounted(async () => {
   padding:12px 14px; cursor:pointer; transition:all var(--transition); background:var(--c-card2);
 }
 .template-card:hover { border-color:var(--c-accent); }
-.template-card.selected { border-color:var(--c-accent); background:#FFF8F0; }
+.template-card.selected { border-color:var(--c-accent); background:var(--c-accent-soft); }
 
 .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
 
@@ -1584,7 +1584,7 @@ onMounted(async () => {
   padding:12px 14px; cursor:pointer; transition:all var(--transition); background:var(--c-card2);
 }
 .schedule-option-card:hover { border-color:var(--c-accent); }
-.schedule-option-card.selected { border-color:var(--c-accent); background:#FFF8F0; }
+.schedule-option-card.selected { border-color:var(--c-accent); background:var(--c-accent-soft); }
 :global(.pre-line-message .el-message-box__message) {
   white-space: pre-line;
 }

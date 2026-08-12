@@ -154,7 +154,7 @@ function drawAnalyticsCharts() {
   const months = Object.keys(dashboardStats.value.monthlyCompletedSessions || {})
   monthlyInst?.destroy(); qualityInst?.destroy(); muscleInst?.destroy()
   if (monthlyChart.value) monthlyInst = new Chart(monthlyChart.value, { type:'bar', data:{ labels:months, datasets:[
-    { label:'Số buổi hoàn thành', data:months.map(k => dashboardStats.value.monthlyCompletedSessions[k]), backgroundColor:'#d98b2b', borderRadius:6 }
+    { label:'Số buổi hoàn thành', data:months.map(k => dashboardStats.value.monthlyCompletedSessions[k]), backgroundColor:'#F97316', borderRadius:6 }
   ]}, options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{grid:{display:false},ticks:{color:text}},y:{beginAtZero:true,grid:{color:grid},ticks:{precision:0,color:text},title:{display:true,text:'Số buổi',color:text}}} } })
   const quality = dashboardStats.value.sessionQualityDistribution || {}
   if (qualityChart.value && hasQualityData.value) qualityInst = new Chart(qualityChart.value, { type:'doughnut', data:{labels:Object.keys(quality),datasets:[{data:Object.values(quality),backgroundColor:['#22c55e','#f59e0b','#ef4444','#94a3b8'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'bottom',labels:{color:text,boxWidth:10}}}} })

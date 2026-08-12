@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 public interface SessionExerciseLogRepository extends JpaRepository<SessionExerciseLog, Long> {
 
@@ -21,4 +22,13 @@ public interface SessionExerciseLogRepository extends JpaRepository<SessionExerc
             @Param("userId") Long userId,
             @Param("planId") Long planId,
             @Param("weekNumber") Integer weekNumber);
+
+    @Query("""
+        SELECT l FROM SessionExerciseLog l JOIN l.session s
+        WHERE s.user.id=:userId AND s.workoutPlan.id=:planId AND l.exercise.id=:exerciseId
+          AND l.completionPercent IS NOT NULL
+        ORDER BY l.loggedAt DESC, l.id DESC
+    """)
+    List<SessionExerciseLog> findRecentExerciseLogs(@Param("userId") Long userId,
+            @Param("planId") Long planId, @Param("exerciseId") Long exerciseId, Pageable pageable);
 }

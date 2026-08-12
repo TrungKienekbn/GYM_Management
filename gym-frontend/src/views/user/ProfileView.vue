@@ -58,46 +58,21 @@
           </el-form-item>
           <div class="section-title">KINH NGHIỆM VÀ LỊCH TẬP</div>
           <div class="grid-2">
-            <el-form-item label="Đã tập luyện bao lâu?">
+            <el-form-item label="Lần tập luyện gần đây nhất">
               <el-select v-model="form.trainingExperienceMonths" style="width:100%">
-                <el-option label="Chưa từng tập" :value="0"/>
-                <el-option label="Dưới 3 tháng" :value="2"/>
-                <el-option label="3–12 tháng" :value="6"/>
-                <el-option label="1–2 năm" :value="18"/>
-                <el-option label="Trên 2 năm" :value="36"/>
+                <el-option label="Trong vòng 3 tháng" :value="2"/>
+                <el-option label="Từ 3 đến 6 tháng" :value="6"/>
+                <el-option label="Từ 6 đến 12 tháng" :value="12"/>
+                <el-option label="Trên 1 năm" :value="13"/>
+                <el-option label="Chưa từng tập" :value="720"/>
               </el-select>
-            </el-form-item>
-            <el-form-item label="Mức vận động hằng ngày">
-              <el-select v-model="form.dailyActivityLevel" style="width:100%">
-                <el-option label="Ít vận động" value="SEDENTARY"/>
-                <el-option label="Vận động nhẹ" value="LIGHT"/>
-                <el-option label="Vận động vừa" value="MODERATE"/>
-                <el-option label="Vận động nhiều" value="HIGH"/>
-              </el-select>
+              <div class="field-help">Nghỉ tập trên 1 năm sẽ hạ một bậc trình độ giáo án để đảm bảo an toàn.</div>
             </el-form-item>
             <el-form-item label="Số ngày rảnh / tuần">
               <el-input-number v-model="form.availableDaysPerWeek" :min="1" :max="7" style="width:100%"/>
             </el-form-item>
-            <el-form-item label="Thời lượng mỗi buổi">
-              <el-select v-model="form.preferredSessionDuration" style="width:100%">
-                <el-option v-for="m in [20,30,45,60,90,120]" :key="m" :label="`${m} phút`" :value="m"/>
-              </el-select>
-            </el-form-item>
           </div>
-          <el-form-item label="Những ngày có thể tập">
-            <el-checkbox-group v-model="form.preferredTrainingDays" class="choice-wrap">
-              <el-checkbox-button v-for="d in weekDays" :key="d.value" :value="d.value">{{ d.label }}</el-checkbox-button>
-            </el-checkbox-group>
-          </el-form-item>
-
-          <div class="section-title">NƠI TẬP VÀ THIẾT BỊ</div>
-          <el-form-item label="Bạn thường tập ở đâu?">
-            <el-radio-group v-model="form.trainingLocation">
-              <el-radio-button value="HOME">Tại nhà</el-radio-button>
-              <el-radio-button value="GYM">Phòng gym</el-radio-button>
-              <el-radio-button value="BOTH">Cả hai</el-radio-button>
-            </el-radio-group>
-          </el-form-item>
+          <div class="section-title">THIẾT BỊ TẬP LUYỆN</div>
           <el-form-item label="Thiết bị có thể sử dụng">
             <el-checkbox-group v-model="form.availableEquipment" class="choice-wrap">
               <el-checkbox v-for="e in equipmentOptions" :key="e.value" :value="e.value" border>{{ e.label }}</el-checkbox>
@@ -111,13 +86,12 @@
               <el-checkbox v-for="i in injuryOptions" :key="i.value" :value="i.value" border>{{ i.label }}</el-checkbox>
             </el-checkbox-group>
           </el-form-item>
-          <el-form-item label="Bệnh lý hoặc lưu ý sức khỏe">
-            <el-input v-model="form.medicalConditions" type="textarea" :rows="2"
-                      placeholder="Ví dụ: cao huyết áp, hen suyễn...; bỏ trống nếu không có"/>
-          </el-form-item>
           <el-form-item label="Bài tập không muốn xuất hiện">
-            <el-input v-model="form.dislikedExercises" placeholder="Nhập tên bài, cách nhau bằng dấu phẩy"/>
-            <div class="field-help">Thông tin sức khỏe chỉ dùng để giới hạn bài tập, không thay thế tư vấn y tế.</div>
+            <el-select v-model="form.dislikedExercises" multiple filterable clearable collapse-tags
+                       collapse-tags-tooltip placeholder="Tìm và chọn bài tập" style="width:100%">
+              <el-option v-for="exercise in exerciseOptions" :key="exercise.id" :label="exercise.name" :value="exercise.name"/>
+            </el-select>
+            <div class="field-help">Các bài đã chọn sẽ không được đưa vào giáo án của bạn.</div>
           </el-form-item>
 
         </el-form>
@@ -151,8 +125,6 @@
             <el-descriptions-item label="Mục tiêu">{{ goalLabel(profile.goal) }}</el-descriptions-item>
             <el-descriptions-item label="Trình độ giáo án">{{ levelLabel(profile.fitnessLevel) }}</el-descriptions-item>
             <el-descriptions-item label="Lịch tập">{{ profile.availableDaysPerWeek }} ngày/tuần </el-descriptions-item>
-            <el-descriptions-item label="Thời lượng">{{ profile.preferredSessionDuration || '--' }} phút/buổi</el-descriptions-item>
-            <el-descriptions-item label="Nơi tập">{{ locationLabel(profile.trainingLocation) }}</el-descriptions-item>
           </el-descriptions>
         </el-card>
 
@@ -169,7 +141,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
-import { profileAPI } from '@/api'
+import { profileAPI, exerciseAPI, injuryAreaAPI } from '@/api'
 import { ElMessage } from 'element-plus'
 import { useRoute } from 'vue-router'
 
@@ -203,22 +175,13 @@ const form    = reactive({
   fitnessLevel: 'BEGINNER',
   availableDaysPerWeek: 3,
   preferredSessionDuration: 45,
-  trainingExperienceMonths: 0,
-  dailyActivityLevel: 'LIGHT',
+  trainingExperienceMonths: 2,
   trainingLocation: 'GYM',
   availableEquipment: ['DUMBBELL', 'BENCH', 'BARBELL', 'CABLE', 'MACHINE'],
-  preferredTrainingDays: [1, 3, 5],
   injuryAreas: [],
-  medicalConditions: '',
-  dislikedExercises: ''
+  dislikedExercises: []
 })
 
-const weekDays = [
-  { value:1, label:'Thứ Hai' }, { value:2, label:'Thứ Ba' },
-  { value:3, label:'Thứ Tư' }, { value:4, label:'Thứ Năm' },
-  { value:5, label:'Thứ Sáu' }, { value:6, label:'Thứ Bảy' },
-  { value:7, label:'Chủ Nhật' }
-]
 const equipmentOptions = [
   { value:'BODYWEIGHT', label:'Không cần dụng cụ' }, { value:'MAT', label:'Thảm' },
   { value:'DUMBBELL', label:'Tạ đơn' }, { value:'RESISTANCE_BAND', label:'Dây kháng lực' },
@@ -226,12 +189,8 @@ const equipmentOptions = [
   { value:'PULL_UP_BAR', label:'Xà đơn' }, { value:'CABLE', label:'Máy cáp' },
   { value:'MACHINE', label:'Máy tập' }, { value:'CARDIO_MACHINE', label:'Máy cardio' }
 ]
-const injuryOptions = [
-  { value:'KNEE', label:'Đầu gối' }, { value:'LOWER_BACK', label:'Lưng dưới' },
-  { value:'SHOULDER', label:'Vai' }, { value:'WRIST', label:'Cổ tay' },
-  { value:'ELBOW', label:'Khuỷu tay' }, { value:'ANKLE', label:'Cổ chân' },
-  { value:'NECK', label:'Cổ' }
-]
+const injuryOptions = ref([])
+const exerciseOptions = ref([])
 const csvToArray = (value, numeric = false) => !value ? [] : String(value).split(',').filter(Boolean).map(v => numeric ? Number(v) : v)
 
 const bmiColor = computed(() => {
@@ -259,16 +218,34 @@ async function load() {
       fitnessLevel: r.data.fitnessLevel,
       availableDaysPerWeek: r.data.availableDaysPerWeek,
       preferredSessionDuration: r.data.preferredSessionDuration || 45,
-      trainingExperienceMonths: r.data.trainingExperienceMonths ?? 0,
-      dailyActivityLevel: r.data.dailyActivityLevel || 'LIGHT',
+      trainingExperienceMonths: r.data.trainingExperienceMonths ?? 2,
       trainingLocation: r.data.trainingLocation || 'GYM',
       availableEquipment: csvToArray(r.data.availableEquipment),
-      preferredTrainingDays: csvToArray(r.data.preferredTrainingDays, true),
       injuryAreas: csvToArray(r.data.injuryAreas),
-      medicalConditions: r.data.medicalConditions || '',
-      dislikedExercises: r.data.dislikedExercises || ''
+      dislikedExercises: csvToArray(r.data.dislikedExercises)
     })
   } catch {}
+}
+
+async function loadCustomInjuryOptions() {
+  try {
+    const [catalogRes, exerciseRes] = await Promise.all([injuryAreaAPI.getAll(), exerciseAPI.getAll()])
+    exerciseOptions.value = (exerciseRes.data || []).filter(ex => ex.isActive !== false)
+      .sort((a, b) => a.name.localeCompare(b.name, 'vi'))
+    const catalog = (catalogRes.data || []).map(item => ({ value:item.code, label:item.label }))
+    const knownMuscles = new Set(['CHEST','BACK','SHOULDERS','ARMS','LEGS','CORE','CARDIO','FULL_BODY'])
+    const unique = new Map(catalog.map(item => [item.label.toLocaleLowerCase('vi-VN'), item]))
+    ;(exerciseRes.data || []).forEach(ex => {
+      ;[...csvToArray(ex.secondaryMuscleGroups), ...csvToArray(ex.contraindicatedInjuries)].forEach(name => {
+        const normalized = name.trim()
+        const key = normalized.toLocaleLowerCase('vi-VN')
+        if (normalized && !knownMuscles.has(normalized.toUpperCase()) && !unique.has(key)) {
+          unique.set(key, { value:normalized, label:normalized })
+        }
+      })
+    })
+    injuryOptions.value = [...unique.values()].sort((a, b) => a.label.localeCompare(b.label, 'vi'))
+  } catch { injuryOptions.value = []; exerciseOptions.value = [] }
 }
 
 
@@ -281,10 +258,6 @@ async function save() {
     ElMessage.warning('Cân nặng phải từ 30 đến 250 kg')
     return
   }
-  if (form.preferredTrainingDays.length < form.availableDaysPerWeek) {
-    ElMessage.warning('Số ngày được chọn phải bằng hoặc nhiều hơn số buổi mỗi tuần')
-    return
-  }
   if (!form.availableEquipment.length) {
     ElMessage.warning('Hãy chọn ít nhất một loại thiết bị hoặc “Không cần dụng cụ”')
     return
@@ -294,8 +267,10 @@ async function save() {
     const payload = {
       ...form,
       availableEquipment: form.availableEquipment.join(','),
-      preferredTrainingDays: form.preferredTrainingDays.join(','),
-      injuryAreas: form.injuryAreas.join(',')
+      injuryAreas: form.injuryAreas.join(','),
+      dislikedExercises: form.dislikedExercises.join(','),
+      medicalConditions: null,
+      dailyActivityLevel: null
     }
     const r = await profileAPI.save(payload)
     profile.value = r.data
@@ -305,9 +280,7 @@ async function save() {
 
 function goalLabel(g)  { return { WEIGHT_LOSS:'Giảm cân', MUSCLE_GAIN:'Tăng cơ', ENDURANCE:'Sức bền', FLEXIBILITY:'Linh hoạt', MAINTENANCE:'Duy trì' }[g]||g }
 function levelLabel(l) { return { BEGINNER:'Mới bắt đầu', INTERMEDIATE:'Trung bình', ADVANCED:'Nâng cao' }[l]||l }
-function locationLabel(v) { return { HOME:'Tại nhà', GYM:'Phòng gym', BOTH:'Tại nhà và phòng gym' }[v] || '--' }
-
-onMounted(load)
+onMounted(() => Promise.all([load(), loadCustomInjuryOptions()]))
 </script>
 
 <style scoped>

@@ -11,6 +11,8 @@ public class ExerciseRequest {
     private String videoUrl;
     private String imageUrl;
     private MuscleGroup muscleGroup;
+    private String secondaryMuscleGroups;
+    private String contraindicatedInjuries;
     private Difficulty difficulty;
     private Integer caloriesBurned;
     private Integer defaultSets;
