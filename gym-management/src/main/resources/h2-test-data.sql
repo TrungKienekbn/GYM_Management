@@ -5,7 +5,7 @@
 -- User: sa | Password: de trong
 --
 -- Tai khoan 1: fulltest@gym.com / password (VIP, tang co, phong gym, 4 buoi)
--- Tai khoan 2: fulltest2@gym.com / password (FREE, giam can, tai nha, 3 buoi)
+-- Tai khoan 2: fulltest2@gym.com / password (FREE, tang co, tai nha, 4 buoi)
 -- Quen mat khau: Full Test 1 dung 1234; Full Test 2 dung 5678
 -- Co the chay lai file nay nhieu lan ma khong tao trung du lieu.
 -- ============================================================
@@ -878,7 +878,8 @@ INSERT INTO workout_plan_exercises (id,plan_day_id,exercise_id,sets,reps,rest_se
 INSERT INTO workout_plan_exercises (id,plan_day_id,exercise_id,sets,duration_seconds,rest_seconds,order_index,notes,is_assessment) SELECT 9769,9720,e.id,1,15,120,2,'Dừng ngay nếu đau hoặc chóng mặt',FALSE FROM exercises e WHERE e.name='Plank' AND NOT EXISTS(SELECT 1 FROM workout_plan_exercises WHERE id=9769);
 
 -- 12. Tai khoan doi chung Full Test 2
--- Khac Full Test 1: FREE, nu, giam can, BEGINNER, 3 buoi/tuan, dang o tuan 1.
+-- Cung muc tieu tang co voi Full Test 1, nhung khac dieu kien:
+-- FREE, nu, BEGINNER, tap tai nha, it thiet bi, dau goi, 4 buoi ngan/tuan.
 INSERT INTO users (id,full_name,email,password,phone,status,email_verified,created_at,role_id)
 SELECT 20001,'Full Test 2','fulltest2@gym.com',
        '$2a$10$YGwKIlx5.AEpPvDkj6QlkO1kR6MWAmMti0vlD5Dbeeznfvll5.d8W',
@@ -893,15 +894,16 @@ WHERE email='fulltest2@gym.com';
 INSERT INTO user_profiles
  (id,user_id,height,weight,age,gender,bmi,body_fat_percentage,goal,fitness_level,
   available_days_per_week,preferred_session_duration,medical_conditions,date_of_birth)
-SELECT 20001,u.id,160.0,68.0,30,'FEMALE',26.56,NULL,'WEIGHT_LOSS','BEGINNER',
-       3,45,'Đau đầu gối nhẹ, ưu tiên bài tác động thấp',DATE '1996-04-12'
+SELECT 20001,u.id,160.0,68.0,30,'FEMALE',26.56,NULL,'MUSCLE_GAIN','BEGINNER',
+       4,45,'Đau đầu gối nhẹ, ưu tiên bài tác động thấp',DATE '1996-04-12'
 FROM users u WHERE u.email='fulltest2@gym.com'
  AND NOT EXISTS(SELECT 1 FROM user_profiles p WHERE p.user_id=u.id);
 
 -- Hồ sơ đối chứng: tập tại nhà, ít thiết bị và đau đầu gối nên bài chân tác động mạnh bị loại.
-UPDATE user_profiles SET training_experience_months=2, daily_activity_level='SEDENTARY',
+UPDATE user_profiles SET goal='MUSCLE_GAIN',fitness_level='BEGINNER',available_days_per_week=4,
+ training_experience_months=2, daily_activity_level='SEDENTARY',
  training_location='HOME', available_equipment='BODYWEIGHT,MAT,RESISTANCE_BAND,DUMBBELL',
- preferred_training_days='2,4,7', injury_areas='KNEE', disliked_exercises='Burpee'
+ preferred_training_days='2,4,6,7', injury_areas='KNEE', disliked_exercises='Burpee'
 WHERE user_id=(SELECT id FROM users WHERE email='fulltest2@gym.com');
 
 INSERT INTO memberships
@@ -913,7 +915,7 @@ SELECT 20001,u.id,'FREE',DATEADD('DAY',-45,CURRENT_DATE),DATEADD('YEAR',100,CURR
 FROM users u WHERE u.email='fulltest2@gym.com'
  AND NOT EXISTS(SELECT 1 FROM memberships m WHERE m.user_id=u.id AND m.is_active=TRUE);
 
--- Tiến độ cân nặng khác Full Test 1: giảm chậm, có một tuần tăng nhẹ.
+-- Tiến độ thực tế yếu hơn Full Test 1: cân nặng dao động và mức hoàn thành thấp.
 INSERT INTO progress_tracking(id,user_id,weight,height,bmi,recorded_date,recorded_at,source,notes)
 SELECT 20501,u.id,70.0,160.0,27.34,DATEADD('DAY',-28,CURRENT_DATE),DATEADD('DAY',-28,CURRENT_TIMESTAMP),'MANUAL','Mốc bắt đầu Full Test 2'
 FROM users u WHERE u.email='fulltest2@gym.com' AND NOT EXISTS(SELECT 1 FROM progress_tracking WHERE id=20501);
@@ -932,9 +934,9 @@ INSERT INTO workout_plans
   is_active,is_ai_generated,is_template,is_completed,week_start_date,starting_bmi,starting_weight,
   difficulty_adjustment,sets_adjustment,reps_adjustment,exercises_adjustment,weight_adjustment_note,
   max_mana,current_mana,fitness_score,fitness_level,body_type,created_at,estimated_weeks)
-SELECT 20001,u.id,'Full Test 2 - Giảm cân cho người mới',
-       'Giáo án đối chứng: cường độ nhẹ, cardio tác động thấp và 3 buổi mỗi tuần.',
-       'WEIGHT_LOSS','BEGINNER',8,3,1,TRUE,TRUE,FALSE,FALSE,
+SELECT 20001,u.id,'Full Test 2 - Tăng cơ tại nhà cho người mới',
+       'Cùng mục tiêu tăng cơ với Full Test 1 nhưng dùng bài tại nhà, tải nhẹ và tránh ảnh hưởng đầu gối.',
+       'MUSCLE_GAIN','BEGINNER',8,4,1,TRUE,TRUE,FALSE,FALSE,
        CAST(DATE_TRUNC('WEEK',CURRENT_DATE) AS DATE),27.34,70.0,
        -1,-1,0,0,'Gói thường: giữ nguyên mức bài sau mỗi tuần',132,92,66,'GOOD','THUA_CAN',
        DATEADD('DAY',-5,CURRENT_TIMESTAMP),8
@@ -943,7 +945,9 @@ FROM users u WHERE u.email='fulltest2@gym.com'
 
 UPDATE workout_plans SET is_active=FALSE
 WHERE user_id=(SELECT id FROM users WHERE email='fulltest2@gym.com') AND id<>20001;
-UPDATE workout_plans SET is_active=TRUE,sessions_per_week=3,current_week=1,
+UPDATE workout_plans SET plan_name='Full Test 2 - Tăng cơ tại nhà cho người mới',
+ description='Cùng mục tiêu tăng cơ với Full Test 1 nhưng dùng bài tại nhà, tải nhẹ và tránh ảnh hưởng đầu gối.',
+ goal='MUSCLE_GAIN',target_level='BEGINNER',is_active=TRUE,sessions_per_week=4,current_week=1,
  max_mana=132,current_mana=92,fitness_score=66,fitness_level='GOOD',body_type='THUA_CAN'
 WHERE id=20001;
 
@@ -953,10 +957,12 @@ INSERT INTO workout_plan_days(id,workout_plan_id,day_of_week,day_name)
 SELECT 20102,20001,4,'Buổi 2 - Chân và cơ lõi' WHERE NOT EXISTS(SELECT 1 FROM workout_plan_days WHERE id=20102);
 INSERT INTO workout_plan_days(id,workout_plan_id,day_of_week,day_name)
 SELECT 20103,20001,7,'Buổi 3 - Toàn thân đốt mỡ' WHERE NOT EXISTS(SELECT 1 FROM workout_plan_days WHERE id=20103);
-UPDATE workout_plan_days SET day_of_week=7,day_name='Buổi 3 - Toàn thân đốt mỡ' WHERE id=20103;
-UPDATE workout_plan_days SET day_name='Buổi 1 - Circuit thân trên và cơ lõi' WHERE id=20101;
+INSERT INTO workout_plan_days(id,workout_plan_id,day_of_week,day_name)
+SELECT 20104,20001,7,'Buổi 4 - Vai và cơ lõi tại nhà' WHERE NOT EXISTS(SELECT 1 FROM workout_plan_days WHERE id=20104);
+UPDATE workout_plan_days SET day_of_week=6,day_name='Buổi 3 - Thân trên tại nhà' WHERE id=20103;
+UPDATE workout_plan_days SET day_name='Buổi 1 - Thân trên và cơ lõi' WHERE id=20101;
 UPDATE workout_plan_days SET day_name='Buổi 2 - Vai và cơ lõi' WHERE id=20102;
-UPDATE workout_plan_days SET day_name='Buổi 3 - Circuit thân trên đốt mỡ' WHERE id=20103;
+UPDATE workout_plan_days SET day_of_week=7,day_name='Buổi 4 - Vai và cơ lõi tại nhà' WHERE id=20104;
 
 INSERT INTO workout_plan_exercises(id,plan_day_id,exercise_id,sets,duration_seconds,rest_seconds,order_index,notes,is_assessment)
 SELECT 20201,20101,e.id,3,15,45,1,'Circuit cơ lõi tại nhà, nghỉ ngắn để tăng tiêu hao',FALSE FROM exercises e WHERE e.name='Crunch' AND NOT EXISTS(SELECT 1 FROM workout_plan_exercises WHERE id=20201);
@@ -970,15 +976,19 @@ INSERT INTO workout_plan_exercises(id,plan_day_id,exercise_id,sets,reps,rest_sec
 SELECT 20205,20103,e.id,3,10,45,1,'Chống tay cao nếu cần, thực hiện theo circuit',FALSE FROM exercises e WHERE e.name='Push Up' AND NOT EXISTS(SELECT 1 FROM workout_plan_exercises WHERE id=20205);
 INSERT INTO workout_plan_exercises(id,plan_day_id,exercise_id,sets,duration_seconds,rest_seconds,order_index,notes,is_assessment)
 SELECT 20206,20103,e.id,2,25,60,2,'Giữ lưng trung lập',FALSE FROM exercises e WHERE e.name='Plank' AND NOT EXISTS(SELECT 1 FROM workout_plan_exercises WHERE id=20206);
+INSERT INTO workout_plan_exercises(id,plan_day_id,exercise_id,sets,reps,rest_seconds,order_index,notes,is_assessment)
+SELECT 20207,20104,e.id,2,10,75,1,'Dùng tạ đơn nhẹ, kiểm soát chuyển động',FALSE FROM exercises e WHERE e.name='Lateral Raise' AND NOT EXISTS(SELECT 1 FROM workout_plan_exercises WHERE id=20207);
+INSERT INTO workout_plan_exercises(id,plan_day_id,exercise_id,sets,duration_seconds,rest_seconds,order_index,notes,is_assessment)
+SELECT 20208,20104,e.id,2,25,75,2,'Giữ lưng trung lập và dừng khi mất tư thế',FALSE FROM exercises e WHERE e.name='Plank' AND NOT EXISTS(SELECT 1 FROM workout_plan_exercises WHERE id=20208);
 
 -- Đồng bộ cả khi file đã từng chạy với phiên bản cũ: tuyệt đối tránh bài cần máy
 -- hoặc gây tải đầu gối trong giáo án tại nhà của Full Test 2.
 UPDATE workout_plan_exercises SET exercise_id=(SELECT id FROM exercises WHERE name='Crunch'),sets=3,reps=15,duration_seconds=NULL,rest_seconds=45,
- notes='Circuit cơ lõi tại nhà, nghỉ ngắn để tăng tiêu hao' WHERE id=20201;
+ notes='Cơ lõi tại nhà, kiểm soát kỹ thuật cho người mới' WHERE id=20201;
 UPDATE workout_plan_exercises SET exercise_id=(SELECT id FROM exercises WHERE name='Lateral Raise'),sets=2,reps=12,rest_seconds=60,
  notes='Dùng tạ đơn nhẹ, không gây tải lên đầu gối' WHERE id=20203;
 UPDATE workout_plan_exercises SET exercise_id=(SELECT id FROM exercises WHERE name='Push Up'),sets=3,reps=10,rest_seconds=45,
- notes='Chống tay cao nếu cần, thực hiện theo circuit' WHERE id=20205;
+ notes='Chống tay cao nếu cần, ưu tiên kỹ thuật tăng cơ an toàn' WHERE id=20205;
 
 -- Một buổi hoàn thành 78%, một buổi bỏ qua và một buổi sắp tập để thấy khác biệt thống kê.
 INSERT INTO workout_sessions
