@@ -104,6 +104,12 @@ const router = createRouter({
                     component: () =>
                         import('@/views/user/ShopView.vue')
                 },
+                {
+                    path: '/shop',
+                    name: 'PublicShop',
+                    component: () => import('@/views/PublicShopView.vue'),
+                    meta: { guest: true, allowAuthenticated: true }
+                },
 
                 {
                     path: 'membership',
@@ -229,15 +235,35 @@ const router = createRouter({
                     component: () =>
                         import('@/views/admin/NotifyView.vue')
                 },
+                { path: 'staff-schedule', name: 'AdminStaffSchedule', component: () => import('@/views/admin/StaffScheduleAdmin.vue') },
+                { path: 'vouchers', name: 'AdminVouchers', component: () => import('@/views/admin/VoucherAdmin.vue') },
                 {
                     path: 'system-configs',
                     name: 'AdminSystemConfigs',
                     component: () =>
                         import('@/views/admin/SystemConfigAdmin.vue')
                 }
+
             ]
         },
-
+        // ─────────────────────────────────────────
+        // STAFF
+        // ─────────────────────────────────────────
+        {
+            path: '/staff',
+            component: () => import('@/components/common/StaffLayout.vue'),
+            meta: {
+                requiresAuth: true,
+                role: 'ROLE_STAFF'
+            },
+            children: [
+                { path: '', redirect: '/staff/pos' },
+                { path: 'pos', name: 'StaffPos', component: () => import('@/views/staff/PosCounterView.vue') },
+                { path: 'pos-orders', name: 'StaffPosOrders', component: () => import('@/views/staff/PosOrdersView.vue') },
+                { path: 'orders', name: 'StaffOrders', component: () => import('@/views/staff/OnlineOrdersView.vue') },
+                { path: 'schedule', name: 'StaffSchedule', component: () => import('@/views/staff/ShiftView.vue') }
+            ]
+        },
         // ─────────────────────────────────────────
         // 404
         // ─────────────────────────────────────────
@@ -251,6 +277,11 @@ const router = createRouter({
 // ─────────────────────────────────────────────
 // ROUTER GUARD
 // ─────────────────────────────────────────────
+function homeByRole(auth) {
+    if (auth.isAdmin) return '/admin/dashboard'
+    if (auth.isStaff) return '/staff/pos'
+    return '/app/dashboard'
+}
 router.beforeEach((to, from, next) => {
 
     const auth = useAuthStore()
@@ -278,11 +309,7 @@ router.beforeEach((to, from, next) => {
             to.meta.role &&
             auth.user?.role !== to.meta.role
         ) {
-            return next(
-                auth.isAdmin
-                    ? '/admin/dashboard'
-                    : '/app/dashboard'
-            )
+            return next(homeByRole(auth))
         }
 
         return next()
@@ -296,11 +323,7 @@ router.beforeEach((to, from, next) => {
         const valid = auth.checkToken()
 
         if (valid) {
-            return next(
-                auth.isAdmin
-                    ? '/admin/dashboard'
-                    : '/app/dashboard'
-            )
+            return next(homeByRole(auth))
         }
 
         return next()

@@ -16,6 +16,7 @@
         <el-menu-item index="/admin/shop"><template #title>Cửa hàng</template></el-menu-item>
         <el-menu-item index="/admin/plans"><template #title>Giáo án</template></el-menu-item>
         <el-menu-item index="/admin/ratings"><template #title>Đánh giá</template></el-menu-item>
+        <el-menu-item index="/admin/vouchers"><template #title>Voucher / Khuyến mãi</template></el-menu-item>
         <el-menu-item index="/admin/support">
           <el-badge :value="supportBadge" :max="9" :hidden="!supportBadge" class="menu-badge">
             <el-icon><ChatDotRound /></el-icon>
@@ -24,6 +25,7 @@
         </el-menu-item>
         <el-menu-item index="/admin/notify"><template #title>Thông báo</template></el-menu-item>
         <el-menu-item index="/admin/system-configs">
+          <el-menu-item index="/admin/staff-schedule"><template #title>Lịch làm việc NV</template></el-menu-item>
           
           <template #title>Công thức hệ thống</template>
         </el-menu-item>

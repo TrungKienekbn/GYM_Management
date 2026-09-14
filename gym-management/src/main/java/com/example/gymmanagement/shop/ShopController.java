@@ -1,8 +1,10 @@
 package com.example.gymmanagement.shop;
 import com.example.gymmanagement.dto.response.ApiResponse; import lombok.RequiredArgsConstructor; import org.springframework.http.*; import org.springframework.security.access.prepost.PreAuthorize; import org.springframework.security.core.annotation.AuthenticationPrincipal; import org.springframework.security.core.userdetails.UserDetails; import org.springframework.web.bind.annotation.*; import java.util.*;
 @RestController @RequestMapping("/api/shop") @RequiredArgsConstructor
-public class ShopController { private final ShopService shop;
- @GetMapping("/products") public ResponseEntity<?> products(@AuthenticationPrincipal UserDetails u,@RequestParam(required=false)String category,@RequestParam(required=false)String keyword){return ResponseEntity.ok(ApiResponse.success(shop.products(u.getUsername(),category,keyword)));}
+public class ShopController { private final ShopService shop; private final VoucherService voucherService;
+ @GetMapping("/products") public ResponseEntity<?> products(@AuthenticationPrincipal UserDetails u,@RequestParam(required=false)String category,@RequestParam(required=false)String keyword){return ResponseEntity.ok(ApiResponse.success(shop.products(u==null?null:u.getUsername(),category,keyword)));}
+ @GetMapping("/vouchers/public") public ResponseEntity<?> publicVouchers(){return ResponseEntity.ok(ApiResponse.success(voucherService.publicList()));}
+ @PostMapping("/vouchers/validate") public ResponseEntity<?> validateVoucher(@RequestBody Map<String,Object>b){var r=voucherService.validate(String.valueOf(b.get("code")),Double.parseDouble(String.valueOf(b.getOrDefault("subtotal","0"))));return ResponseEntity.ok(ApiResponse.success(Map.of("code",r.getKey().getCode(),"discount",r.getValue())));}
  @GetMapping("/cart") public ResponseEntity<?> cart(@AuthenticationPrincipal UserDetails u){return ResponseEntity.ok(ApiResponse.success(shop.cart(u.getUsername())));}
  @PostMapping("/cart") public ResponseEntity<?> add(@AuthenticationPrincipal UserDetails u,@RequestBody Map<String,Object>b){shop.addCart(u.getUsername(),Long.valueOf(String.valueOf(b.get("productId"))),Integer.parseInt(String.valueOf(b.getOrDefault("quantity",1))));return ResponseEntity.ok(ApiResponse.success("Đã thêm vào giỏ"));}
  @PutMapping("/cart/{id}") public ResponseEntity<?> update(@AuthenticationPrincipal UserDetails u,@PathVariable Long id,@RequestBody Map<String,Object>b){shop.updateCart(u.getUsername(),id,Integer.parseInt(String.valueOf(b.get("quantity"))));return ResponseEntity.ok(ApiResponse.success("Đã cập nhật"));}
@@ -15,6 +17,6 @@ public class ShopController { private final ShopService shop;
  @PostMapping("/admin/products") @PreAuthorize("hasAuthority('ROLE_ADMIN')") public ResponseEntity<?> create(@RequestBody Product p){return ResponseEntity.ok(ApiResponse.success(shop.saveProduct(null,p)));}
  @PutMapping("/admin/products/{id}") @PreAuthorize("hasAuthority('ROLE_ADMIN')") public ResponseEntity<?> edit(@PathVariable Long id,@RequestBody Product p){return ResponseEntity.ok(ApiResponse.success(shop.saveProduct(id,p)));}
  @DeleteMapping("/admin/products/{id}") @PreAuthorize("hasAuthority('ROLE_ADMIN')") public ResponseEntity<?> hide(@PathVariable Long id){shop.hideProduct(id);return ResponseEntity.ok(ApiResponse.success("Đã ngừng bán"));}
- @GetMapping("/admin/orders") @PreAuthorize("hasAuthority('ROLE_ADMIN')") public ResponseEntity<?> allOrders(){return ResponseEntity.ok(ApiResponse.success(shop.allOrders()));}
- @PutMapping("/admin/orders/{id}/status") @PreAuthorize("hasAuthority('ROLE_ADMIN')") public ResponseEntity<?> status(@PathVariable Long id,@RequestBody Map<String,String>b){return ResponseEntity.ok(ApiResponse.success(shop.updateStatus(id,OrderStatus.valueOf(b.get("status")))));}
+ @GetMapping("/admin/orders") @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_STAFF')") public ResponseEntity<?> allOrders(){return ResponseEntity.ok(ApiResponse.success(shop.allOrders()));}
+ @PutMapping("/admin/orders/{id}/status") @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_STAFF')") public ResponseEntity<?> status(@PathVariable Long id,@RequestBody Map<String,String>b){return ResponseEntity.ok(ApiResponse.success(shop.updateStatus(id,OrderStatus.valueOf(b.get("status")))));}
 }

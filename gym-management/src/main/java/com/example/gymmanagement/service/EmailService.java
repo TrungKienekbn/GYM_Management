@@ -39,4 +39,9 @@ public class EmailService {
     public void sendPromotionalEmail(String email, String name, String subject, String message) {
         log.info("[EMAIL] Promotional email to {} - Subject: {}", email, subject);
     }
+    @Async
+    public void sendPosOrderConfirmation(String email, String customerName, Long orderId, Double total) {
+        log.info("[EMAIL] Hóa đơn bán tại quầy #{} gửi tới {} ({}) - Tổng tiền: {}", orderId, email, customerName, total);
+        // In production: gửi email kèm PDF/link hóa đơn
+    }
 }

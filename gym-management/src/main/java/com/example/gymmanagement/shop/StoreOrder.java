@@ -6,6 +6,9 @@ public class StoreOrder {
  @Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
  @ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="user_id") private User user;
  @Enumerated(EnumType.STRING) private OrderStatus status;
+ @Enumerated(EnumType.STRING) @Builder.Default private SalesChannel channel = SalesChannel.ONLINE;
+ private Long createdByStaffId; private String paymentMethod;
+ private String voucherCode; private Double voucherDiscount;
  private Double subtotal; private Double discount; private Double shippingFee; private Double total;
  private String receiverName; private String phone; @Column(length=1000) private String shippingAddress;
  @Column(length=1000) private String note;

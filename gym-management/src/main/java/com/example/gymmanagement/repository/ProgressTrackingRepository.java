@@ -6,9 +6,12 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 public interface ProgressTrackingRepository extends JpaRepository<ProgressTracking, Long> {
-    boolean existsByUserIdAndRecordedDate(Long userId, java.time.LocalDate recordedDate);
+    Optional<ProgressTracking> findFirstByUserIdAndRecordedDateOrderByIdDesc(
+            Long userId, java.time.LocalDate recordedDate);
+    List<ProgressTracking> findByUserIdAndRecordedDateOrderByIdDesc(
+            Long userId, java.time.LocalDate recordedDate);
     List<ProgressTracking> findByUserIdOrderByRecordedDateDesc(Long userId);
     Optional<ProgressTracking> findFirstByUserIdOrderByRecordedDateDesc(Long userId);
-    @Query("SELECT p FROM ProgressTracking p WHERE p.user.id = :userId ORDER BY p.recordedDate ASC")
+    @Query("SELECT p FROM ProgressTracking p WHERE p.user.id = :userId ORDER BY p.recordedDate ASC, p.id ASC")
     List<ProgressTracking> findByUserIdOrderByDateAsc(@Param("userId") Long userId);
 }

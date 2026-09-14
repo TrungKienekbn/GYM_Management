@@ -43,7 +43,7 @@
         <div style="font-size:0.72rem;font-weight:700;color:var(--c-text3);letter-spacing:0.1em;margin-bottom:4px">TÀI KHOẢN THỬ NGHIỆM</div>
         <div style="font-size:0.78rem;color:var(--c-text2)">Quản trị viên: <strong>admin@gym.com</strong> / <strong>admin123</strong></div>
         <div class="demo-account"><b>Demo 1 · VIP tăng cơ tại phòng gym</b><span><strong>fulltest@gym.com</strong> / <strong>password</strong></span></div>
-        <div class="demo-account"><b>Demo 2 · Gói thường giảm cân tại nhà</b><span><strong>fulltest2@gym.com</strong> / <strong>password</strong></span></div>
+        <div class="demo-account"><b>Demo 2 · Gói thường tăng cơ tại nhà, người mới</b><span><strong>fulltest2@gym.com</strong> / <strong>password</strong></span></div>
       </div>
     </div>
     <el-dialog v-model="forgotDialog" title="ĐẶT LẠI MẬT KHẨU" width="400px" align-center append-to-body>

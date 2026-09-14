@@ -3,6 +3,7 @@ package com.example.gymmanagement.service;
 import com.example.gymmanagement.dto.response.DashboardResponse;
 import com.example.gymmanagement.entity.*;
 import com.example.gymmanagement.enums.SessionStatus;
+import com.example.gymmanagement.enums.ProgressSource;
 import com.example.gymmanagement.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ public class DashboardService {
     private final UserRepository userRepository;
     private final WorkoutSessionRepository sessionRepository;
     private final ProgressTrackingRepository progressRepository;
+    private final UserProfileRepository profileRepository;
     private final MembershipRepository membershipRepository;
     private final ServiceRatingRepository ratingRepository;
     private final WorkoutPlanRepository planRepository;
@@ -36,7 +38,19 @@ public class DashboardService {
         Long totalCal = sessionRepository.sumCaloriesByUserId(uid);
 
         List<ProgressTracking> progList = progressRepository.findByUserIdOrderByDateAsc(uid);
-        Double startWeight   = progList.isEmpty() ? null : progList.get(0).getWeight();
+        // Ưu tiên snapshot bất biến được lưu ngay lần đầu tạo hồ sơ.
+        Double recordedProfileWeight = progList.stream()
+                .filter(p -> p.getSource() == ProgressSource.PROFILE && p.getWeight() != null)
+                .map(ProgressTracking::getWeight)
+                .findFirst()
+                .orElseGet(() -> progList.stream()
+                        .map(ProgressTracking::getWeight)
+                        .filter(Objects::nonNull)
+                        .findFirst()
+                        .orElse(null));
+        Double startWeight = profileRepository.findByUserId(uid)
+                .map(UserProfile::getInitialWeight)
+                .orElse(recordedProfileWeight);
         Double currentWeight = progList.isEmpty() ? null : progList.get(progList.size() - 1).getWeight();
         Double currentBmi    = progList.isEmpty() ? null : progList.get(progList.size() - 1).getBmi();
         Double weightChange  = (startWeight != null && currentWeight != null)

@@ -25,17 +25,17 @@ WHERE email = 'fulltest@gym.com';
 
 -- 2. Ho so day du de vao thang cac chuc nang giao an, dinh duong, tien do
 INSERT INTO user_profiles
-    (id, user_id, height, weight, age, gender, bmi, body_fat_percentage, goal,
+    (id, user_id, height, weight, initial_weight, age, gender, bmi, body_fat_percentage, goal,
      fitness_level, available_days_per_week, preferred_session_duration,
      medical_conditions, date_of_birth)
-SELECT 9001, u.id, 175.0, 72.0, 25, 'MALE', 23.51, 16.0, 'MUSCLE_GAIN',
+SELECT 9001, u.id, 175.0, 72.0, 65.0, 25, 'MALE', 23.51, 16.0, 'MUSCLE_GAIN',
        'INTERMEDIATE', 4, 60, 'Khong', DATE '2001-01-01'
 FROM users u
 WHERE u.email = 'fulltest@gym.com'
   AND NOT EXISTS (SELECT 1 FROM user_profiles p WHERE p.user_id = u.id);
 
 -- Hồ sơ ràng buộc dùng để demo thuật toán: phòng gym, 4 ngày, không chấn thương.
-UPDATE user_profiles SET height=175.0,weight=72.0,age=25,gender='MALE',bmi=23.51,
+UPDATE user_profiles SET height=175.0,weight=72.0,initial_weight=65.0,age=25,gender='MALE',bmi=23.51,
  body_fat_percentage=16.0,goal='MUSCLE_GAIN',fitness_level='INTERMEDIATE',
  available_days_per_week=4,preferred_session_duration=60,medical_conditions='Không',
  training_experience_months=18, daily_activity_level='MODERATE',
@@ -938,7 +938,7 @@ SELECT 20001,u.id,'Full Test 2 - Tăng cơ tại nhà cho người mới',
        'Cùng mục tiêu tăng cơ với Full Test 1 nhưng dùng bài tại nhà, tải nhẹ và tránh ảnh hưởng đầu gối.',
        'MUSCLE_GAIN','BEGINNER',8,4,1,TRUE,TRUE,FALSE,FALSE,
        CAST(DATE_TRUNC('WEEK',CURRENT_DATE) AS DATE),27.34,70.0,
-       -1,-1,0,0,'Gói thường: giữ nguyên mức bài sau mỗi tuần',132,92,66,'GOOD','THUA_CAN',
+       -1,-1,0,0,'Gói thường: giữ nguyên mức bài sau mỗi tuần',122,82,61,'AVERAGE','THUA_CAN',
        DATEADD('DAY',-5,CURRENT_TIMESTAMP),8
 FROM users u WHERE u.email='fulltest2@gym.com'
  AND NOT EXISTS(SELECT 1 FROM workout_plans WHERE id=20001);
@@ -948,7 +948,8 @@ WHERE user_id=(SELECT id FROM users WHERE email='fulltest2@gym.com') AND id<>200
 UPDATE workout_plans SET plan_name='Full Test 2 - Tăng cơ tại nhà cho người mới',
  description='Cùng mục tiêu tăng cơ với Full Test 1 nhưng dùng bài tại nhà, tải nhẹ và tránh ảnh hưởng đầu gối.',
  goal='MUSCLE_GAIN',target_level='BEGINNER',is_active=TRUE,sessions_per_week=4,current_week=1,
- max_mana=132,current_mana=92,fitness_score=66,fitness_level='GOOD',body_type='THUA_CAN'
+ -- Snapshot lúc tạo giáo án dùng cân nặng ban đầu 70 kg: khoảng 61 điểm (AVERAGE).
+ max_mana=122,current_mana=82,fitness_score=61,fitness_level='AVERAGE',body_type='THUA_CAN'
 WHERE id=20001;
 
 INSERT INTO workout_plan_days(id,workout_plan_id,day_of_week,day_name)
@@ -959,10 +960,12 @@ INSERT INTO workout_plan_days(id,workout_plan_id,day_of_week,day_name)
 SELECT 20103,20001,7,'Buổi 3 - Toàn thân đốt mỡ' WHERE NOT EXISTS(SELECT 1 FROM workout_plan_days WHERE id=20103);
 INSERT INTO workout_plan_days(id,workout_plan_id,day_of_week,day_name)
 SELECT 20104,20001,7,'Buổi 4 - Vai và cơ lõi tại nhà' WHERE NOT EXISTS(SELECT 1 FROM workout_plan_days WHERE id=20104);
-UPDATE workout_plan_days SET day_of_week=6,day_name='Buổi 3 - Thân trên tại nhà' WHERE id=20103;
-UPDATE workout_plan_days SET day_name='Buổi 1 - Thân trên và cơ lõi' WHERE id=20101;
-UPDATE workout_plan_days SET day_name='Buổi 2 - Vai và cơ lõi' WHERE id=20102;
-UPDATE workout_plan_days SET day_of_week=7,day_name='Buổi 4 - Vai và cơ lõi tại nhà' WHERE id=20104;
+-- Giữ cùng khung nhóm cơ với Full Test 1 để có thể so sánh từng buổi.
+-- Khác biệt chỉ nằm ở biến thể bài, tải tập và thời gian nghỉ theo thể trạng.
+UPDATE workout_plan_days SET day_of_week=2,day_name='Buổi 1 - Ngực, vai và tay sau' WHERE id=20101;
+UPDATE workout_plan_days SET day_of_week=4,day_name='Buổi 2 - Lưng và tay trước' WHERE id=20102;
+UPDATE workout_plan_days SET day_of_week=6,day_name='Buổi 3 - Chân và cơ lõi' WHERE id=20103;
+UPDATE workout_plan_days SET day_of_week=7,day_name='Buổi 4 - Toàn thân và cardio' WHERE id=20104;
 
 INSERT INTO workout_plan_exercises(id,plan_day_id,exercise_id,sets,duration_seconds,rest_seconds,order_index,notes,is_assessment)
 SELECT 20201,20101,e.id,3,15,45,1,'Circuit cơ lõi tại nhà, nghỉ ngắn để tăng tiêu hao',FALSE FROM exercises e WHERE e.name='Crunch' AND NOT EXISTS(SELECT 1 FROM workout_plan_exercises WHERE id=20201);
@@ -983,12 +986,37 @@ SELECT 20208,20104,e.id,2,25,75,2,'Giữ lưng trung lập và dừng khi mất 
 
 -- Đồng bộ cả khi file đã từng chạy với phiên bản cũ: tuyệt đối tránh bài cần máy
 -- hoặc gây tải đầu gối trong giáo án tại nhà của Full Test 2.
-UPDATE workout_plan_exercises SET exercise_id=(SELECT id FROM exercises WHERE name='Crunch'),sets=3,reps=15,duration_seconds=NULL,rest_seconds=45,
- notes='Cơ lõi tại nhà, kiểm soát kỹ thuật cho người mới' WHERE id=20201;
-UPDATE workout_plan_exercises SET exercise_id=(SELECT id FROM exercises WHERE name='Lateral Raise'),sets=2,reps=12,rest_seconds=60,
- notes='Dùng tạ đơn nhẹ, không gây tải lên đầu gối' WHERE id=20203;
-UPDATE workout_plan_exercises SET exercise_id=(SELECT id FROM exercises WHERE name='Push Up'),sets=3,reps=10,rest_seconds=45,
- notes='Chống tay cao nếu cần, ưu tiên kỹ thuật tăng cơ an toàn' WHERE id=20205;
+UPDATE workout_plan_exercises SET exercise_id=(SELECT id FROM exercises WHERE name='Push Up'),sets=3,reps=10,duration_seconds=NULL,rest_seconds=90,order_index=1,
+ notes='Ngực: chống tay cao nếu cần, ưu tiên kỹ thuật tăng cơ an toàn' WHERE id=20201;
+UPDATE workout_plan_exercises SET exercise_id=(SELECT id FROM exercises WHERE name='Lateral Raise'),sets=2,reps=12,duration_seconds=NULL,rest_seconds=75,order_index=2,
+ notes='Vai: dùng tạ đơn nhẹ và kiểm soát chuyển động' WHERE id=20202;
+UPDATE workout_plan_exercises SET exercise_id=(SELECT id FROM exercises WHERE name='Romanian Deadlift'),sets=2,reps=10,duration_seconds=NULL,rest_seconds=90,order_index=1,
+ notes='Lưng và chuỗi sau: gập hông, giữ gối ổn định' WHERE id=20203;
+UPDATE workout_plan_exercises SET exercise_id=(SELECT id FROM exercises WHERE name='Hammer Curl'),sets=2,reps=12,duration_seconds=NULL,rest_seconds=75,order_index=2,
+ notes='Tay trước: cuộn tạ đơn, không nhún người' WHERE id=20204;
+UPDATE workout_plan_exercises SET exercise_id=(SELECT id FROM exercises WHERE name='Romanian Deadlift'),sets=2,reps=12,duration_seconds=NULL,rest_seconds=90,order_index=1,
+ notes='Chân: ưu tiên chuỗi sau, không ép khớp gối' WHERE id=20205;
+
+-- Bổ sung đủ 3-4 bài/buổi như tài khoản đối chứng. Mỗi order_index tương ứng
+-- cùng một vai trò vận động; bài dùng máy/tạ đòn được đổi sang biến thể tại nhà.
+INSERT INTO workout_plan_exercises(id,plan_day_id,exercise_id,sets,reps,rest_seconds,order_index,notes,is_assessment)
+SELECT 20209,20101,e.id,2,12,75,3,'Thay bài cáp bằng tạ đơn; tải nhẹ cho người mới',FALSE FROM exercises e WHERE e.name='Skull Crusher' AND NOT EXISTS(SELECT 1 FROM workout_plan_exercises WHERE id=20209);
+INSERT INTO workout_plan_exercises(id,plan_day_id,exercise_id,sets,reps,rest_seconds,order_index,notes,is_assessment)
+SELECT 20210,20101,e.id,2,10,90,4,'Nằm sàn đẩy tạ đơn, không cần ghế tập',FALSE FROM exercises e WHERE e.id=9001 AND NOT EXISTS(SELECT 1 FROM workout_plan_exercises WHERE id=20210);
+INSERT INTO workout_plan_exercises(id,plan_day_id,exercise_id,sets,reps,rest_seconds,order_index,notes,is_assessment)
+SELECT 20211,20102,e.id,2,10,90,3,'Kéo tạ đơn, gập hông và giữ gối ổn định',FALSE FROM exercises e WHERE e.name='Romanian Deadlift' AND NOT EXISTS(SELECT 1 FROM workout_plan_exercises WHERE id=20211);
+INSERT INTO workout_plan_exercises(id,plan_day_id,exercise_id,sets,reps,rest_seconds,order_index,notes,is_assessment)
+SELECT 20212,20102,e.id,2,12,75,4,'Cuộn tạ đơn, không nhún người',FALSE FROM exercises e WHERE e.name='Hammer Curl' AND NOT EXISTS(SELECT 1 FROM workout_plan_exercises WHERE id=20212);
+INSERT INTO workout_plan_exercises(id,plan_day_id,exercise_id,sets,reps,rest_seconds,order_index,notes,is_assessment)
+SELECT 20213,20103,e.id,2,12,90,3,'Biên độ vừa, ưu tiên chuỗi sau và không ép gối',FALSE FROM exercises e WHERE e.name='Romanian Deadlift' AND NOT EXISTS(SELECT 1 FROM workout_plan_exercises WHERE id=20213);
+INSERT INTO workout_plan_exercises(id,plan_day_id,exercise_id,sets,reps,rest_seconds,order_index,notes,is_assessment)
+SELECT 20214,20104,e.id,2,15,60,3,'Bài toàn thân nhẹ thay cho máy cardio; dừng nếu gối khó chịu',FALSE FROM exercises e WHERE e.name='Calf Raise' AND NOT EXISTS(SELECT 1 FROM workout_plan_exercises WHERE id=20214);
+UPDATE workout_plan_exercises SET exercise_id=(SELECT id FROM exercises WHERE name='Plank'),sets=2,reps=NULL,duration_seconds=25,rest_seconds=75,
+ notes='Cơ lõi hỗ trợ ổn định lưng cho người mới' WHERE id=20211;
+UPDATE workout_plan_exercises SET exercise_id=(SELECT id FROM exercises WHERE name='Russian Twist'),sets=2,reps=12,duration_seconds=NULL,rest_seconds=75,
+ notes='Xoay thân không tạ, biên độ vừa và giữ lưng trung lập' WHERE id=20212;
+UPDATE workout_plan_exercises SET exercise_id=(SELECT id FROM exercises WHERE name='Crunch'),sets=2,reps=15,duration_seconds=NULL,rest_seconds=60,
+ notes='Cơ lõi: thở ra khi gập bụng, không kéo cổ' WHERE id=20213;
 
 -- Một buổi hoàn thành 78%, một buổi bỏ qua và một buổi sắp tập để thấy khác biệt thống kê.
 INSERT INTO workout_sessions
@@ -1016,7 +1044,8 @@ SELECT 20402,20301,e.id,2,12,TRUE,'Hoàn thành 12/16 lần',
  (SELECT check_out_time FROM workout_sessions WHERE id=20301),75
 FROM exercises e WHERE e.name='Push Up' AND NOT EXISTS(SELECT 1 FROM session_exercise_logs WHERE id=20402);
 UPDATE session_exercise_logs SET exercise_id=(SELECT id FROM exercises WHERE name='Crunch'),duration_seconds=NULL,
- reps_completed=38,notes='Hoàn thành 38/45 lần Crunch',completion_percent=84 WHERE id=20401;
+ reps_completed=25,notes='Hoàn thành 25/30 lần Push Up biến thể',completion_percent=84 WHERE id=20401;
+UPDATE session_exercise_logs SET exercise_id=(SELECT id FROM exercises WHERE name='Push Up') WHERE id=20401;
 
 -- Bản ghi bài tập 9001 từng được dùng để test sửa tên trên admin; chuẩn hóa lại
 -- để giáo án demo hiển thị tên có nghĩa nhưng không đụng bản Bench Press đã ẩn (id 2).
@@ -1029,7 +1058,9 @@ UPDATE exercises SET name='Dumbbell Bench Press' WHERE id=9001 AND name='TEST Be
 ALTER TABLE users ALTER COLUMN id RESTART WITH 1000000;
 ALTER TABLE user_profiles ALTER COLUMN id RESTART WITH 1000000;
 ALTER TABLE memberships ALTER COLUMN id RESTART WITH 1000000;
-ALTER TABLE progress_tracking ALTER COLUMN id RESTART WITH 1000000;
+-- Dữ liệu tiến độ có thể được tạo tự động sau mỗi lần khởi động. Dùng vùng ID
+-- riêng cao hơn dữ liệu mẫu để không reset bộ đếm vào các khóa đã tồn tại.
+ALTER TABLE progress_tracking ALTER COLUMN id RESTART WITH 2000000;
 ALTER TABLE exercises ALTER COLUMN id RESTART WITH 1000000;
 ALTER TABLE foods ALTER COLUMN id RESTART WITH 1000000;
 ALTER TABLE user_cosmetic_ownership ALTER COLUMN id RESTART WITH 1000000;
@@ -1057,10 +1088,12 @@ UPDATE workout_plans
 SET is_active = TRUE,
     is_completed = FALSE,
     sessions_per_week = 4,
-    max_mana = 100,
-    current_mana = 76,
-    fitness_score = 50,
-    fitness_level = 'AVERAGE',
+    -- Hồ sơ Full Test: nam, 25 tuổi, 175 cm, 72 kg.
+    -- FitnessCalculator cho kết quả xấp xỉ 92 điểm (EXCELLENT), không phải 50.
+    max_mana = 184,
+    current_mana = 160,
+    fitness_score = 92,
+    fitness_level = 'EXCELLENT',
     body_type = 'CAN_DOI',
     last_mana_regen_date = CURRENT_DATE,
     weight_adjustment_note = 'Giáo án Full Test 4 buổi/tuần'

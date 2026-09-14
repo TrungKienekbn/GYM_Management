@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { authAPI } from '@/api'
+import { authAPI, shopAPI } from '@/api'
 import { ElMessage } from 'element-plus'
 
 // ─────────────────────────────────────────────
@@ -96,6 +96,9 @@ export const useAuthStore = defineStore('auth', () => {
   const isUser = computed(() => {
     return user.value?.role === 'ROLE_USER'
   })
+  const isStaff = computed(() => {
+  return user.value?.role === 'ROLE_STAFF'
+})
 
   // ───────────────────────────────────────────
   // Check token
@@ -147,6 +150,17 @@ export const useAuthStore = defineStore('auth', () => {
           'user',
           JSON.stringify(user.value)
       )
+
+      // Gộp giỏ hàng khách vãng lai (nếu có) vào tài khoản vừa đăng nhập
+      try {
+        const guestCart = JSON.parse(localStorage.getItem('guest_cart') || '[]')
+        for (const item of guestCart) {
+          await shopAPI.addCart(item.id, item.quantity)
+        }
+        localStorage.removeItem('guest_cart')
+      } catch (e) {
+        console.warn('Không thể gộp giỏ hàng khách vãng lai:', e)
+      }
 
       ElMessage.success('Đăng nhập thành công!')
 
@@ -252,6 +266,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     login,
     register,
-    logout
+    logout,
+    isStaff
   }
 })

@@ -6,6 +6,7 @@ import com.example.gymmanagement.entity.*;
 import com.example.gymmanagement.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,6 +25,7 @@ public class ProgressService {
     private final UserProfileRepository profileRepository;
     private final MembershipService membershipService;
 
+    @Transactional
     public ProgressResponse addProgress(String email, ProgressRequest request) {
         if (request.getWeight() == null || !Double.isFinite(request.getWeight())
                 || request.getWeight() < 30 || request.getWeight() > 250) {
@@ -31,9 +33,6 @@ public class ProgressService {
         }
         User user = getUser(email);
         LocalDate recordedDate = request.getRecordedDate() != null ? request.getRecordedDate() : LocalDate.now();
-        if (progressRepository.existsByUserIdAndRecordedDate(user.getId(), recordedDate)) {
-            throw new RuntimeException("Bạn đã ghi nhận tiến độ trong ngày này. Mỗi ngày chỉ được ghi nhận một lần.");
-        }
 
         double bmi = 0;
         if (request.getWeight() != null && request.getHeight() != null && request.getHeight() > 0) {
@@ -48,23 +47,29 @@ public class ProgressService {
             }
         }
 
-        ProgressTracking pt = ProgressTracking.builder()
-                .user(user)
-                .weight(request.getWeight())
-                .height(request.getHeight())
-                .bmi(bmi > 0 ? bmi : null)
-                .bodyFatPercentage(request.getBodyFatPercentage())
-                .source(ProgressSource.MANUAL)
-                .muscleMassKg(request.getMuscleMassKg())
-                .chestCm(request.getChestCm())
-                .waistCm(request.getWaistCm())
-                .hipCm(request.getHipCm())
-                .armCm(request.getArmCm())
-                .thighCm(request.getThighCm())
-                .recordedDate(recordedDate)
-                .notes(request.getNotes())
-                .build();
+        // Một bản ghi có thể đã được tạo tự động từ hồ sơ hoặc lúc checkout.
+        // Khi người dùng nhập lại trong cùng ngày, cập nhật bản ghi gần nhất thay vì
+        // từ chối khiến cân nặng mới không được lưu.
+        ProgressTracking pt = progressRepository
+                .findFirstByUserIdAndRecordedDateOrderByIdDesc(user.getId(), recordedDate)
+                .orElseGet(() -> ProgressTracking.builder()
+                        .user(user)
+                        .recordedDate(recordedDate)
+                        .build());
+        pt.setWeight(request.getWeight());
+        pt.setHeight(request.getHeight());
+        pt.setBmi(bmi > 0 ? bmi : null);
+        pt.setBodyFatPercentage(request.getBodyFatPercentage());
+        pt.setSource(ProgressSource.MANUAL);
+        pt.setMuscleMassKg(request.getMuscleMassKg());
+        pt.setChestCm(request.getChestCm());
+        pt.setWaistCm(request.getWaistCm());
+        pt.setHipCm(request.getHipCm());
+        pt.setArmCm(request.getArmCm());
+        pt.setThighCm(request.getThighCm());
+        pt.setNotes(request.getNotes());
         progressRepository.save(pt);
+        removeOlderRecordsFromSameDay(user.getId(), recordedDate, pt.getId());
 
         // Tạo biến effectively final để dùng trong Lambda
         double finalBmi = bmi;
@@ -162,6 +167,7 @@ public class ProgressService {
                 .build();
     }
 
+    @Transactional
     public void autoSaveProgress(
             User user,
             Double weight,
@@ -193,20 +199,32 @@ public class ProgressService {
             ) / 10.0;
         }
 
-        ProgressTracking progress =
-                ProgressTracking.builder()
+        LocalDate effectiveDate = recordedDate != null ? recordedDate : LocalDate.now();
+        ProgressTracking progress = progressRepository
+                .findFirstByUserIdAndRecordedDateOrderByIdDesc(user.getId(), effectiveDate)
+                .orElseGet(() -> ProgressTracking.builder()
                         .user(user)
-                        .weight(weight)
-                        .height(height)
-                        .bodyFatPercentage(bodyFat)
-                        .bmi(bmi)
-                        // đổi từ .recordedDate(LocalDate.now())  thành đoạn bên dưới để lấy thời gian theo buổi cuối ko phỉa thời gian thực
-                        .recordedDate(recordedDate)
-                        .source(source)
-                        .notes(note)
-                        .build();
+                        .recordedDate(effectiveDate)
+                        .build());
+
+        progress.setWeight(weight);
+        progress.setHeight(height);
+        progress.setBodyFatPercentage(bodyFat);
+        progress.setBmi(bmi);
+        progress.setSource(source);
+        progress.setNotes(note);
 
         progressRepository.save(progress);
+        removeOlderRecordsFromSameDay(user.getId(), effectiveDate, progress.getId());
+    }
+
+    private void removeOlderRecordsFromSameDay(Long userId, LocalDate recordedDate, Long keptId) {
+        List<ProgressTracking> duplicates = progressRepository
+                .findByUserIdAndRecordedDateOrderByIdDesc(userId, recordedDate)
+                .stream()
+                .filter(record -> !record.getId().equals(keptId))
+                .toList();
+        if (!duplicates.isEmpty()) progressRepository.deleteAll(duplicates);
     }
 
 

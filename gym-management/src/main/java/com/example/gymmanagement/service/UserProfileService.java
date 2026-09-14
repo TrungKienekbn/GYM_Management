@@ -38,6 +38,7 @@ public class UserProfileService {
         }
 
         profile.setHeight(request.getHeight());
+        if (profile.getInitialWeight() == null) profile.setInitialWeight(request.getWeight());
         profile.setWeight(request.getWeight());
         profile.setBodyFatPercentage(request.getBodyFatPercentage());
         profile.setGender(request.getGender());

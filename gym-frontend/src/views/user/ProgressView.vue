@@ -119,7 +119,7 @@
 <script setup>
 import { ref, computed, reactive, onMounted, nextTick, watch } from 'vue'
 import { Chart, registerables } from 'chart.js'
-import { progressAPI, membershipAPI } from '@/api'
+import { progressAPI, membershipAPI, dashboardAPI } from '@/api'
 import { ElMessage } from 'element-plus'
 import dayjs from 'dayjs'
 
@@ -130,6 +130,7 @@ const addDialog    = ref(false)
 const chartRef     = ref(null)
 const isVip        = ref(false)
 const selectedMonth = ref('')
+const initialWeight = ref(null)
 let   chartInst    = null
 
 const form = reactive({
@@ -139,8 +140,9 @@ const form = reactive({
 const latest      = computed(() => progressList.value.at(-1))
 const firstRecord = computed(() => progressList.value[0])
 const weightChange = computed(() => {
-  if (!latest.value?.weight || !firstRecord.value?.weight) return null
-  return Math.round((latest.value.weight - firstRecord.value.weight) * 10) / 10
+  const baseline = initialWeight.value ?? firstRecord.value?.weight
+  if (latest.value?.weight == null || baseline == null) return null
+  return Math.round((latest.value.weight - baseline) * 10) / 10
 })
 const hasBodyMeasure = computed(() =>
     latest.value?.chestCm || latest.value?.hipCm || latest.value?.armCm || latest.value?.thighCm
@@ -196,7 +198,11 @@ function moveMonth(offset) {
 
 async function load() {
   try {
-    const r = await progressAPI.getAll()
+    const [r, dashboard] = await Promise.all([
+      progressAPI.getAll(),
+      dashboardAPI.get().catch(() => ({ data: null }))
+    ])
+    initialWeight.value = dashboard.data?.startingWeight ?? null
     // sort asc by date
     progressList.value = (r.data || []).sort((a,b) => a.recordedDate.localeCompare(b.recordedDate))
     if (!monthOptions.value.some(month => month.key === selectedMonth.value)) {

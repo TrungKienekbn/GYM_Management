@@ -20,6 +20,8 @@ public class UserProfile {
 
     private Double height; // cm
     private Double weight; // kg
+    // Snapshot bất biến của cân nặng ở lần tạo hồ sơ đầu tiên.
+    private Double initialWeight;
     private Integer age;
     private String gender;
     private Double bmi;

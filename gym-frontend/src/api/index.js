@@ -167,7 +167,9 @@ export const shopAPI = {
     checkout: (data) => api.post('/shop/orders', data),
     orders: () => api.get('/shop/orders'),
     order: (id) => api.get(`/shop/orders/${id}`),
-    cancelOrder: (id) => api.post(`/shop/orders/${id}/cancel`)
+    cancelOrder: (id) => api.post(`/shop/orders/${id}/cancel`),
+    validateVoucher: (code, subtotal) => api.post('/shop/vouchers/validate', { code, subtotal }),
+    publicVouchers: () => api.get('/shop/vouchers/public')
 }
 export const adminShopAPI = {
     products: () => api.get('/shop/admin/products'),
@@ -257,4 +259,24 @@ export const adminAPI = {
 export const systemConfigAPI = {
     getAll:  ()          => api.get('/admin/system-configs'),
     update:  (key, data) => api.put(`/admin/system-configs/${key}`, data)
+}
+export const posAPI = {
+    products: (params) => api.get('/shop/products', { params }),
+    checkout: (data) => api.post('/shop/pos/orders', data),
+    orders: () => api.get('/shop/pos/orders'),
+    order: (id) => api.get(`/shop/pos/orders/${id}`),
+    validateVoucher: (code, subtotal) => api.post('/shop/vouchers/validate', { code, subtotal })
+}
+export const shiftAPI = {
+    assign: (data) => api.post('/shifts', data),
+    all: () => api.get('/shifts'),
+    mine: () => api.get('/shifts/mine'),
+    checkIn: (id) => api.post(`/shifts/${id}/check-in`),
+    checkOut: (id, handoverNote) => api.post(`/shifts/${id}/check-out`, { handoverNote })
+}
+export const voucherAdminAPI = {
+    all: () => api.get('/shop/admin/vouchers'),
+    create: (data) => api.post('/shop/admin/vouchers', data),
+    update: (id, data) => api.put(`/shop/admin/vouchers/${id}`, data),
+    remove: (id) => api.delete(`/shop/admin/vouchers/${id}`)
 }

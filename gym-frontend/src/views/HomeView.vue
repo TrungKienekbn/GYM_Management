@@ -1,12 +1,12 @@
 <template>
   <main class="home-page">
-    <nav><div class="brand">GYM<span>PRO</span></div><div><router-link to="/login">Đăng nhập</router-link><router-link class="join" to="/register">Đăng ký</router-link></div></nav>
+<nav><div class="brand">GYM<span>PRO</span></div><div><router-link to="/shop">Cửa hàng</router-link><router-link to="/login">Đăng nhập</router-link><router-link class="join" to="/register">Đăng ký</router-link></div></nav>
     <section class="hero">
       <div><p class="eyebrow">LUYỆN TẬP THÔNG MINH · TIẾN BỘ BỀN VỮNG</p><h1>Quản lý hành trình<br><span>tập luyện của bạn</span></h1><p class="lead">Giáo án cá nhân hóa, theo dõi từng buổi tập, dinh dưỡng và tiến độ — tất cả trong một nơi.</p><div class="actions"><router-link class="primary" to="/register">Bắt đầu ngay</router-link><router-link class="secondary" to="/login">Tôi đã có tài khoản</router-link></div></div>
       <div class="info-card"><div class="icon"></div><h2>GYMPRO</h2><p>Hệ thống quản lý phòng gym và trợ lý luyện tập cá nhân.</p><div class="metrics"><div><b>AI</b><span>Giáo án</span></div><div><b>24/7</b><span>Theo dõi</span></div><div><b>100%</b><span>Cá nhân hóa</span></div></div></div>
     </section>
     <section class="features"><article><b>01</b><h3>Giáo án phù hợp</h3><p>Tạo lịch tập theo mục tiêu, thể lực và số ngày bạn có thể luyện tập.</p></article><article><b>02</b><h3>Ghi nhận mỗi buổi</h3><p>Ghi nhận kết quả, khối lượng và theo dõi tiến bộ theo từng tuần.</p></article><article><b>03</b><h3>Bài tập & dinh dưỡng</h3><p>Tra cứu hướng dẫn bài tập và gợi ý món ăn phù hợp với mục tiêu.</p></article></section>
-    <section class="demo-section"><h2>Hai hồ sơ — hai hướng giáo án khác nhau</h2><p>Dùng hai tài khoản dưới đây để xem thuật toán thay đổi lịch, bài tập và cường độ theo dữ liệu đầu vào.</p><div class="demo-grid"><article><b>VIP · TĂNG CƠ</b><h3>fulltest@gym.com</h3><p>Nam · 175 cm · 72 kg · trung bình · phòng gym · 4 buổi/tuần</p><code>password</code></article><article><b>FREE · GIẢM CÂN</b><h3>fulltest2@gym.com</h3><p>Nữ · 160 cm · 68 kg · mới tập · tại nhà · đau đầu gối · 3 buổi/tuần</p><code>password</code></article></div></section>
+    <section class="demo-section"><h2>Cùng mục tiêu — giáo án đổi theo thể trạng</h2><p>Hai tài khoản đều tăng cơ và tập 4 buổi/tuần theo cùng khung nhóm cơ. Hãy so sánh biến thể bài, số hiệp/lần và thời gian nghỉ.</p><div class="demo-grid"><article><b>VIP · TĂNG CƠ</b><h3>fulltest@gym.com</h3><p>Nam · 175 cm · 72 kg · trung bình · phòng gym · không chấn thương</p><code>password</code></article><article><b>FREE · TĂNG CƠ</b><h3>fulltest2@gym.com</h3><p>Nữ · 160 cm · 68 kg · mới tập · tại nhà · đau đầu gối</p><code>password</code></article></div></section>
   </main>
 </template>
 <style scoped>

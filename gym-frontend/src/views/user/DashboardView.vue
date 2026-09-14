@@ -26,11 +26,11 @@
           <div class="metric-card"><span>Tỷ lệ duy trì</span><strong>{{ dashboardStats.currentMonthAdherencePercent || 0 }}%</strong><small :class="changeClass(dashboardStats.adherenceChangePercent)">{{ changeText(dashboardStats.adherenceChangePercent, ' điểm %') }}</small></div>
           <div class="metric-card"><span>Thời gian tập</span><strong>{{ formatDuration(dashboardStats.currentMonthDurationMinutes) }}</strong><small>Trong tháng này</small></div>
           <div class="metric-card"><span>Calo tiêu hao</span><strong>{{ (dashboardStats.currentMonthCalories || 0).toLocaleString('vi-VN') }}</strong><small>kcal đã ghi nhận</small></div>
-          <div class="metric-card"><span>Thay đổi cân nặng</span><strong>{{ dashboardStats.currentMonthWeightChange == null ? '--' : signed(dashboardStats.currentMonthWeightChange) + ' kg' }}</strong><small>Từ lần ghi đầu đến cuối tháng</small></div>
+          <div class="metric-card"><span>Thay đổi cân nặng</span><strong>{{ overallWeightChange == null ? '--' : signed(overallWeightChange) + ' kg' }}</strong><small>So với cân nặng đầu tiên nhập ở hồ sơ</small></div>
         </div>
 
         <div class="analytics-grid">
-          <el-card class="analytics-card wide"><template #header><b> Xu hướng 6 tháng</b></template><div class="analytics-chart"><canvas ref="monthlyChart"></canvas></div></el-card>
+          <el-card class="analytics-card wide"><template #header><b> Xu hướng 6 tháng</b></template><div class="analytics-chart"><span class="chart-axis-title">Số buổi</span><canvas ref="monthlyChart"></canvas></div></el-card>
           <el-card class="analytics-card"><template #header><b> Chất lượng buổi tập</b></template><div class="analytics-chart"><canvas ref="qualityChart"></canvas><div v-if="!hasQualityData" class="chart-empty">Chưa có dữ liệu</div></div></el-card>
           <el-card class="analytics-card"><template #header><b> Phân bố nhóm cơ</b></template><div class="analytics-chart"><canvas ref="muscleChart"></canvas><div v-if="!hasMuscleData" class="chart-empty">Chưa có dữ liệu</div></div></el-card>
           <el-card class="analytics-card insight-card"><template #header><b> Nhận xét tự động</b></template><p class="insight-main">{{ dashboardStats.monthlyInsight }}</p><ul><li v-for="item in dashboardStats.recommendations || []" :key="item">{{ item }}</li></ul><small>Nhận xét mang tính hỗ trợ luyện tập, không thay thế tư vấn y tế.</small></el-card>
@@ -57,6 +57,7 @@
           </div>
         </template>
         <div style="height:220px;position:relative">
+          <span class="chart-axis-title">%</span>
           <canvas ref="volChart"></canvas>
           <div v-if="noVolume" class="chart-empty">Chưa có dữ liệu</div>
         </div>
@@ -143,6 +144,7 @@ let monthlyInst = null, qualityInst = null, muscleInst = null
 
 const hasQualityData = computed(() => Object.values(dashboardStats.value?.sessionQualityDistribution || {}).some(v => v > 0))
 const hasMuscleData = computed(() => Object.values(dashboardStats.value?.muscleGroupDistribution || {}).some(v => v > 0))
+const overallWeightChange = computed(() => serverDashboardStats.value?.weightChange ?? null)
 const signed = value => `${Number(value) > 0 ? '+' : ''}${value}`
 const changeText = (value, suffix = '%') => value == null ? 'Chưa đủ dữ liệu so sánh' : `${signed(value)}${suffix} so với tháng trước`
 const changeClass = value => Number(value) > 0 ? 'change-up' : Number(value) < 0 ? 'change-down' : ''
@@ -155,7 +157,7 @@ function drawAnalyticsCharts() {
   monthlyInst?.destroy(); qualityInst?.destroy(); muscleInst?.destroy()
   if (monthlyChart.value) monthlyInst = new Chart(monthlyChart.value, { type:'bar', data:{ labels:months, datasets:[
     { label:'Số buổi hoàn thành', data:months.map(k => dashboardStats.value.monthlyCompletedSessions[k]), backgroundColor:'#F97316', borderRadius:6 }
-  ]}, options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{grid:{display:false},ticks:{color:text}},y:{beginAtZero:true,grid:{color:grid},ticks:{precision:0,color:text},title:{display:true,text:'Số buổi',color:text}}} } })
+  ]}, options:{ responsive:true, maintainAspectRatio:false, layout:{padding:{top:14}}, plugins:{legend:{display:false}}, scales:{x:{grid:{display:false},ticks:{color:text}},y:{beginAtZero:true,grid:{color:grid},ticks:{precision:0,color:text}}} } })
   const quality = dashboardStats.value.sessionQualityDistribution || {}
   if (qualityChart.value && hasQualityData.value) qualityInst = new Chart(qualityChart.value, { type:'doughnut', data:{labels:Object.keys(quality),datasets:[{data:Object.values(quality),backgroundColor:['#22c55e','#f59e0b','#ef4444','#94a3b8'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'bottom',labels:{color:text,boxWidth:10}}}} })
   const muscles = dashboardStats.value.muscleGroupDistribution || {}
@@ -269,7 +271,7 @@ function drawVolumeChart() {
       plugins:{ legend:{ display:true, position:'top', labels:{color:TICK,boxWidth:12,font:{size:11}} } },
       scales:{
         x:{ grid:{color:GRID}, ticks:{color:TICK,font:{size:11}} },
-        y:{ grid:{color:GRID}, ticks:{color:TICK,font:{size:11}}, beginAtZero:true, title:{display:true,text:'%',color:TICK} }
+        y:{ grid:{color:GRID}, ticks:{color:TICK,font:{size:11}}, beginAtZero:true }
       }
     }
   })
@@ -456,6 +458,7 @@ onMounted(async () => {
 .analytics-section{margin-bottom:24px}.analytics-heading{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}.analytics-heading h2{margin:0;color:var(--c-text);font-size:1.15rem}.analytics-heading p{margin:4px 0 0;color:var(--c-text3);font-size:.8rem}.metric-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px}.metric-card{padding:16px;background:linear-gradient(145deg,var(--c-card),var(--c-card2));border:1px solid var(--c-border2);border-radius:12px;display:flex;flex-direction:column;gap:6px}.metric-card span{font-size:.76rem;color:var(--c-text2)}.metric-card strong{font-size:1.45rem;color:var(--c-text)}.metric-card small{color:var(--c-text3);font-size:.7rem}.metric-card .change-up{color:#15803d}.metric-card .change-down{color:#dc2626}.analytics-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:16px}.analytics-card{min-width:0}.analytics-card.wide{grid-column:span 1}.analytics-chart{height:260px;position:relative}.insight-card{background:linear-gradient(145deg,#fffaf2,var(--c-card))}.insight-main{font-weight:600;line-height:1.55;color:var(--c-text)}.insight-card ul{padding-left:18px;color:var(--c-text2);font-size:.85rem;line-height:1.55}.insight-card li{margin-bottom:8px}.insight-card small{color:var(--c-text3)}@media(max-width:1050px){.metric-grid{grid-template-columns:repeat(3,1fr)}}@media(max-width:768px){.analytics-grid{grid-template-columns:1fr}.metric-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:480px){.metric-grid{grid-template-columns:1fr}}
 .vip-lock-banner{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:14px 18px;margin-bottom:20px;border:1px solid #e7bd52;background:#fff8dc;border-radius:10px;color:#6b4b00}.vip-lock-banner span{display:block;font-size:.8rem;margin-top:4px}@media(max-width:650px){.vip-lock-banner{align-items:flex-start;flex-direction:column}}
 .chart-empty { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--c-text3); font-size:0.85rem; }
+.chart-axis-title { position:absolute; top:0; left:8px; z-index:1; color:#4A3728; font-size:12px; line-height:1; white-space:nowrap; pointer-events:none; }
 
 .volume-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
 .month-pagination{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.month-pagination .el-button+.el-button{margin-left:0}

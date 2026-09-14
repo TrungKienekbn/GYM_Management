@@ -58,6 +58,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/exercises").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/ratings/public").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/shop/products").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/shop/vouchers/public").permitAll()
                         // File đính kèm phục vụ tĩnh (tên UUID không đoán được)
                         .requestMatchers(HttpMethod.GET, "/api/files/**").permitAll()
 

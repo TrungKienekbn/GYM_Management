@@ -26,6 +26,7 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) {
         initRoles();
         initAdminUser();
+        initStaffUser();
         initExercises();
         initSystemConfigs();
         initInjuryAreas();
@@ -50,8 +51,11 @@ public class DataInitializer implements CommandLineRunner {
         if (roleRepository.count() == 0) {
             roleRepository.saveAll(List.of(
                     new Role(null, "ROLE_ADMIN"),
-                    new Role(null, "ROLE_USER")
+                    new Role(null, "ROLE_USER"),
+                    new Role(null, "ROLE_STAFF")
             ));
+        } else if (roleRepository.findByRoleName("ROLE_STAFF").isEmpty()) {
+            roleRepository.save(new Role(null, "ROLE_STAFF"));
         }
     }
 
@@ -65,6 +69,18 @@ public class DataInitializer implements CommandLineRunner {
                     .role(adminRole).build();
             userRepository.save(admin);
             log.info("Admin created: admin@gym.com / admin123");
+        }
+    }
+    private void initStaffUser() {
+        if (!userRepository.existsByEmail("staff@gym.com")) {
+            Role staffRole = roleRepository.findByRoleName("ROLE_STAFF").orElseThrow();
+            User staff = User.builder()
+                    .fullName("Nhân viên Demo").email("staff@gym.com")
+                    .password(passwordEncoder.encode("staff123"))
+                    .phone("0900000001").status(true).emailVerified(true)
+                    .role(staffRole).build();
+            userRepository.save(staff);
+            log.info("Staff created: staff@gym.com / staff123");
         }
     }
 
