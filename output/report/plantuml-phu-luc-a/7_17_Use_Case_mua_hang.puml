@@ -1,0 +1,64 @@
+@startuml
+title 7.17 - Use Case Mua hàng trực tuyến
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 16
+skinparam ArrowColor Black
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+  DiamondBackgroundColor White
+  DiamondBorderColor Black
+}
+skinparam swimlane {
+  BorderColor Black
+  TitleBackgroundColor WhiteSmoke
+}
+
+left to right direction
+skinparam shadowing false
+skinparam defaultFontName Arial
+actor "Khách vãng lai" as A0
+actor "Người dùng" as A1
+actor "Cổng thanh toán" as A2
+rectangle "HỆ THỐNG GYMIFY" {
+usecase "UC-33\nXem và tìm kiếm sản phẩm" as UC33
+usecase "UC-34\nXem chi tiết và chọn phân loại" as UC34
+usecase "UC-35\nQuản lý giỏ hàng" as UC35
+usecase "UC-36\nQuản lý sản phẩm yêu thích" as UC36
+usecase "UC-37\nXem sản phẩm đã xem gần đây" as UC37
+usecase "UC-38\nSo sánh sản phẩm" as UC38
+usecase "UC-39\nQuản lý địa chỉ nhận hàng" as UC39
+usecase "UC-40\nÁp dụng mã giảm giá" as UC40
+usecase "UC-41\nĐặt hàng trực tuyến" as UC41
+usecase "UC-42\nThanh toán đơn trực tuyến" as UC42
+usecase "UC-43\nTheo dõi và tra cứu đơn hàng" as UC43
+usecase "UC-44\nHủy đơn hàng" as UC44
+usecase "UC-45\nĐánh giá sản phẩm sau mua" as UC45
+}
+A0 -- UC33
+A1 -- UC33
+A0 -- UC34
+A1 -- UC34
+A0 -- UC35
+A1 -- UC35
+A0 -- UC36
+A1 -- UC36
+A0 -- UC37
+A1 -- UC37
+A0 -- UC38
+A1 -- UC38
+A1 -- UC39
+A0 -- UC40
+A1 -- UC40
+A1 -- UC41
+A1 -- UC42
+A2 -- UC42
+A0 -- UC43
+A1 -- UC43
+A1 -- UC44
+A1 -- UC45
+UC40 ..> UC41 : <<extend>>\n(khi nhập mã)
+@enduml

@@ -2,6 +2,9 @@ package com.example.gymmanagement.shift;
 
 import com.example.gymmanagement.entity.User;
 import com.example.gymmanagement.repository.UserRepository;
+import com.example.gymmanagement.shop.SalesChannel;
+import com.example.gymmanagement.shop.StoreOrder;
+import com.example.gymmanagement.shop.StoreOrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +19,7 @@ import java.util.*;
 public class WorkShiftService {
     private final WorkShiftRepository shifts;
     private final UserRepository users;
+    private final StoreOrderRepository orders;
 
     @Transactional
     public Map<String, Object> assign(Long staffUserId, LocalDate date, LocalTime start, LocalTime end) {
@@ -34,21 +38,45 @@ public class WorkShiftService {
     }
 
     @Transactional
-    public Map<String, Object> checkIn(String email, Long shiftId) {
+    public Map<String, Object> checkIn(String email, Long shiftId, Double cashAtStart) {
         WorkShift s = owned(email, shiftId);
+        if (cashAtStart != null && (!Double.isFinite(cashAtStart) || cashAtStart < 0)) throw new RuntimeException("Tiền đầu ca không hợp lệ");
         if (s.getCheckInAt() != null) throw new RuntimeException("Ca này đã check-in rồi");
         s.setCheckInAt(LocalDateTime.now());
         s.setStatus(ShiftStatus.CHECKED_IN);
+        s.setCashAtStart(cashAtStart == null ? 0d : cashAtStart);
         return map(shifts.save(s));
     }
 
     @Transactional
-    public Map<String, Object> checkOut(String email, Long shiftId, String handoverNote) {
+    public Map<String, Object> checkOut(String email, Long shiftId, Double cashCounted, String handoverNote) {
         WorkShift s = owned(email, shiftId);
+        if (cashCounted == null || !Double.isFinite(cashCounted) || cashCounted < 0) throw new RuntimeException("Vui lòng nhập tiền kiểm đếm cuối ca hợp lệ");
         if (s.getCheckInAt() == null) throw new RuntimeException("Chưa check-in thì không thể check-out");
         if (s.getCheckOutAt() != null) throw new RuntimeException("Ca này đã check-out rồi");
-        s.setCheckOutAt(LocalDateTime.now());
+
+        LocalDateTime now = LocalDateTime.now();
+        List<StoreOrder> posOrders = orders.findByCreatedByStaffIdAndChannelAndCreatedAtBetween(
+                s.getUser().getId(), SalesChannel.POS, s.getCheckInAt(), now);
+
+        double cashRevenue = posOrders.stream()
+                .filter(o -> "CASH".equals(o.getPaymentMethod()))
+                .mapToDouble(o -> o.getTotal() == null ? 0 : o.getTotal()).sum();
+        double bankRevenue = posOrders.stream()
+                .filter(o -> "BANK_TRANSFER".equals(o.getPaymentMethod()))
+                .mapToDouble(o -> o.getTotal() == null ? 0 : o.getTotal()).sum();
+
+        double cashAtStart = s.getCashAtStart() == null ? 0 : s.getCashAtStart();
+        double expected = cashAtStart + cashRevenue;
+        double counted = cashCounted == null ? 0 : cashCounted;
+
+        s.setCheckOutAt(now);
         s.setStatus(ShiftStatus.COMPLETED);
+        s.setPosCashRevenue(cashRevenue);
+        s.setPosBankRevenue(bankRevenue);
+        s.setExpectedCash(expected);
+        s.setCashCounted(counted);
+        s.setCashDifference(counted - expected);
         s.setHandoverNote(handoverNote);
         return map(shifts.save(s));
     }
@@ -76,6 +104,12 @@ public class WorkShiftService {
         m.put("status", s.getStatus());
         m.put("checkInAt", s.getCheckInAt());
         m.put("checkOutAt", s.getCheckOutAt());
+        m.put("cashAtStart", s.getCashAtStart());
+        m.put("cashCounted", s.getCashCounted());
+        m.put("posCashRevenue", s.getPosCashRevenue());
+        m.put("posBankRevenue", s.getPosBankRevenue());
+        m.put("expectedCash", s.getExpectedCash());
+        m.put("cashDifference", s.getCashDifference());
         m.put("handoverNote", s.getHandoverNote());
         return m;
     }

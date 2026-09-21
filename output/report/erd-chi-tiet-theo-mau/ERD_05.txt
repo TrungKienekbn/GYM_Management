@@ -1,0 +1,100 @@
+@startuml
+' Code PlantUML: copy this entire file, including @startuml and @enduml.
+hide circle
+hide methods
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam roundcorner 0
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 65
+skinparam ranksep 85
+skinparam class {
+  BackgroundColor White
+  HeaderBackgroundColor #EEEEEE
+  BorderColor Black
+  FontColor Black
+  FontStyle bold
+  AttributeFontStyle plain
+}
+top to bottom direction
+
+title ERD logic - 5. Sản phẩm và thuộc tính
+
+entity "product_attribute_values" as product_attribute_values {
+  {field} **PK**  id : BIGINT
+  {field} **FK**  attribute_id : BIGINT
+  {field}       value : VARCHAR(255)
+}
+
+entity "product_attributes" as product_attributes {
+  {field} **PK**  id : BIGINT
+  {field}       name : VARCHAR(255)  [UK]
+}
+
+entity "product_variants" as product_variants {
+  {field} **PK**  id : BIGINT
+  {field} **FK**  product_id : BIGINT
+  {field}       active : BOOLEAN
+  {field}       price_override : FLOAT(53)
+  {field}       stock : INTEGER
+  {field}       sku : VARCHAR(255)
+}
+
+entity "shop_products" as shop_products {
+  {field} **PK**  id : BIGINT
+  {field}       active : BOOLEAN
+  {field}       price : FLOAT(53)
+  {field}       sale_price : FLOAT(53)
+  {field}       stock : INTEGER
+  {field}       created_at : TIMESTAMP(6)
+  {field}       description : VARCHAR(2000)
+  {field}       images : VARCHAR(20000)
+  {field}       brand : VARCHAR(255)
+  {field}       image_url : VARCHAR(255)
+  {field}       name : VARCHAR(255)
+  {field}       required_equipment_code : VARCHAR(255)
+  {field}       suitable_goals : VARCHAR(255)
+  {field}       category : ENUM
+}
+
+entity "variant_attribute_values" as variant_attribute_values {
+  {field} **PK/FK**  value_id : BIGINT
+  {field} **PK/FK**  variant_id : BIGINT
+}
+
+entity "voucher_scope_products" as voucher_scope_products {
+  {field} **REF**  product_id : BIGINT
+  {field} **FK**  voucher_id : BIGINT
+}
+
+entity "vouchers" as vouchers {
+  {field} **PK**  id : BIGINT
+  {field}       active : BOOLEAN
+  {field}       max_discount_amount : FLOAT(53)
+  {field}       min_order_amount : FLOAT(53)
+  {field}       usage_limit : INTEGER
+  {field}       used_count : INTEGER
+  {field}       value : FLOAT(53)
+  {field}       created_at : TIMESTAMP(6)
+  {field}       end_at : TIMESTAMP(6)
+  {field}       start_at : TIMESTAMP(6)
+  {field}       code : VARCHAR(255)  [UK]
+  {field}       description : VARCHAR(255)
+  {field}       scope_category : ENUM
+  {field}       scope_type : ENUM
+  {field}       type : ENUM
+}
+product_attributes |o--o{ product_attribute_values
+shop_products |o--o{ product_variants
+product_attribute_values ||--o{ variant_attribute_values
+product_variants ||--o{ variant_attribute_values
+vouchers ||--o{ voucher_scope_products
+shop_products |o..o{ voucher_scope_products
+legend bottom
+  PK: khóa chính. FK: khóa ngoại hiện có. UK: khóa duy nhất.
+  REF / nét đứt: liên kết logic bổ sung, chưa phải FK của ứng dụng.
+endlegend
+@enduml

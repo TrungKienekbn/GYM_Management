@@ -1,6 +1,6 @@
 <template>
   <main class="home-page">
-<nav><div class="brand">GYM<span>PRO</span></div><div><router-link to="/shop">Cửa hàng</router-link><router-link to="/login">Đăng nhập</router-link><router-link class="join" to="/register">Đăng ký</router-link></div></nav>
+<nav><div class="brand">GYM<span>PRO</span></div><div><router-link to="/shop">Cửa hàng</router-link><router-link to="/tra-cuu-don">Tra cứu đơn hàng</router-link><router-link to="/login">Đăng nhập</router-link><router-link class="join" to="/register">Đăng ký</router-link></div></nav>
     <section class="hero">
       <div><p class="eyebrow">LUYỆN TẬP THÔNG MINH · TIẾN BỘ BỀN VỮNG</p><h1>Quản lý hành trình<br><span>tập luyện của bạn</span></h1><p class="lead">Giáo án cá nhân hóa, theo dõi từng buổi tập, dinh dưỡng và tiến độ — tất cả trong một nơi.</p><div class="actions"><router-link class="primary" to="/register">Bắt đầu ngay</router-link><router-link class="secondary" to="/login">Tôi đã có tài khoản</router-link></div></div>
       <div class="info-card"><div class="icon"></div><h2>GYMPRO</h2><p>Hệ thống quản lý phòng gym và trợ lý luyện tập cá nhân.</p><div class="metrics"><div><b>AI</b><span>Giáo án</span></div><div><b>24/7</b><span>Theo dõi</span></div><div><b>100%</b><span>Cá nhân hóa</span></div></div></div>

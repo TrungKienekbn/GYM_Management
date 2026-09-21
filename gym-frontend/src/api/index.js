@@ -159,19 +159,37 @@ export const ratingAPI = {
 }
 
 export const shopAPI = {
+    catalog: params => api.get('/shop/catalog', { params }),
+    detail: id => api.get('/shop/products/' + id),
+    addresses: () => api.get('/shop/addresses'),
+    saveAddress: data => data.id ? api.put('/shop/addresses/' + data.id, data) : api.post('/shop/addresses', data),
+    deleteAddress: id => api.delete('/shop/addresses/' + id),
+    customerState: () => api.get('/shop/customer-state'),
+    setCustomerState: (id, data) => api.put('/shop/customer-state/' + id, data),
+    paymentMethods: () => api.get('/shop/payments/methods'),
+    startPayment: id => api.post('/shop/payments/' + id + '/start'),
+    uploadImage: file => { const body = new FormData(); body.append('file', file); return api.post('/shop/images', body) },
     products: (params) => api.get('/shop/products', { params }),
     cart: () => api.get('/shop/cart'),
-    addCart: (productId, quantity = 1) => api.post('/shop/cart', { productId, quantity }),
+    addCart: (productId, quantity = 1, variantId = null) => api.post('/shop/cart', { productId, quantity, variantId }),
     updateCart: (id, quantity) => api.put(`/shop/cart/${id}`, { quantity }),
     removeCart: (id) => api.delete(`/shop/cart/${id}`),
     checkout: (data) => api.post('/shop/orders', data),
     orders: () => api.get('/shop/orders'),
     order: (id) => api.get(`/shop/orders/${id}`),
     cancelOrder: (id) => api.post(`/shop/orders/${id}/cancel`),
-    validateVoucher: (code, subtotal) => api.post('/shop/vouchers/validate', { code, subtotal }),
-    publicVouchers: () => api.get('/shop/vouchers/public')
+    validateVoucher: (code, items) => api.post('/shop/vouchers/validate', { code, items }),
+    bestVoucher: (items) => api.post('/shop/vouchers/best', { items }),
+        publicVouchers: () => api.get('/shop/vouchers/public'),
+        lookupOrder: (orderId, phone) => api.post('/shop/orders/lookup', { orderId, phone }),
+        requestGuestCancelOtp: (orderId, email) => api.post('/shop/orders/guest-cancel/request-otp', { orderId, email }),
+        cancelGuestOrder: (orderId, email, otp) => api.post('/shop/orders/guest-cancel', { orderId, email, otp }),
+    productReviews: (productId, params) => api.get(`/shop/products/${productId}/reviews`, { params }),
+    submitReview: (data) => api.post('/shop/reviews', data)
 }
 export const adminShopAPI = {
+    inventory: params => api.get('/shop/admin/inventory', { params }),
+    statistics: params => api.get('/shop/admin/statistics', { params }),
     products: () => api.get('/shop/admin/products'),
     create: (data) => api.post('/shop/admin/products', data),
     update: (id, data) => api.put(`/shop/admin/products/${id}`, data),
@@ -265,18 +283,33 @@ export const posAPI = {
     checkout: (data) => api.post('/shop/pos/orders', data),
     orders: () => api.get('/shop/pos/orders'),
     order: (id) => api.get(`/shop/pos/orders/${id}`),
-    validateVoucher: (code, subtotal) => api.post('/shop/vouchers/validate', { code, subtotal })
+    validateVoucher: (code, items) => api.post('/shop/vouchers/validate', { code, items }),
+    bestVoucher: (items) => api.post('/shop/vouchers/best', { items })
 }
 export const shiftAPI = {
     assign: (data) => api.post('/shifts', data),
     all: () => api.get('/shifts'),
     mine: () => api.get('/shifts/mine'),
-    checkIn: (id) => api.post(`/shifts/${id}/check-in`),
-    checkOut: (id, handoverNote) => api.post(`/shifts/${id}/check-out`, { handoverNote })
+    checkIn: (id, cashAtStart) => api.post(`/shifts/${id}/check-in`, { cashAtStart }),
+    checkOut: (id, cashCounted, handoverNote) => api.post(`/shifts/${id}/check-out`, { cashCounted, handoverNote })
 }
 export const voucherAdminAPI = {
     all: () => api.get('/shop/admin/vouchers'),
     create: (data) => api.post('/shop/admin/vouchers', data),
     update: (id, data) => api.put(`/shop/admin/vouchers/${id}`, data),
     remove: (id) => api.delete(`/shop/admin/vouchers/${id}`)
+}
+export const attributeAdminAPI = {
+    all: () => api.get('/shop/admin/attributes'),
+    create: (name) => api.post('/shop/admin/attributes', { name }),
+    remove: (id) => api.delete(`/shop/admin/attributes/${id}`),
+    addValue: (attributeId, value) => api.post(`/shop/admin/attributes/${attributeId}/values`, { value }),
+    removeValue: (id) => api.delete(`/shop/admin/attributes/values/${id}`)
+}
+
+export const variantAdminAPI = {
+    forProduct: (productId) => api.get(`/shop/products/${productId}/variants`),
+    create: (productId, data) => api.post(`/shop/admin/products/${productId}/variants`, data),
+    update: (id, data) => api.put(`/shop/admin/products/variants/${id}`, data),
+    remove: (id) => api.delete(`/shop/admin/products/variants/${id}`)
 }

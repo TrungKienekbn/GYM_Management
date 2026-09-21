@@ -1,0 +1,67 @@
+@startuml
+title ERD logic - 6. Đơn hàng và biến động kho
+hide circle
+skinparam monochrome true
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam linetype polyline
+skinparam nodesep 65
+skinparam ranksep 100
+top to bottom direction
+entity "product_variants" as product_variants {
+  id : bigint <<PK>>
+  product_id : bigint <<FK>>
+}
+entity "shop_inventory_movements" as shop_inventory_movements {
+  id : bigint <<PK>>
+  order_id : bigint <<REF>>
+  product_id : bigint <<REF>>
+  variant_id : bigint <<REF>>
+}
+entity "shop_order_events" as shop_order_events {
+  id : bigint <<PK>>
+  order_id : bigint <<REF>>
+}
+entity "shop_order_items" as shop_order_items {
+  id : bigint <<PK>>
+  order_id : bigint <<FK>>
+  product_id : bigint <<REF>>
+  variant_id : bigint <<REF>>
+}
+entity "shop_orders" as shop_orders {
+  created_by_staff_id : bigint <<REF>>
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+  gateway_reference : varchar <<UK>>
+  transfer_code : varchar <<UK>>
+  voucher_code : varchar <<REF>>
+}
+entity "shop_products" as shop_products {
+  id : bigint <<PK>>
+}
+entity "users" as users {
+  id : bigint <<PK>>
+  role_id : bigint <<FK>>
+  email : varchar <<UK>>
+}
+entity "vouchers" as vouchers {
+  id : bigint <<PK>>
+  code : varchar <<UK>>
+}
+shop_orders |o--o{ shop_order_items : "order_id"
+users |o--o{ shop_orders : "user_id"
+shop_orders |o..o{ shop_order_events : "order_id -> id"
+shop_products |o..o{ shop_inventory_movements : "product_id -> id"
+product_variants |o..o{ shop_inventory_movements : "variant_id -> id"
+shop_orders |o..o{ shop_inventory_movements : "order_id -> id"
+shop_products |o..o{ shop_order_items : "product_id -> id"
+product_variants |o..o{ shop_order_items : "variant_id -> id"
+users |o..o{ shop_orders : "created_by_staff_id -> id"
+vouchers |o..o{ shop_orders : "voucher_code -> code"
+legend bottom
+  Liền: FK hiện có. Nét đứt / REF: liên kết logic bổ sung.
+  Bảng cùng tên ở các hình là cùng một bảng trong CSDL.
+endlegend
+@enduml

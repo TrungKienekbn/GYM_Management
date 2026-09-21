@@ -1,0 +1,47 @@
+@startuml
+title 7.18 - Use Case Quản trị và vận hành cửa hàng
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 16
+skinparam ArrowColor Black
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+  DiamondBackgroundColor White
+  DiamondBorderColor Black
+}
+skinparam swimlane {
+  BorderColor Black
+  TitleBackgroundColor WhiteSmoke
+}
+
+left to right direction
+skinparam shadowing false
+skinparam defaultFontName Arial
+actor "Nhân viên" as A0
+actor "Quản trị viên" as A1
+rectangle "HỆ THỐNG GYMIFY" {
+usecase "UC-46\nQuản lý sản phẩm cửa hàng" as UC46
+usecase "UC-47\nQuản lý thuộc tính và biến thể" as UC47
+usecase "UC-48\nQuản lý mã giảm giá" as UC48
+usecase "UC-49\nXử lý đơn hàng trực tuyến" as UC49
+usecase "UC-50\nBán hàng tại quầy" as UC50
+usecase "UC-51\nXem báo cáo cửa hàng" as UC51
+usecase "UC-52\nTheo dõi tồn thấp và nhật ký kho" as UC52
+usecase "UC-40\nÁp dụng mã giảm giá" as UC40
+}
+A1 -- UC46
+A1 -- UC47
+A1 -- UC48
+A0 -- UC49
+A1 -- UC49
+A0 -- UC50
+A1 -- UC50
+A1 -- UC51
+A1 -- UC52
+A0 -- UC40
+A1 -- UC40
+UC40 ..> UC50 : <<extend>>\n(khi nhập mã)
+@enduml

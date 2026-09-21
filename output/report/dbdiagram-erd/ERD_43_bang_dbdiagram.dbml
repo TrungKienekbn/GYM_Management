@@ -1,0 +1,861 @@
+// ERD 43 bang - DBML for dbdiagram.io
+// 39 FK hien co + 16 lien ket logic bo sung de ve so do.
+// Cac Ref logic KHONG co nghia la database hien tai da co constraint.
+// Khong dung ban nay de tao migration SQL ma chua ra soat cac Ref logic.
+
+Enum exercises_assessment_metric_type_enum {
+  "PLANK_SECONDS"
+  "PUSHUP_REPS"
+  "SQUAT_REPS"
+}
+
+Enum exercises_difficulty_enum {
+  "EASY"
+  "HARD"
+  "MEDIUM"
+}
+
+Enum exercises_muscle_group_enum {
+  "ARMS"
+  "BACK"
+  "CARDIO"
+  "CHEST"
+  "CORE"
+  "FULL_BODY"
+  "LEGS"
+  "SHOULDERS"
+}
+
+Enum invoices_invoice_type_enum {
+  "COSMETIC"
+  "MEMBERSHIP"
+}
+
+Enum invoices_membership_type_enum {
+  "FREE"
+  "VIP"
+}
+
+Enum invoices_status_enum {
+  "CANCELLED"
+  "EXPIRED"
+  "FAILED"
+  "PAID"
+  "PENDING"
+  "REFUNDED"
+}
+
+Enum memberships_membership_type_enum {
+  "FREE"
+  "VIP"
+}
+
+Enum memberships_payment_status_enum {
+  "CANCELLED"
+  "EXPIRED"
+  "FAILED"
+  "PAID"
+  "PENDING"
+  "REFUNDED"
+}
+
+Enum muscle_split_configs_goal_enum {
+  "ENDURANCE"
+  "MAINTENANCE"
+  "MUSCLE_GAIN"
+  "WEIGHT_LOSS"
+}
+
+Enum pet_profiles_aura_tier_enum {
+  "BLACK"
+  "BLUE"
+  "GREEN"
+  "NONE"
+  "PURPLE"
+  "RED"
+  "YELLOW"
+}
+
+Enum pet_profiles_stage_enum {
+  "AVERAGE"
+  "FIT"
+  "LEAN"
+  "OVERWEIGHT"
+  "SLIM"
+}
+
+Enum plan_muscle_group_weight_muscle_group_enum {
+  "ARMS"
+  "BACK"
+  "CARDIO"
+  "CHEST"
+  "CORE"
+  "FULL_BODY"
+  "LEGS"
+  "SHOULDERS"
+}
+
+Enum progress_tracking_source_enum {
+  "MANUAL"
+  "PROFILE"
+  "WEEKLY_CHECKOUT"
+}
+
+Enum shop_orders_channel_enum {
+  "ONLINE"
+  "POS"
+}
+
+Enum shop_orders_status_enum {
+  "CANCELLED"
+  "COMPLETED"
+  "CONFIRMED"
+  "DELIVERED"
+  "EXPIRED"
+  "PAID"
+  "PENDING_PAYMENT"
+  "PREPARING"
+  "SHIPPING"
+}
+
+Enum shop_products_category_enum {
+  "EQUIPMENT"
+  "FOOD"
+  "SUPPLEMENT"
+}
+
+Enum support_sessions_status_enum {
+  "ACTIVE"
+  "CLOSED"
+  "PENDING"
+  "REJECTED"
+}
+
+Enum user_profiles_fitness_level_enum {
+  "ADVANCED"
+  "BEGINNER"
+  "INTERMEDIATE"
+}
+
+Enum user_profiles_goal_enum {
+  "ENDURANCE"
+  "MAINTENANCE"
+  "MUSCLE_GAIN"
+  "WEIGHT_LOSS"
+}
+
+Enum vouchers_scope_category_enum {
+  "EQUIPMENT"
+  "FOOD"
+  "SUPPLEMENT"
+}
+
+Enum vouchers_scope_type_enum {
+  "ALL"
+  "CATEGORY"
+  "PRODUCT"
+}
+
+Enum vouchers_type_enum {
+  "AMOUNT"
+  "PERCENT"
+}
+
+Enum work_shifts_status_enum {
+  "CHECKED_IN"
+  "COMPLETED"
+  "SCHEDULED"
+}
+
+Enum workout_plans_body_type_enum {
+  "CAN_DOI"
+  "CAO_GAY"
+  "CO_BAP"
+  "GAY_CAN_DOI"
+  "THUA_CAN"
+  "VAN_DONG_VIEN"
+}
+
+Enum workout_plans_fitness_level_enum {
+  "AVERAGE"
+  "EXCELLENT"
+  "GOOD"
+  "WEAK"
+}
+
+Enum workout_plans_goal_enum {
+  "ENDURANCE"
+  "MAINTENANCE"
+  "MUSCLE_GAIN"
+  "WEIGHT_LOSS"
+}
+
+Enum workout_plans_target_level_enum {
+  "ADVANCED"
+  "BEGINNER"
+  "INTERMEDIATE"
+}
+
+Enum workout_sessions_status_enum {
+  "CHECKED_IN"
+  "COMPLETED"
+  "SCHEDULED"
+  "SKIPPED"
+}
+
+Table chat_messages {
+  id bigint [pk, not null, increment]
+  user_id bigint
+  attachment_size bigint
+  created_at timestamp(6)
+  content varchar(2000)
+  attachment_name varchar(255)
+  attachment_type varchar(255)
+  attachment_url varchar(255)
+  sender varchar(255)
+}
+
+Table customer_addresses {
+  id bigint [pk, not null, increment]
+  user_id bigint [note: 'REF logic bo sung; chua co FK constraint trong schema nguon']
+  default_address boolean [not null]
+  address varchar(1000)
+  phone varchar(255)
+  receiver_name varchar(255)
+}
+
+Table customer_product_states {
+  id bigint [pk, not null, increment]
+  product_id bigint [note: 'REF logic bo sung; chua co FK constraint trong schema nguon']
+  user_id bigint [note: 'REF logic bo sung; chua co FK constraint trong schema nguon']
+  wishlisted boolean [not null]
+  viewed_at timestamp(6)
+  indexes {
+    (user_id, product_id) [unique]
+  }
+}
+
+Table endurance_tests {
+  id bigint [pk, not null, increment]
+  user_id bigint [not null, unique]
+  plank_seconds integer
+  pushup_reps integer
+  squat_reps integer
+  tested_at timestamp(6)
+}
+
+Table exercises {
+  id bigint [pk, not null, increment]
+  calories_burned integer
+  default_duration_seconds integer
+  default_reps integer
+  default_sets integer
+  endurance_score integer
+  flexibility_score integer
+  is_active boolean
+  is_assessment boolean
+  maintenance_score integer
+  muscle_gain_score integer
+  rest_seconds integer
+  stamina_cost integer
+  uses_weight boolean
+  weight_loss_score integer
+  contraindicated_injuries varchar(255)
+  description varchar(255)
+  image_url varchar(255)
+  name varchar(255)
+  secondary_muscle_groups varchar(255)
+  video_url varchar(255)
+  assessment_metric_type exercises_assessment_metric_type_enum
+  difficulty exercises_difficulty_enum
+  muscle_group exercises_muscle_group_enum
+}
+
+Table foods {
+  id bigint [pk, not null, increment]
+  calories integer
+  fat_grams float(53)
+  is_active boolean
+  protein_grams float(53)
+  weight_grams float(53)
+  image_url varchar(255)
+  name varchar(255)
+  suitable_goals varchar(255)
+  ingredients clob
+  instructions clob
+}
+
+Table injury_area_options {
+  id bigint [pk, not null, increment]
+  code varchar(100) [not null]
+  label varchar(100) [not null]
+}
+
+Table invoices {
+  id bigint [pk, not null, increment]
+  membership_id bigint
+  user_id bigint
+  price float(53)
+  regenerate_count integer
+  cancelled_at timestamp(6)
+  created_at timestamp(6)
+  expires_at timestamp(6)
+  paid_at timestamp(6)
+  qr_raw_payload varchar(1000)
+  cosmetic_item_code varchar(255)
+  deeplink varchar(255)
+  momo_order_id varchar(255) [unique]
+  momo_request_id varchar(255)
+  pay_url varchar(255)
+  qr_code_url varchar(255)
+  result_message varchar(255)
+  transaction_id varchar(255)
+  transfer_code varchar(255) [unique]
+  invoice_type invoices_invoice_type_enum
+  membership_type invoices_membership_type_enum
+  status invoices_status_enum
+}
+
+Table memberships {
+  id bigint [pk, not null, increment]
+  user_id bigint
+  end_date date
+  is_active boolean
+  price float(53)
+  start_date date
+  created_at timestamp(6)
+  paid_at timestamp(6)
+  notes varchar(255)
+  payment_method varchar(255)
+  transaction_id varchar(255)
+  membership_type memberships_membership_type_enum
+  payment_status memberships_payment_status_enum
+}
+
+Table muscle_split_configs {
+  id bigint [pk, not null, increment]
+  sessions_per_week integer [not null]
+  day_groups varchar(1000) [not null]
+  goal muscle_split_configs_goal_enum [not null]
+  indexes {
+    (goal, sessions_per_week) [unique]
+  }
+}
+
+Table notifications {
+  id bigint [pk, not null, increment]
+  user_id bigint
+  is_read boolean
+  created_at timestamp(6)
+  ref_id bigint
+  scheduled_at timestamp(6)
+  sent_at timestamp(6)
+  message varchar(255)
+  ref_type varchar(255)
+  title varchar(255)
+  type varchar(255)
+}
+
+Table pet_profiles {
+  user_id bigint [pk, not null]
+  current_streak integer
+  missed_streak integer
+  web_count integer
+  last_calculated_at timestamp(6)
+  equipped_hair varchar(255)
+  equipped_pants varchar(255)
+  equipped_shirt varchar(255)
+  aura_tier pet_profiles_aura_tier_enum
+  stage pet_profiles_stage_enum
+}
+
+Table plan_muscle_group_weight {
+  id bigint [pk, not null, increment]
+  workout_plan_id bigint
+  multiplier float(53)
+  muscle_group plan_muscle_group_weight_muscle_group_enum
+  indexes {
+    (workout_plan_id, muscle_group) [unique]
+  }
+}
+
+Table product_attribute_values {
+  id bigint [pk, not null, increment]
+  attribute_id bigint
+  value varchar(255) [not null]
+}
+
+Table product_attributes {
+  id bigint [pk, not null, increment]
+  name varchar(255) [not null, unique]
+}
+
+Table product_reviews {
+  id bigint [pk, not null, increment]
+  order_id bigint
+  product_id bigint
+  user_id bigint
+  rating integer
+  created_at timestamp(6)
+  comment varchar(2000)
+  images varchar(20000)
+}
+
+Table product_variants {
+  id bigint [pk, not null, increment]
+  product_id bigint
+  active boolean
+  price_override float(53)
+  stock integer [not null]
+  sku varchar(255)
+}
+
+Table progress_tracking {
+  id bigint [pk, not null, increment]
+  user_id bigint
+  arm_cm float(53)
+  bmi float(53)
+  body_fat_percentage float(53)
+  chest_cm float(53)
+  height float(53)
+  hip_cm float(53)
+  muscle_mass_kg float(53)
+  recorded_date date
+  thigh_cm float(53)
+  waist_cm float(53)
+  weight float(53)
+  recorded_at timestamp(6)
+  notes varchar(255)
+  source progress_tracking_source_enum
+}
+
+Table recommended_schedule_configs {
+  id bigint [pk, not null, increment]
+  sessions_per_week integer [not null]
+  recommended_days varchar(30) [not null]
+}
+
+Table roles {
+  id bigint [pk, not null, increment]
+  role_name varchar(255) [unique]
+}
+
+Table service_ratings {
+  id bigint [pk, not null, increment]
+  user_id bigint
+  is_public boolean
+  rating integer
+  attachment_size bigint
+  created_at timestamp(6) [not null]
+  replied_at timestamp(6)
+  reply_attachment_size bigint
+  updated_at timestamp(6)
+  admin_reply varchar(255)
+  attachment_name varchar(255)
+  attachment_type varchar(255)
+  attachment_url varchar(255)
+  comment varchar(255)
+  reply_attachment_name varchar(255)
+  reply_attachment_type varchar(255)
+  reply_attachment_url varchar(255)
+  service_type varchar(255)
+  title varchar(255)
+}
+
+Table session_exercise_logs {
+  id bigint [pk, not null, increment]
+  exercise_id bigint
+  session_id bigint
+  completion_percent integer
+  duration_seconds integer
+  is_completed boolean
+  reps_completed integer
+  sets_completed integer
+  weight_used_kg float(53)
+  logged_at timestamp(6)
+  notes varchar(255)
+}
+
+Table shop_cart_items {
+  id bigint [pk, not null, increment]
+  product_id bigint
+  user_id bigint
+  variant_id bigint [note: 'REF logic bo sung; chua co FK constraint trong schema nguon']
+  quantity integer
+  variant_label varchar(255)
+}
+
+Table shop_inventory_movements {
+  id bigint [pk, not null, increment]
+  order_id bigint [note: 'REF logic bo sung; chua co FK constraint trong schema nguon']
+  product_id bigint [note: 'REF logic bo sung; chua co FK constraint trong schema nguon']
+  variant_id bigint [note: 'REF logic bo sung; chua co FK constraint trong schema nguon']
+  after_stock integer [not null]
+  before_stock integer [not null]
+  created_at timestamp(6)
+  reason varchar(1000)
+  actor varchar(255)
+}
+
+Table shop_order_events {
+  id bigint [pk, not null, increment]
+  order_id bigint [note: 'REF logic bo sung; chua co FK constraint trong schema nguon']
+  created_at timestamp(6)
+  note varchar(1000)
+  actor varchar(255)
+  from_status varchar(255)
+  to_status varchar(255)
+}
+
+Table shop_order_items {
+  id bigint [pk, not null, increment]
+  order_id bigint
+  product_id bigint [note: 'REF logic bo sung; chua co FK constraint trong schema nguon']
+  variant_id bigint [note: 'REF logic bo sung; chua co FK constraint trong schema nguon']
+  line_total float(53)
+  quantity integer
+  unit_price float(53)
+  image_url varchar(255)
+  product_name varchar(255)
+  variant_label varchar(255)
+}
+
+Table shop_orders {
+  id bigint [pk, not null, increment]
+  created_by_staff_id bigint [note: 'REF logic bo sung; chua co FK constraint trong schema nguon']
+  user_id bigint
+  voucher_code varchar(255) [note: 'REF logic bo sung; chua co FK constraint trong schema nguon']
+  discount float(53)
+  shipping_fee float(53)
+  subtotal float(53)
+  total float(53)
+  voucher_discount float(53)
+  created_at timestamp(6)
+  expires_at timestamp(6)
+  paid_at timestamp(6)
+  note varchar(1000)
+  qr_raw_payload varchar(1000)
+  shipping_address varchar(1000)
+  payment_url varchar(2000)
+  gateway_reference varchar(255) [unique]
+  payment_method varchar(255)
+  phone varchar(255)
+  qr_code_url varchar(255)
+  receiver_name varchar(255)
+  transaction_id varchar(255)
+  transfer_code varchar(255) [unique]
+  channel shop_orders_channel_enum
+  status shop_orders_status_enum
+}
+
+Table shop_products {
+  id bigint [pk, not null, increment]
+  active boolean
+  price float(53) [not null]
+  sale_price float(53)
+  stock integer [not null]
+  created_at timestamp(6)
+  description varchar(2000)
+  images varchar(20000)
+  brand varchar(255)
+  image_url varchar(255)
+  name varchar(255) [not null]
+  required_equipment_code varchar(255)
+  suitable_goals varchar(255)
+  category shop_products_category_enum
+}
+
+Table support_messages {
+  id bigint [pk, not null, increment]
+  session_id bigint
+  attachment_size bigint
+  created_at timestamp(6)
+  content varchar(2000)
+  attachment_name varchar(255)
+  attachment_type varchar(255)
+  attachment_url varchar(255)
+  sender_role varchar(255)
+}
+
+Table support_sessions {
+  id bigint [pk, not null, increment]
+  admin_id bigint
+  user_id bigint
+  user_rating integer
+  accepted_at timestamp(6)
+  closed_at timestamp(6)
+  created_at timestamp(6)
+  rated_at timestamp(6)
+  user_rating_comment varchar(1000)
+  subject varchar(255)
+  status support_sessions_status_enum
+}
+
+Table system_configs {
+  config_key varchar(255) [pk, not null]
+  config_value float(53)
+  category varchar(255)
+  description clob
+}
+
+Table user_cosmetic_ownership {
+  id bigint [pk, not null, increment]
+  user_id bigint [not null, note: 'REF logic bo sung; chua co FK constraint trong schema nguon']
+  purchased_at timestamp(6)
+  cosmetic_code varchar(255) [not null]
+  indexes {
+    (user_id, cosmetic_code) [unique]
+  }
+}
+
+Table user_profiles {
+  id bigint [pk, not null, increment]
+  user_id bigint [unique]
+  age integer
+  available_days_per_week integer
+  bmi float(53)
+  body_fat_percentage float(53)
+  date_of_birth date
+  height float(53)
+  initial_weight float(53)
+  preferred_session_duration integer
+  training_experience_months integer
+  weight float(53)
+  preferred_training_days varchar(500)
+  available_equipment varchar(1000)
+  disliked_exercises varchar(1000)
+  injury_areas varchar(1000)
+  daily_activity_level varchar(255)
+  gender varchar(255)
+  medical_conditions varchar(255)
+  training_location varchar(255)
+  fitness_level user_profiles_fitness_level_enum
+  goal user_profiles_goal_enum
+}
+
+Table users {
+  id bigint [pk, not null, increment]
+  role_id bigint
+  email_verified boolean
+  password_reset_attempts integer
+  status boolean
+  created_at timestamp(6) [not null]
+  password_reset_blocked_until timestamp(6)
+  email varchar(255) [not null, unique]
+  full_name varchar(255)
+  password varchar(255)
+  phone varchar(255)
+  verification_token varchar(255)
+}
+
+Table variant_attribute_values {
+  value_id bigint [not null]
+  variant_id bigint [not null]
+  indexes {
+    (value_id, variant_id) [pk]
+  }
+}
+
+Table voucher_scope_products {
+  product_id bigint [note: 'REF logic bo sung; chua co FK constraint trong schema nguon']
+  voucher_id bigint [not null]
+}
+
+Table vouchers {
+  id bigint [pk, not null, increment]
+  active boolean
+  max_discount_amount float(53)
+  min_order_amount float(53)
+  usage_limit integer
+  used_count integer
+  value float(53)
+  created_at timestamp(6)
+  end_at timestamp(6)
+  start_at timestamp(6)
+  code varchar(255) [unique]
+  description varchar(255)
+  scope_category vouchers_scope_category_enum
+  scope_type vouchers_scope_type_enum
+  type vouchers_type_enum
+}
+
+Table weekly_reviews {
+  id bigint [pk, not null, increment]
+  user_id bigint
+  workout_plan_id bigint
+  rating integer
+  week_number integer
+  created_at timestamp(6) [not null]
+  comment varchar(255)
+  indexes {
+    (user_id, workout_plan_id, week_number) [unique]
+  }
+}
+
+Table work_shifts {
+  id bigint [pk, not null, increment]
+  user_id bigint
+  cash_at_start float(53)
+  cash_counted float(53)
+  cash_difference float(53)
+  expected_cash float(53)
+  planned_end time(6)
+  planned_start time(6)
+  pos_bank_revenue float(53)
+  pos_cash_revenue float(53)
+  shift_date date
+  check_in_at timestamp(6)
+  check_out_at timestamp(6)
+  created_at timestamp(6)
+  handover_note varchar(2000)
+  status work_shifts_status_enum
+}
+
+Table workout_plan_days {
+  id bigint [pk, not null, increment]
+  workout_plan_id bigint
+  day_of_week integer
+  day_name varchar(255)
+}
+
+Table workout_plan_exercises {
+  id bigint [pk, not null, increment]
+  exercise_id bigint
+  last_low_adjustment_log_id bigint [note: 'REF logic bo sung; chua co FK constraint trong schema nguon']
+  plan_day_id bigint
+  base_weight_kg float(53)
+  current_recommended_weight_kg float(53)
+  current_weight_kg float(53)
+  duration_seconds integer
+  is_assessment boolean
+  order_index integer
+  recommended_weight_kg float(53)
+  reps integer
+  rest_seconds integer
+  sets integer
+  weight_updated_week integer
+  notes varchar(255)
+}
+
+Table workout_plans {
+  id bigint [pk, not null, increment]
+  original_plan_id bigint [note: 'REF logic bo sung; chua co FK constraint trong schema nguon']
+  user_id bigint
+  current_mana integer
+  current_week integer
+  difficulty_adjustment integer
+  duration_weeks integer
+  estimated_weeks integer
+  exercises_adjustment integer
+  fitness_score integer
+  is_active boolean
+  is_ai_generated boolean
+  is_completed boolean
+  is_fitness_improvement boolean
+  is_template boolean
+  last_mana_regen_date date
+  last_training_date date
+  max_mana integer
+  reps_adjustment integer
+  required_max_session_mana_cost integer
+  sessions_per_week integer
+  sets_adjustment integer
+  starting_bmi float(53)
+  starting_weight float(53)
+  target_achieved boolean
+  target_baseline_value float(53)
+  target_current_value float(53)
+  target_goal_value float(53)
+  target_metric_type tinyint
+  week_start_date date
+  created_at timestamp(6)
+  confirmed_schedule_dows varchar(255)
+  description varchar(255)
+  plan_name varchar(255)
+  weight_adjustment_note varchar(255)
+  body_type workout_plans_body_type_enum
+  fitness_level workout_plans_fitness_level_enum
+  goal workout_plans_goal_enum
+  target_level workout_plans_target_level_enum
+}
+
+Table workout_sessions {
+  id bigint [pk, not null, increment]
+  plan_day_id bigint
+  user_id bigint
+  workout_plan_id bigint
+  checkout_body_fat float(53)
+  checkout_weight float(53)
+  completion_rate integer
+  duration_minutes integer
+  is_custom boolean
+  is_last_session_of_week boolean
+  scheduled_time time(6)
+  session_date date
+  total_calories_burned integer
+  week_number integer
+  check_in_time timestamp(6)
+  check_out_time timestamp(6)
+  custom_session_name varchar(255)
+  notes varchar(255)
+  status workout_sessions_status_enum
+}
+
+// Khoa ngoai hien co
+Ref: chat_messages.user_id > users.id
+Ref: users.id - endurance_tests.user_id
+Ref: invoices.membership_id > memberships.id
+Ref: invoices.user_id > users.id
+Ref: memberships.user_id > users.id
+Ref: notifications.user_id > users.id
+Ref: users.id - pet_profiles.user_id
+Ref: plan_muscle_group_weight.workout_plan_id > workout_plans.id
+Ref: product_attribute_values.attribute_id > product_attributes.id
+Ref: product_reviews.order_id > shop_orders.id
+Ref: product_reviews.product_id > shop_products.id
+Ref: product_reviews.user_id > users.id
+Ref: product_variants.product_id > shop_products.id
+Ref: progress_tracking.user_id > users.id
+Ref: service_ratings.user_id > users.id
+Ref: session_exercise_logs.exercise_id > exercises.id
+Ref: session_exercise_logs.session_id > workout_sessions.id
+Ref: shop_cart_items.product_id > shop_products.id
+Ref: shop_cart_items.user_id > users.id
+Ref: shop_order_items.order_id > shop_orders.id
+Ref: shop_orders.user_id > users.id
+Ref: support_messages.session_id > support_sessions.id
+Ref: support_sessions.admin_id > users.id
+Ref: support_sessions.user_id > users.id
+Ref: users.id - user_profiles.user_id
+Ref: users.role_id > roles.id
+Ref: variant_attribute_values.value_id > product_attribute_values.id
+Ref: variant_attribute_values.variant_id > product_variants.id
+Ref: voucher_scope_products.voucher_id > vouchers.id
+Ref: weekly_reviews.user_id > users.id
+Ref: weekly_reviews.workout_plan_id > workout_plans.id
+Ref: work_shifts.user_id > users.id
+Ref: workout_plan_days.workout_plan_id > workout_plans.id
+Ref: workout_plan_exercises.exercise_id > exercises.id
+Ref: workout_plan_exercises.plan_day_id > workout_plan_days.id
+Ref: workout_plans.user_id > users.id
+Ref: workout_sessions.plan_day_id > workout_plan_days.id
+Ref: workout_sessions.user_id > users.id
+Ref: workout_sessions.workout_plan_id > workout_plans.id
+
+// Lien ket logic bo sung cho so do
+Ref: customer_addresses.user_id > users.id
+Ref: customer_product_states.user_id > users.id
+Ref: customer_product_states.product_id > shop_products.id
+Ref: shop_order_events.order_id > shop_orders.id
+Ref: shop_inventory_movements.product_id > shop_products.id
+Ref: shop_inventory_movements.variant_id > product_variants.id
+Ref: shop_inventory_movements.order_id > shop_orders.id
+Ref: shop_cart_items.variant_id > product_variants.id
+Ref: shop_order_items.product_id > shop_products.id
+Ref: shop_order_items.variant_id > product_variants.id
+Ref: shop_orders.created_by_staff_id > users.id
+Ref: voucher_scope_products.product_id > shop_products.id
+Ref: user_cosmetic_ownership.user_id > users.id
+Ref: workout_plans.original_plan_id > workout_plans.id
+Ref: workout_plan_exercises.last_low_adjustment_log_id > session_exercise_logs.id
+Ref: shop_orders.voucher_code > vouchers.code

@@ -1,0 +1,64 @@
+@startuml
+title 7.17 - Activity Diagram Mua hàng trực tuyến
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 16
+skinparam ArrowColor Black
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+  DiamondBackgroundColor White
+  DiamondBorderColor Black
+}
+skinparam swimlane {
+  BorderColor Black
+  TitleBackgroundColor WhiteSmoke
+}
+
+|Người dùng|
+start
+:Xem sản phẩm và chọn phân loại;
+:Thêm sản phẩm, cập nhật giỏ hàng;
+|Hệ thống|
+:Hiển thị giỏ hàng và giá sản phẩm;
+|Người dùng|
+:Đăng nhập để đặt hàng;
+repeat
+  :Nhập hoặc chỉnh sửa người nhận,\nsố điện thoại, địa chỉ và\nphương thức thanh toán;
+  :Nhập mã giảm giá nếu có,\nXác nhận đặt hàng;
+  |Hệ thống|
+  :Kiểm tra giỏ, thông tin giao hàng,\ntồn kho và mã giảm giá,\nTính tổng tiền;
+  if (Dữ liệu hợp lệ?) then (Có)
+    :Chấp nhận yêu cầu đặt hàng;
+  else (Không)
+    :Hiển thị lỗi cần chỉnh sửa;
+  endif
+  |Người dùng|
+repeat while (Còn lỗi cần chỉnh sửa?) is (Có) not (Không)
+|Hệ thống|
+:Tạo đơn và lưu chi tiết,\nTrừ tồn, ghi nhật ký,\nGhi nhận sử dụng voucher nếu có,\nXóa giỏ hàng;
+if (Thanh toán COD?) then (Có)
+  :Đặt trạng thái đơn đã xác nhận;
+  |Người dùng|
+  :Nhận mã đơn,\nThanh toán khi nhận hàng;
+else (Không)
+  |Hệ thống|
+  :Đặt trạng thái chờ thanh toán,\nHiển thị QR hoặc cổng thanh toán;
+  |Người dùng|
+  :Thực hiện thanh toán;
+  |Hệ thống|
+  :Kiểm tra kết quả thanh toán\ntừ nguồn xác nhận hợp lệ;
+  if (Thanh toán thành công?) then (Có)
+    :Cập nhật đã thanh toán,\nGhi lịch sử đơn hàng;
+  else (Không)
+    :Hiển thị trạng thái chờ,\nthất bại hoặc hết hạn;
+    |Người dùng|
+    :Xem trạng thái, có thể thử lại\nkhi đơn còn hiệu lực;
+  endif
+endif
+|Người dùng|
+:Xem và theo dõi đơn hàng;
+stop
+@enduml

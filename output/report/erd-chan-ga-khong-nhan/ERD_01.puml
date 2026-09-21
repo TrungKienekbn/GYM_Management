@@ -1,0 +1,57 @@
+@startuml
+title ERD logic - 1. Tài khoản và theo dõi thể chất
+hide circle
+skinparam monochrome true
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam linetype polyline
+skinparam nodesep 65
+skinparam ranksep 100
+left to right direction
+entity "chat_messages" as chat_messages {
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+}
+entity "endurance_tests" as endurance_tests {
+  id : bigint <<PK>>
+  user_id : bigint <<FK>> <<UK>>
+}
+entity "notifications" as notifications {
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+}
+entity "progress_tracking" as progress_tracking {
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+}
+entity "roles" as roles {
+  id : bigint <<PK>>
+  role_name : varchar <<UK>>
+}
+entity "service_ratings" as service_ratings {
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+}
+entity "user_profiles" as user_profiles {
+  id : bigint <<PK>>
+  user_id : bigint <<FK>> <<UK>>
+}
+entity "users" as users {
+  id : bigint <<PK>>
+  role_id : bigint <<FK>>
+  email : varchar <<UK>>
+}
+users |o--o{ chat_messages
+users ||--o| endurance_tests
+users |o--o{ notifications
+users |o--o{ progress_tracking
+users |o--o{ service_ratings
+users |o--o| user_profiles
+roles |o--o{ users
+legend bottom
+  Liền: FK hiện có. Nét đứt / REF: liên kết logic bổ sung.
+  Bảng cùng tên ở các hình là cùng một bảng trong CSDL.
+endlegend
+@enduml

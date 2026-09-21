@@ -1,0 +1,42 @@
+@startuml
+title 7.19 - Use Case Phân công và thực hiện ca làm việc
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 16
+skinparam ArrowColor Black
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+  DiamondBackgroundColor White
+  DiamondBorderColor Black
+usecase "Kiểm tra nhân viên\nvà thời gian ca" as CheckSchedule
+usecase "Kiểm tra quyền\nvà trạng thái ca" as CheckShift
+usecase "Tổng hợp doanh thu\nvà tính chênh lệch" as Reconcile
+}
+skinparam swimlane {
+  BorderColor Black
+  TitleBackgroundColor WhiteSmoke
+}
+
+left to right direction
+skinparam shadowing false
+skinparam defaultFontName Arial
+actor "Nhân viên" as A0
+actor "Quản trị viên" as A1
+rectangle "HỆ THỐNG GYMIFY" {
+usecase "UC-53\nPhân công và xem lịch làm việc" as UC53
+usecase "UC-54\nVào ca làm việc" as UC54
+usecase "UC-55\nKết ca và đối soát tiền" as UC55
+}
+A1 -- UC53
+A0 -- UC54
+A1 -- UC54
+A0 -- UC55
+A1 -- UC55
+UC53 ..> CheckSchedule : <<include>>
+UC54 ..> CheckShift : <<include>>
+UC55 ..> CheckShift : <<include>>
+UC55 ..> Reconcile : <<include>>
+@enduml

@@ -1,0 +1,50 @@
+@startuml
+title ERD logic - 5. Sản phẩm và thuộc tính
+hide circle
+skinparam monochrome true
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam linetype polyline
+skinparam nodesep 65
+skinparam ranksep 100
+top to bottom direction
+entity "product_attribute_values" as product_attribute_values {
+  attribute_id : bigint <<FK>>
+  id : bigint <<PK>>
+}
+entity "product_attributes" as product_attributes {
+  id : bigint <<PK>>
+  name : varchar <<UK>>
+}
+entity "product_variants" as product_variants {
+  id : bigint <<PK>>
+  product_id : bigint <<FK>>
+}
+entity "shop_products" as shop_products {
+  id : bigint <<PK>>
+}
+entity "variant_attribute_values" as variant_attribute_values {
+  value_id : bigint <<PK>> <<FK>>
+  variant_id : bigint <<PK>> <<FK>>
+}
+entity "voucher_scope_products" as voucher_scope_products {
+  product_id : bigint <<REF>>
+  voucher_id : bigint <<FK>>
+}
+entity "vouchers" as vouchers {
+  id : bigint <<PK>>
+  code : varchar <<UK>>
+}
+product_attributes |o--o{ product_attribute_values : "attribute_id"
+shop_products |o--o{ product_variants : "product_id"
+product_attribute_values ||--o{ variant_attribute_values : "value_id"
+product_variants ||--o{ variant_attribute_values : "variant_id"
+vouchers ||--o{ voucher_scope_products : "voucher_id"
+shop_products |o..o{ voucher_scope_products : "product_id -> id"
+legend bottom
+  Liền: FK hiện có. Nét đứt / REF: liên kết logic bổ sung.
+  Bảng cùng tên ở các hình là cùng một bảng trong CSDL.
+endlegend
+@enduml

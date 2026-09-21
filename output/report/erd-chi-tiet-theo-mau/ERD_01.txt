@@ -1,0 +1,157 @@
+@startuml
+' Code PlantUML: copy this entire file, including @startuml and @enduml.
+hide circle
+hide methods
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam roundcorner 0
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 65
+skinparam ranksep 85
+skinparam class {
+  BackgroundColor White
+  HeaderBackgroundColor #EEEEEE
+  BorderColor Black
+  FontColor Black
+  FontStyle bold
+  AttributeFontStyle plain
+}
+left to right direction
+
+title ERD logic - 1. Tài khoản và theo dõi thể chất
+
+entity "chat_messages" as chat_messages {
+  {field} **PK**  id : BIGINT
+  {field} **FK**  user_id : BIGINT
+  {field}       attachment_size : BIGINT
+  {field}       created_at : TIMESTAMP(6)
+  {field}       content : VARCHAR(2000)
+  {field}       attachment_name : VARCHAR(255)
+  {field}       attachment_type : VARCHAR(255)
+  {field}       attachment_url : VARCHAR(255)
+  {field}       sender : VARCHAR(255)
+}
+
+entity "endurance_tests" as endurance_tests {
+  {field} **PK**  id : BIGINT
+  {field} **FK**  user_id : BIGINT  [UK]
+  {field}       plank_seconds : INTEGER
+  {field}       pushup_reps : INTEGER
+  {field}       squat_reps : INTEGER
+  {field}       tested_at : TIMESTAMP(6)
+}
+
+entity "notifications" as notifications {
+  {field} **PK**  id : BIGINT
+  {field} **FK**  user_id : BIGINT
+  {field}       is_read : BOOLEAN
+  {field}       created_at : TIMESTAMP(6)
+  {field}       ref_id : BIGINT
+  {field}       scheduled_at : TIMESTAMP(6)
+  {field}       sent_at : TIMESTAMP(6)
+  {field}       message : VARCHAR(255)
+  {field}       ref_type : VARCHAR(255)
+  {field}       title : VARCHAR(255)
+  {field}       type : VARCHAR(255)
+}
+
+entity "progress_tracking" as progress_tracking {
+  {field} **PK**  id : BIGINT
+  {field} **FK**  user_id : BIGINT
+  {field}       arm_cm : FLOAT(53)
+  {field}       bmi : FLOAT(53)
+  {field}       body_fat_percentage : FLOAT(53)
+  {field}       chest_cm : FLOAT(53)
+  {field}       height : FLOAT(53)
+  {field}       hip_cm : FLOAT(53)
+  {field}       muscle_mass_kg : FLOAT(53)
+  {field}       recorded_date : DATE
+  {field}       thigh_cm : FLOAT(53)
+  {field}       waist_cm : FLOAT(53)
+  {field}       weight : FLOAT(53)
+  {field}       recorded_at : TIMESTAMP(6)
+  {field}       notes : VARCHAR(255)
+  {field}       source : ENUM
+}
+
+entity "roles" as roles {
+  {field} **PK**  id : BIGINT
+  {field}       role_name : VARCHAR(255)  [UK]
+}
+
+entity "service_ratings" as service_ratings {
+  {field} **PK**  id : BIGINT
+  {field} **FK**  user_id : BIGINT
+  {field}       is_public : BOOLEAN
+  {field}       rating : INTEGER
+  {field}       attachment_size : BIGINT
+  {field}       created_at : TIMESTAMP(6)
+  {field}       replied_at : TIMESTAMP(6)
+  {field}       reply_attachment_size : BIGINT
+  {field}       updated_at : TIMESTAMP(6)
+  {field}       admin_reply : VARCHAR(255)
+  {field}       attachment_name : VARCHAR(255)
+  {field}       attachment_type : VARCHAR(255)
+  {field}       attachment_url : VARCHAR(255)
+  {field}       comment : VARCHAR(255)
+  {field}       reply_attachment_name : VARCHAR(255)
+  {field}       reply_attachment_type : VARCHAR(255)
+  {field}       reply_attachment_url : VARCHAR(255)
+  {field}       service_type : VARCHAR(255)
+  {field}       title : VARCHAR(255)
+}
+
+entity "user_profiles" as user_profiles {
+  {field} **PK**  id : BIGINT
+  {field} **FK**  user_id : BIGINT  [UK]
+  {field}       age : INTEGER
+  {field}       available_days_per_week : INTEGER
+  {field}       bmi : FLOAT(53)
+  {field}       body_fat_percentage : FLOAT(53)
+  {field}       date_of_birth : DATE
+  {field}       height : FLOAT(53)
+  {field}       initial_weight : FLOAT(53)
+  {field}       preferred_session_duration : INTEGER
+  {field}       training_experience_months : INTEGER
+  {field}       weight : FLOAT(53)
+  {field}       preferred_training_days : VARCHAR(500)
+  {field}       available_equipment : VARCHAR(1000)
+  {field}       disliked_exercises : VARCHAR(1000)
+  {field}       injury_areas : VARCHAR(1000)
+  {field}       daily_activity_level : VARCHAR(255)
+  {field}       gender : VARCHAR(255)
+  {field}       medical_conditions : VARCHAR(255)
+  {field}       training_location : VARCHAR(255)
+  {field}       fitness_level : ENUM
+  {field}       goal : ENUM
+}
+
+entity "users" as users {
+  {field} **PK**  id : BIGINT
+  {field} **FK**  role_id : BIGINT
+  {field}       email_verified : BOOLEAN
+  {field}       password_reset_attempts : INTEGER
+  {field}       status : BOOLEAN
+  {field}       created_at : TIMESTAMP(6)
+  {field}       password_reset_blocked_until : TIMESTAMP(6)
+  {field}       email : VARCHAR(255)  [UK]
+  {field}       full_name : VARCHAR(255)
+  {field}       password : VARCHAR(255)
+  {field}       phone : VARCHAR(255)
+  {field}       verification_token : VARCHAR(255)
+}
+users |o--o{ chat_messages
+users ||--o| endurance_tests
+users |o--o{ notifications
+users |o--o{ progress_tracking
+users |o--o{ service_ratings
+users |o--o| user_profiles
+roles |o--o{ users
+legend bottom
+  PK: khóa chính. FK: khóa ngoại hiện có. UK: khóa duy nhất.
+  REF / nét đứt: liên kết logic bổ sung, chưa phải FK của ứng dụng.
+endlegend
+@enduml

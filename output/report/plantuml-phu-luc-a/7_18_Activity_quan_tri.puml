@@ -1,0 +1,71 @@
+@startuml
+title 7.18 - Activity Diagram Quản trị và vận hành cửa hàng
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 16
+skinparam ArrowColor Black
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+  DiamondBackgroundColor White
+  DiamondBorderColor Black
+}
+skinparam swimlane {
+  BorderColor Black
+  TitleBackgroundColor WhiteSmoke
+}
+
+|Quản trị viên / Nhân viên|
+start
+:Đăng nhập;
+:Chọn chức năng cửa hàng;
+|Hệ thống|
+:Kiểm tra quyền theo chức năng;
+if (Có quyền truy cập?) then (Không)
+  :Thông báo từ chối truy cập;
+  stop
+else (Có)
+endif
+if (Quản lý danh mục?) then (Có)
+  |Quản trị viên / Nhân viên|
+  :ADMIN nhập hoặc sửa sản phẩm,\nthuộc tính, biến thể hoặc voucher;
+  |Hệ thống|
+  :Kiểm tra dữ liệu;
+  if (Dữ liệu hợp lệ?) then (Có)
+    :Lưu thay đổi;
+  else (Không)
+    :Trả lỗi để chỉnh sửa;
+  endif
+elseif (Xử lý đơn trực tuyến?) then (Có)
+  :Hiển thị đơn hàng và thao tác\nđược phép theo trạng thái;
+  |Quản trị viên / Nhân viên|
+  :STAFF / ADMIN chọn đơn\nvà thao tác xử lý;
+  |Hệ thống|
+  :Kiểm tra chuyển trạng thái;
+  if (Thao tác hợp lệ?) then (Có)
+    :Cập nhật đơn và ghi lịch sử;
+  else (Không)
+    :Trả lỗi trạng thái đơn;
+  endif
+elseif (Bán hàng tại quầy?) then (Có)
+  |Quản trị viên / Nhân viên|
+  :STAFF / ADMIN chọn khách,\nsản phẩm, phân loại, số lượng,\nNhập voucher nếu có;
+  :Ghi nhận thanh toán tiền mặt\nhoặc chuyển khoản,\nXác nhận tạo đơn POS;
+  |Hệ thống|
+  :Kiểm tra khách, giá, tồn kho,\nsố lượng và mã giảm giá;
+  if (Dữ liệu hợp lệ?) then (Có)
+    :Lưu đơn POS đã thanh toán,\nTrừ tồn và ghi nhật ký;
+  else (Không)
+    :Trả lỗi để chỉnh sửa;
+  endif
+else (Báo cáo / kho)
+  :Tổng hợp báo cáo doanh thu,\ntồn thấp hoặc nhật ký kho\ntheo yêu cầu của ADMIN;
+endif
+|Hệ thống|
+:Hiển thị kết quả hoặc lỗi;
+|Quản trị viên / Nhân viên|
+:Xem kết quả xử lý;
+stop
+@enduml

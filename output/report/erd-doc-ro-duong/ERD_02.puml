@@ -1,0 +1,45 @@
+@startuml
+title ERD logic - 2. Gói tập và nhân vật đồng hành
+hide circle
+skinparam monochrome true
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam linetype polyline
+skinparam nodesep 65
+skinparam ranksep 100
+left to right direction
+entity "invoices" as invoices {
+  id : bigint <<PK>>
+  membership_id : bigint <<FK>>
+  user_id : bigint <<FK>>
+  momo_order_id : varchar <<UK>>
+  transfer_code : varchar <<UK>>
+}
+entity "memberships" as memberships {
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+}
+entity "pet_profiles" as pet_profiles {
+  user_id : bigint <<PK>> <<FK>>
+}
+entity "user_cosmetic_ownership" as user_cosmetic_ownership {
+  id : bigint <<PK>>
+  user_id : bigint <<REF>>
+}
+entity "users" as users {
+  id : bigint <<PK>>
+  role_id : bigint <<FK>>
+  email : varchar <<UK>>
+}
+memberships |o--o{ invoices : "membership_id"
+users |o--o{ invoices : "user_id"
+users |o--o{ memberships : "user_id"
+users ||--o| pet_profiles : "user_id"
+users ||..o{ user_cosmetic_ownership : "user_id -> id"
+legend bottom
+  Liền: FK hiện có. Nét đứt / REF: liên kết logic bổ sung.
+  Bảng cùng tên ở các hình là cùng một bảng trong CSDL.
+endlegend
+@enduml

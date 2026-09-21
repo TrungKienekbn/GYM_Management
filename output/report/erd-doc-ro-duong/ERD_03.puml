@@ -1,0 +1,44 @@
+@startuml
+title ERD logic - 3. Hỗ trợ và nhân viên
+hide circle
+skinparam monochrome true
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam linetype polyline
+skinparam nodesep 65
+skinparam ranksep 100
+left to right direction
+entity "customer_addresses" as customer_addresses {
+  id : bigint <<PK>>
+  user_id : bigint <<REF>>
+}
+entity "support_messages" as support_messages {
+  id : bigint <<PK>>
+  session_id : bigint <<FK>>
+}
+entity "support_sessions" as support_sessions {
+  admin_id : bigint <<FK>>
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+}
+entity "users" as users {
+  id : bigint <<PK>>
+  role_id : bigint <<FK>>
+  email : varchar <<UK>>
+}
+entity "work_shifts" as work_shifts {
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+}
+support_sessions |o--o{ support_messages : "session_id"
+users |o--o{ support_sessions : "admin_id"
+users |o--o{ support_sessions : "user_id"
+users |o--o{ work_shifts : "user_id"
+users |o..o{ customer_addresses : "user_id -> id"
+legend bottom
+  Liền: FK hiện có. Nét đứt / REF: liên kết logic bổ sung.
+  Bảng cùng tên ở các hình là cùng một bảng trong CSDL.
+endlegend
+@enduml

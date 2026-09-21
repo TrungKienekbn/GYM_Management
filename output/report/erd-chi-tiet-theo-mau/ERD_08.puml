@@ -1,0 +1,73 @@
+@startuml
+' Code PlantUML: copy this entire file, including @startuml and @enduml.
+hide circle
+hide methods
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam roundcorner 0
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 65
+skinparam ranksep 85
+skinparam class {
+  BackgroundColor White
+  HeaderBackgroundColor #EEEEEE
+  BorderColor Black
+  FontColor Black
+  FontStyle bold
+  AttributeFontStyle plain
+}
+top to bottom direction
+
+title ERD logic - 8. Danh mục và cấu hình độc lập
+
+entity "foods" as foods {
+  {field} **PK**  id : BIGINT
+  {field}       calories : INTEGER
+  {field}       fat_grams : FLOAT(53)
+  {field}       is_active : BOOLEAN
+  {field}       protein_grams : FLOAT(53)
+  {field}       weight_grams : FLOAT(53)
+  {field}       image_url : VARCHAR(255)
+  {field}       name : VARCHAR(255)
+  {field}       suitable_goals : VARCHAR(255)
+  {field}       ingredients : CLOB
+  {field}       instructions : CLOB
+}
+
+entity "injury_area_options" as injury_area_options {
+  {field} **PK**  id : BIGINT
+  {field}       code : VARCHAR(100)
+  {field}       label : VARCHAR(100)
+}
+
+entity "muscle_split_configs" as muscle_split_configs {
+  {field} **PK**  id : BIGINT
+  {field}       sessions_per_week : INTEGER
+  {field}       day_groups : VARCHAR(1000)
+  {field}       goal : ENUM
+}
+
+entity "recommended_schedule_configs" as recommended_schedule_configs {
+  {field} **PK**  id : BIGINT
+  {field}       sessions_per_week : INTEGER
+  {field}       recommended_days : VARCHAR(30)
+}
+
+entity "system_configs" as system_configs {
+  {field} **PK**  config_key : VARCHAR(255)
+  {field}       config_value : FLOAT(53)
+  {field}       category : VARCHAR(255)
+  {field}       description : CLOB
+}
+foods -[hidden]down- injury_area_options
+injury_area_options -[hidden]down- muscle_split_configs
+muscle_split_configs -[hidden]down- recommended_schedule_configs
+recommended_schedule_configs -[hidden]down- system_configs
+legend bottom
+  PK: khóa chính. FK: khóa ngoại hiện có. UK: khóa duy nhất.
+  REF / nét đứt: liên kết logic bổ sung, chưa phải FK của ứng dụng.
+endlegend
+@enduml

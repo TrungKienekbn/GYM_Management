@@ -58,8 +58,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/exercises").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/ratings/public").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/shop/products").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/shop/products", "/api/shop/products/*", "/api/shop/catalog", "/api/shop/payments/methods").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/shop/payments/momo/ipn", "/api/shop/payments/zalopay/callback").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/shop/vouchers/public").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/shop/orders/lookup", "/api/shop/orders/guest-cancel/request-otp", "/api/shop/orders/guest-cancel").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/shop/products/*/reviews").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/shop/products/*/variants").permitAll()
                         // File đính kèm phục vụ tĩnh (tên UUID không đoán được)
                         .requestMatchers(HttpMethod.GET, "/api/files/**").permitAll()
 

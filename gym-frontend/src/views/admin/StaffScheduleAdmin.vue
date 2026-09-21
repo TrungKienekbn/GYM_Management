@@ -22,7 +22,7 @@
     </el-form>
   </el-card>
 
-  <el-table :data="shiftsList" v-loading="loading">
+    <el-table :data="shiftsList" v-loading="loading">
     <el-table-column prop="userName" label="Nhân viên" />
     <el-table-column prop="shiftDate" label="Ngày" width="120" />
     <el-table-column label="Giờ ca" width="150">
@@ -34,6 +34,21 @@
     </el-table-column>
     <el-table-column label="Check-out" width="160">
       <template #default="{ row }">{{ row.checkOutAt ? new Date(row.checkOutAt).toLocaleString('vi-VN') : '-' }}</template>
+    </el-table-column>
+    <el-table-column label="Tiền đầu ca" width="120">
+      <template #default="{ row }">{{ row.cashAtStart != null ? formatVnd(row.cashAtStart) : '-' }}</template>
+    </el-table-column>
+    <el-table-column label="Dự kiến cuối ca" width="130">
+      <template #default="{ row }">{{ row.expectedCash != null ? formatVnd(row.expectedCash) : '-' }}</template>
+    </el-table-column>
+    <el-table-column label="Đếm thực tế" width="120">
+      <template #default="{ row }">{{ row.cashCounted != null ? formatVnd(row.cashCounted) : '-' }}</template>
+    </el-table-column>
+    <el-table-column label="Chênh lệch" width="120">
+      <template #default="{ row }">
+        <span v-if="row.cashDifference != null" :style="{ color: row.cashDifference === 0 ? 'green' : 'red' }">{{ formatVnd(row.cashDifference) }}</span>
+        <span v-else>-</span>
+      </template>
     </el-table-column>
     <el-table-column prop="handoverNote" label="Bàn giao" />
   </el-table>
@@ -48,7 +63,7 @@ const staffList = ref([])
 const shiftsList = ref([])
 const loading = ref(false)
 const form = ref({ staffUserId: null, shiftDate: '', startTime: '', endTime: '' })
-
+function formatVnd(v) { return (v || 0).toLocaleString('vi-VN') + ' đ' }
 async function loadStaff() {
   const res = await adminAPI.getUsers()
   staffList.value = (res.data || []).filter(u => u.role === 'ROLE_STAFF')

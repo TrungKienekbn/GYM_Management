@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1000" viewBox="0 0 1400 1000">
+<rect width="100%" height="100%" fill="white"/>
+<text x="700.0" y="30.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="23" font-weight="700" fill="#111">7.18 - Use Case Quản trị và vận hành cửa hàng</text>
+<rect x="220" y="170" width="950" height="780" rx="3" fill="white" stroke="#222" stroke-width="1.3"/>
+<text x="695" y="200.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#111">HỆ THỐNG GYMIFY</text>
+<circle cx="100" cy="380" r="14" fill="#f4f4f4" stroke="#222"/>
+<polyline points="100,394 100,442" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="75,410 125,410" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="100,442 75,473" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="100,442 125,473" fill="none" stroke="#222" stroke-width="1.4"/>
+<text x="100" y="497.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="18" font-weight="400" fill="#111">Quản trị viên</text>
+<circle cx="1300" cy="510" r="14" fill="#f4f4f4" stroke="#222"/>
+<polyline points="1300,524 1300,572" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="1275,540 1325,540" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="1300,572 1275,603" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="1300,572 1325,603" fill="none" stroke="#222" stroke-width="1.4"/>
+<text x="1300" y="627.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="18" font-weight="400" fill="#111">Nhân viên</text>
+<polyline points="125,410 245,285 280,285" fill="none" stroke="#222" stroke-width="1.4"/>
+<ellipse cx="450" cy="285" rx="170.0" ry="41.0" fill="white" stroke="#222" stroke-width="1.2"/>
+<text x="450" y="261.25" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">UC-46</text>
+<text x="450" y="285.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">Quản lý sản phẩm</text>
+<text x="450" y="308.75" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">cửa hàng</text>
+<polyline points="125,410 245,415 280,415" fill="none" stroke="#222" stroke-width="1.4"/>
+<ellipse cx="450" cy="415" rx="170.0" ry="41.0" fill="white" stroke="#222" stroke-width="1.2"/>
+<text x="450" y="391.25" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">UC-47</text>
+<text x="450" y="415.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">Quản lý thuộc tính</text>
+<text x="450" y="438.75" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">và biến thể</text>
+<polyline points="125,410 245,545 280,545" fill="none" stroke="#222" stroke-width="1.4"/>
+<ellipse cx="450" cy="545" rx="170.0" ry="41.0" fill="white" stroke="#222" stroke-width="1.2"/>
+<text x="450" y="533.125" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">UC-48</text>
+<text x="450" y="556.875" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">Quản lý mã giảm giá</text>
+<polyline points="125,410 245,675 280,675" fill="none" stroke="#222" stroke-width="1.4"/>
+<ellipse cx="450" cy="675" rx="170.0" ry="41.0" fill="white" stroke="#222" stroke-width="1.2"/>
+<text x="450" y="651.25" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">UC-51</text>
+<text x="450" y="675.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">Xem báo cáo</text>
+<text x="450" y="698.75" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">cửa hàng</text>
+<polyline points="125,410 245,805 280,805" fill="none" stroke="#222" stroke-width="1.4"/>
+<ellipse cx="450" cy="805" rx="170.0" ry="41.0" fill="white" stroke="#222" stroke-width="1.2"/>
+<text x="450" y="781.25" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">UC-52</text>
+<text x="450" y="805.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">Theo dõi tồn thấp</text>
+<text x="450" y="828.75" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">và nhật ký kho</text>
+<polyline points="1275,540 1150,340 1110,340" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="125,410 190,225 700,225 700,340 770,340" fill="none" stroke="#222" stroke-width="1.4"/>
+<ellipse cx="940" cy="340" rx="170.0" ry="41.0" fill="white" stroke="#222" stroke-width="1.2"/>
+<text x="940" y="316.25" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">UC-49</text>
+<text x="940" y="340.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">Xử lý đơn hàng</text>
+<text x="940" y="363.75" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">trực tuyến</text>
+<polyline points="1275,540 1150,575 1110,575" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="125,410 190,225 700,225 700,575 770,575" fill="none" stroke="#222" stroke-width="1.4"/>
+<ellipse cx="940" cy="575" rx="170.0" ry="41.0" fill="white" stroke="#222" stroke-width="1.2"/>
+<text x="940" y="563.125" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">UC-50</text>
+<text x="940" y="586.875" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">Bán hàng tại quầy</text>
+<polyline points="1275,540 1150,810 1110,810" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="125,410 190,225 700,225 700,810 770,810" fill="none" stroke="#222" stroke-width="1.4"/>
+<ellipse cx="940" cy="810" rx="170.0" ry="41.0" fill="white" stroke="#222" stroke-width="1.2"/>
+<text x="940" y="798.125" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">UC-40</text>
+<text x="940" y="821.875" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="19" font-weight="400" fill="#111">Áp dụng mã giảm giá</text>
+<polyline points="940,769 940,616" fill="none" stroke="#222" stroke-width="1.4" stroke-dasharray="8 6"/>
+<polyline points="944.0776045305957,625.1308894031231 940,616 935.9223954694043,625.1308894031231" fill="none" stroke="#222" stroke-width="1.4"/>
+<text x="1010" y="690.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="18" font-weight="400" fill="#111">«extend»</text>
+<text x="1010" y="719.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#111">Khi nhập mã</text>
+</svg>

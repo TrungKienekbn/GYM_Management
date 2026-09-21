@@ -13,10 +13,12 @@
         <el-menu-item index="/admin/invoices"><template #title>Lịch sử giao dịch</template></el-menu-item>
         <el-menu-item index="/admin/exercises"><template #title>Bài tập</template></el-menu-item>
         <el-menu-item index="/admin/foods"><template #title>Món ăn</template></el-menu-item>
+        <el-menu-item index="/admin/shop-reports"><template #title>Thống kê & Kho cửa hàng</template></el-menu-item>
         <el-menu-item index="/admin/shop"><template #title>Cửa hàng</template></el-menu-item>
         <el-menu-item index="/admin/plans"><template #title>Giáo án</template></el-menu-item>
         <el-menu-item index="/admin/ratings"><template #title>Đánh giá</template></el-menu-item>
         <el-menu-item index="/admin/vouchers"><template #title>Voucher / Khuyến mãi</template></el-menu-item>
+        <el-menu-item index="/admin/product-attributes"><template #title>Thuộc tính & Biến thể</template></el-menu-item>
         <el-menu-item index="/admin/support">
           <el-badge :value="supportBadge" :max="9" :hidden="!supportBadge" class="menu-badge">
             <el-icon><ChatDotRound /></el-icon>
@@ -24,9 +26,8 @@
           <template #title>Hỗ trợ chat</template>
         </el-menu-item>
         <el-menu-item index="/admin/notify"><template #title>Thông báo</template></el-menu-item>
+        <el-menu-item index="/admin/staff-schedule"><template #title>Lịch làm việc NV</template></el-menu-item>
         <el-menu-item index="/admin/system-configs">
-          <el-menu-item index="/admin/staff-schedule"><template #title>Lịch làm việc NV</template></el-menu-item>
-          
           <template #title>Công thức hệ thống</template>
         </el-menu-item>
       </el-menu>

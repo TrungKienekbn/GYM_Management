@@ -1,0 +1,110 @@
+@startuml
+' Code PlantUML: copy this entire file, including @startuml and @enduml.
+hide circle
+hide methods
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam roundcorner 0
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 65
+skinparam ranksep 85
+skinparam class {
+  BackgroundColor White
+  HeaderBackgroundColor #EEEEEE
+  BorderColor Black
+  FontColor Black
+  FontStyle bold
+  AttributeFontStyle plain
+}
+left to right direction
+
+title ERD logic - 2. Gói tập và nhân vật đồng hành
+
+entity "invoices" as invoices {
+  {field} **PK**  id : BIGINT
+  {field} **FK**  membership_id : BIGINT
+  {field} **FK**  user_id : BIGINT
+  {field}       price : FLOAT(53)
+  {field}       regenerate_count : INTEGER
+  {field}       cancelled_at : TIMESTAMP(6)
+  {field}       created_at : TIMESTAMP(6)
+  {field}       expires_at : TIMESTAMP(6)
+  {field}       paid_at : TIMESTAMP(6)
+  {field}       qr_raw_payload : VARCHAR(1000)
+  {field}       cosmetic_item_code : VARCHAR(255)
+  {field}       deeplink : VARCHAR(255)
+  {field}       momo_order_id : VARCHAR(255)  [UK]
+  {field}       momo_request_id : VARCHAR(255)
+  {field}       pay_url : VARCHAR(255)
+  {field}       qr_code_url : VARCHAR(255)
+  {field}       result_message : VARCHAR(255)
+  {field}       transaction_id : VARCHAR(255)
+  {field}       transfer_code : VARCHAR(255)  [UK]
+  {field}       invoice_type : ENUM
+  {field}       membership_type : ENUM
+  {field}       status : ENUM
+}
+
+entity "memberships" as memberships {
+  {field} **PK**  id : BIGINT
+  {field} **FK**  user_id : BIGINT
+  {field}       end_date : DATE
+  {field}       is_active : BOOLEAN
+  {field}       price : FLOAT(53)
+  {field}       start_date : DATE
+  {field}       created_at : TIMESTAMP(6)
+  {field}       paid_at : TIMESTAMP(6)
+  {field}       notes : VARCHAR(255)
+  {field}       payment_method : VARCHAR(255)
+  {field}       transaction_id : VARCHAR(255)
+  {field}       membership_type : ENUM
+  {field}       payment_status : ENUM
+}
+
+entity "pet_profiles" as pet_profiles {
+  {field} **PK/FK**  user_id : BIGINT
+  {field}       current_streak : INTEGER
+  {field}       missed_streak : INTEGER
+  {field}       web_count : INTEGER
+  {field}       last_calculated_at : TIMESTAMP(6)
+  {field}       equipped_hair : VARCHAR(255)
+  {field}       equipped_pants : VARCHAR(255)
+  {field}       equipped_shirt : VARCHAR(255)
+  {field}       aura_tier : ENUM
+  {field}       stage : ENUM
+}
+
+entity "user_cosmetic_ownership" as user_cosmetic_ownership {
+  {field} **PK**  id : BIGINT
+  {field} **REF**  user_id : BIGINT
+  {field}       purchased_at : TIMESTAMP(6)
+  {field}       cosmetic_code : VARCHAR(255)
+}
+
+entity "users" as users {
+  {field} **PK**  id : BIGINT
+  {field} **FK**  role_id : BIGINT
+  {field}       email_verified : BOOLEAN
+  {field}       password_reset_attempts : INTEGER
+  {field}       status : BOOLEAN
+  {field}       created_at : TIMESTAMP(6)
+  {field}       password_reset_blocked_until : TIMESTAMP(6)
+  {field}       email : VARCHAR(255)  [UK]
+  {field}       full_name : VARCHAR(255)
+  {field}       password : VARCHAR(255)
+  {field}       phone : VARCHAR(255)
+  {field}       verification_token : VARCHAR(255)
+}
+memberships |o--o{ invoices
+users |o--o{ invoices
+users |o--o{ memberships
+users ||--o| pet_profiles
+users ||..o{ user_cosmetic_ownership
+legend bottom
+  PK: khóa chính. FK: khóa ngoại hiện có. UK: khóa duy nhất.
+  REF / nét đứt: liên kết logic bổ sung, chưa phải FK của ứng dụng.
+endlegend
+@enduml

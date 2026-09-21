@@ -1,0 +1,103 @@
+@startuml
+' Code PlantUML: copy this entire file, including @startuml and @enduml.
+hide circle
+hide methods
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam roundcorner 0
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 65
+skinparam ranksep 85
+skinparam class {
+  BackgroundColor White
+  HeaderBackgroundColor #EEEEEE
+  BorderColor Black
+  FontColor Black
+  FontStyle bold
+  AttributeFontStyle plain
+}
+left to right direction
+
+title ERD logic - 3. Hỗ trợ và nhân viên
+
+entity "customer_addresses" as customer_addresses {
+  {field} **PK**  id : BIGINT
+  {field} **REF**  user_id : BIGINT
+  {field}       default_address : BOOLEAN
+  {field}       address : VARCHAR(1000)
+  {field}       phone : VARCHAR(255)
+  {field}       receiver_name : VARCHAR(255)
+}
+
+entity "support_messages" as support_messages {
+  {field} **PK**  id : BIGINT
+  {field} **FK**  session_id : BIGINT
+  {field}       attachment_size : BIGINT
+  {field}       created_at : TIMESTAMP(6)
+  {field}       content : VARCHAR(2000)
+  {field}       attachment_name : VARCHAR(255)
+  {field}       attachment_type : VARCHAR(255)
+  {field}       attachment_url : VARCHAR(255)
+  {field}       sender_role : VARCHAR(255)
+}
+
+entity "support_sessions" as support_sessions {
+  {field} **PK**  id : BIGINT
+  {field} **FK**  admin_id : BIGINT
+  {field} **FK**  user_id : BIGINT
+  {field}       user_rating : INTEGER
+  {field}       accepted_at : TIMESTAMP(6)
+  {field}       closed_at : TIMESTAMP(6)
+  {field}       created_at : TIMESTAMP(6)
+  {field}       rated_at : TIMESTAMP(6)
+  {field}       user_rating_comment : VARCHAR(1000)
+  {field}       subject : VARCHAR(255)
+  {field}       status : ENUM
+}
+
+entity "users" as users {
+  {field} **PK**  id : BIGINT
+  {field} **FK**  role_id : BIGINT
+  {field}       email_verified : BOOLEAN
+  {field}       password_reset_attempts : INTEGER
+  {field}       status : BOOLEAN
+  {field}       created_at : TIMESTAMP(6)
+  {field}       password_reset_blocked_until : TIMESTAMP(6)
+  {field}       email : VARCHAR(255)  [UK]
+  {field}       full_name : VARCHAR(255)
+  {field}       password : VARCHAR(255)
+  {field}       phone : VARCHAR(255)
+  {field}       verification_token : VARCHAR(255)
+}
+
+entity "work_shifts" as work_shifts {
+  {field} **PK**  id : BIGINT
+  {field} **FK**  user_id : BIGINT
+  {field}       cash_at_start : FLOAT(53)
+  {field}       cash_counted : FLOAT(53)
+  {field}       cash_difference : FLOAT(53)
+  {field}       expected_cash : FLOAT(53)
+  {field}       planned_end : TIME(6)
+  {field}       planned_start : TIME(6)
+  {field}       pos_bank_revenue : FLOAT(53)
+  {field}       pos_cash_revenue : FLOAT(53)
+  {field}       shift_date : DATE
+  {field}       check_in_at : TIMESTAMP(6)
+  {field}       check_out_at : TIMESTAMP(6)
+  {field}       created_at : TIMESTAMP(6)
+  {field}       handover_note : VARCHAR(2000)
+  {field}       status : ENUM
+}
+support_sessions |o--o{ support_messages
+users |o--o{ support_sessions
+users |o--o{ support_sessions
+users |o--o{ work_shifts
+users |o..o{ customer_addresses
+legend bottom
+  PK: khóa chính. FK: khóa ngoại hiện có. UK: khóa duy nhất.
+  REF / nét đứt: liên kết logic bổ sung, chưa phải FK của ứng dụng.
+endlegend
+@enduml

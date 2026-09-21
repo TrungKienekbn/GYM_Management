@@ -4,10 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class EmailService {
+    private final JavaMailSender mailSender;
 
     @Value("${app.base-url:http://localhost:8080}")
     private String baseUrl;
@@ -43,5 +48,13 @@ public class EmailService {
     public void sendPosOrderConfirmation(String email, String customerName, Long orderId, Double total) {
         log.info("[EMAIL] Hóa đơn bán tại quầy #{} gửi tới {} ({}) - Tổng tiền: {}", orderId, email, customerName, total);
         // In production: gửi email kèm PDF/link hóa đơn
+    }
+    @Async
+    public void sendOrderCancellationOtp(String email, String code) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setSubject("Mã OTP hủy đơn hàng GYMPRO");
+        message.setText("Mã OTP hủy đơn của bạn là " + code + ". Mã có hiệu lực trong 5 phút và chỉ dùng một lần.");
+        mailSender.send(message);
     }
 }

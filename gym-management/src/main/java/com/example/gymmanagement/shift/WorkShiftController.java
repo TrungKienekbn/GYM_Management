@@ -42,13 +42,16 @@ public class WorkShiftController {
 
     @PostMapping("/{id}/check-in")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_STAFF')")
-    public ResponseEntity<?> checkIn(@AuthenticationPrincipal UserDetails u, @PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.success(shiftService.checkIn(u.getUsername(), id), "Check-in thành công"));
+    public ResponseEntity<?> checkIn(@AuthenticationPrincipal UserDetails u, @PathVariable Long id, @RequestBody(required = false) Map<String, Object> body) {
+        Double cashAtStart = body != null && body.get("cashAtStart") != null ? Double.valueOf(String.valueOf(body.get("cashAtStart"))) : null;
+        return ResponseEntity.ok(ApiResponse.success(shiftService.checkIn(u.getUsername(), id, cashAtStart), "Check-in thành công"));
     }
 
     @PostMapping("/{id}/check-out")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_STAFF')")
-    public ResponseEntity<?> checkOut(@AuthenticationPrincipal UserDetails u, @PathVariable Long id, @RequestBody Map<String, String> body) {
-        return ResponseEntity.ok(ApiResponse.success(shiftService.checkOut(u.getUsername(), id, body.get("handoverNote")), "Check-out thành công"));
+    public ResponseEntity<?> checkOut(@AuthenticationPrincipal UserDetails u, @PathVariable Long id, @RequestBody Map<String, Object> body) {
+        Double cashCounted = body.get("cashCounted") != null ? Double.valueOf(String.valueOf(body.get("cashCounted"))) : null;
+        String note = body.get("handoverNote") == null ? null : String.valueOf(body.get("handoverNote"));
+        return ResponseEntity.ok(ApiResponse.success(shiftService.checkOut(u.getUsername(), id, cashCounted, note), "Check-out thành công"));
     }
 }

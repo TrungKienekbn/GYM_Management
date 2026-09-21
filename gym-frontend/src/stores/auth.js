@@ -117,6 +117,37 @@ export const useAuthStore = defineStore('auth', () => {
   // ───────────────────────────────────────────
   // Login
   // ───────────────────────────────────────────
+  async function mergeGuestData() {
+      // Gộp giỏ hàng khách vãng lai (nếu có) vào tài khoản vừa đăng nhập
+      try {
+        const guestCart = JSON.parse(localStorage.getItem('guest_cart') || '[]')
+        const remaining = [...guestCart]
+        for (const item of guestCart) {
+          try {
+            await shopAPI.addCart(item.id, item.quantity, item.variantId ?? null)
+            remaining.splice(remaining.indexOf(item), 1)
+            // Persist each success so a later failure cannot duplicate earlier items.
+            if (remaining.length) localStorage.setItem('guest_cart', JSON.stringify(remaining))
+            else localStorage.removeItem('guest_cart')
+          } catch (e) {
+            console.warn('Không thể gộp sản phẩm vào giỏ hàng:', item.id, e)
+          }
+        }
+        if (remaining.length) ElMessage.warning('Một số sản phẩm chưa thể chuyển vào giỏ tài khoản. Giỏ tạm vẫn được giữ lại.')
+      } catch (e) {
+        console.warn('Không thể gộp giỏ hàng khách vãng lai:', e)
+      }
+
+      try {
+        for (const key of ['guest_wishlist', 'guest_recent']) {
+          const pending = JSON.parse(localStorage.getItem(key) || '[]')
+          for (const item of [...pending]) {
+            try { await shopAPI.setCustomerState(item.id, key === 'guest_wishlist' ? {wishlisted:true} : {viewed:true});pending.splice(pending.indexOf(item),1);localStorage.setItem(key,JSON.stringify(pending)) } catch { }
+          }
+        }
+      } catch { }
+  }
+
   async function login(credentials) {
     loading.value = true
 
@@ -151,16 +182,7 @@ export const useAuthStore = defineStore('auth', () => {
           JSON.stringify(user.value)
       )
 
-      // Gộp giỏ hàng khách vãng lai (nếu có) vào tài khoản vừa đăng nhập
-      try {
-        const guestCart = JSON.parse(localStorage.getItem('guest_cart') || '[]')
-        for (const item of guestCart) {
-          await shopAPI.addCart(item.id, item.quantity)
-        }
-        localStorage.removeItem('guest_cart')
-      } catch (e) {
-        console.warn('Không thể gộp giỏ hàng khách vãng lai:', e)
-      }
+      await mergeGuestData()
 
       ElMessage.success('Đăng nhập thành công!')
 
@@ -220,6 +242,7 @@ export const useAuthStore = defineStore('auth', () => {
           JSON.stringify(user.value)
       )
 
+      await mergeGuestData()
       ElMessage.success('Đăng ký thành công!')
 
       return authData

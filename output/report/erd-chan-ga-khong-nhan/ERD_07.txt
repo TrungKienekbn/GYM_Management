@@ -1,0 +1,62 @@
+@startuml
+title ERD logic - 7. Giỏ hàng và trải nghiệm khách hàng
+hide circle
+skinparam monochrome true
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam linetype polyline
+skinparam nodesep 65
+skinparam ranksep 100
+left to right direction
+entity "customer_product_states" as customer_product_states {
+  id : bigint <<PK>>
+  product_id : bigint <<REF>>
+  user_id : bigint <<REF>>
+}
+entity "product_reviews" as product_reviews {
+  id : bigint <<PK>>
+  order_id : bigint <<FK>>
+  product_id : bigint <<FK>>
+  user_id : bigint <<FK>>
+}
+entity "product_variants" as product_variants {
+  id : bigint <<PK>>
+  product_id : bigint <<FK>>
+}
+entity "shop_cart_items" as shop_cart_items {
+  id : bigint <<PK>>
+  product_id : bigint <<FK>>
+  user_id : bigint <<FK>>
+  variant_id : bigint <<REF>>
+}
+entity "shop_orders" as shop_orders {
+  created_by_staff_id : bigint <<REF>>
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+  gateway_reference : varchar <<UK>>
+  transfer_code : varchar <<UK>>
+  voucher_code : varchar <<REF>>
+}
+entity "shop_products" as shop_products {
+  id : bigint <<PK>>
+}
+entity "users" as users {
+  id : bigint <<PK>>
+  role_id : bigint <<FK>>
+  email : varchar <<UK>>
+}
+shop_orders |o--o{ product_reviews
+shop_products |o--o{ product_reviews
+users |o--o{ product_reviews
+shop_products |o--o{ shop_cart_items
+users |o--o{ shop_cart_items
+users |o..o{ customer_product_states
+shop_products |o..o{ customer_product_states
+product_variants |o..o{ shop_cart_items
+legend bottom
+  Liền: FK hiện có. Nét đứt / REF: liên kết logic bổ sung.
+  Bảng cùng tên ở các hình là cùng một bảng trong CSDL.
+endlegend
+@enduml

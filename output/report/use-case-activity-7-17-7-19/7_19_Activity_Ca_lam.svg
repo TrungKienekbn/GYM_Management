@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1770" viewBox="0 0 1200 1770">
+<rect width="100%" height="100%" fill="white"/>
+<text x="600.0" y="30.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="23" font-weight="700" fill="#111">7.19 - Activity Diagram Phân công và thực hiện ca làm việc</text>
+<rect x="30" y="66" width="1140" height="36" fill="#f0f0f0"/>
+<polyline points="30.0,66 30.0,1745" fill="none" stroke="#222" stroke-width="1.4"/>
+<text x="315.0" y="84.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="21" font-weight="700" fill="#111">Quản trị viên / Nhân viên</text>
+<polyline points="600.0,66 600.0,1745" fill="none" stroke="#222" stroke-width="1.4"/>
+<text x="885.0" y="84.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="21" font-weight="700" fill="#111">Hệ thống</text>
+<polyline points="1170,66 1170,1745" fill="none" stroke="#222" stroke-width="1.4"/>
+<circle cx="315" cy="120" r="7" fill="#222"/>
+<polyline points="315,127 315,135" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="310.9223954694043,125.86911059687692 315,135 319.0776045305957,125.86911059687692" fill="none" stroke="#222" stroke-width="1.4"/>
+<polygon points="315,135.0 325.0,145 315,155.0 305.0,145" fill="white" stroke="#222" stroke-width="1.2"/>
+<text x="315" y="145.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#111"></text>
+<polyline points="315,155 315,160" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="310.9223954694043,150.8691105968769 315,160 319.0776045305957,150.8691105968769" fill="none" stroke="#222" stroke-width="1.4"/>
+<rect x="105.0" y="160.0" width="420" height="60" rx="12" fill="white" stroke="#222" stroke-width="1.3"/>
+<text x="315" y="179.375" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="17" font-weight="400" fill="#111">ADMIN: chọn nhân viên, ngày</text>
+<text x="315" y="200.625" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="17" font-weight="400" fill="#111">và giờ làm; lưu phân công</text>
+<polyline points="315,220 315,240 885,240 885,263" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="880.9223954694043,253.8691105968769 885,263 889.0776045305957,253.8691105968769" fill="none" stroke="#222" stroke-width="1.4"/>
+<rect x="665.0" y="263.0" width="440" height="64" rx="12" fill="white" stroke="#222" stroke-width="1.3"/>
+<text x="885" y="284.375" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="17" font-weight="400" fill="#111">Kiểm tra nhân viên và giờ làm;</text>
+<text x="885" y="305.625" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="17" font-weight="400" fill="#111">lưu lịch nếu hợp lệ, sai thì báo lỗi</text>
+<polyline points="885,327 885,353" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="880.9223954694043,343.8691105968769 885,353 889.0776045305957,343.8691105968769" fill="none" stroke="#222" stroke-width="1.4"/>
+<polygon points="885,353.0 1025.0,385 885,417.0 745.0,385" fill="white" stroke="#222" stroke-width="1.2"/>
+<text x="885" y="385.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#111">Đã tạo ca hợp lệ?</text>
+<polyline points="745,385 315,385 315,424" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="310.9223954694043,414.8691105968769 315,424 319.0776045305957,414.8691105968769" fill="none" stroke="#222" stroke-width="1.4"/>
+<text x="600" y="368.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#111">Không</text>
+<rect x="115.0" y="424.0" width="400" height="62" rx="12" fill="white" stroke="#222" stroke-width="1.3"/>
+<text x="315" y="455.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="17" font-weight="400" fill="#111">ADMIN: chỉnh sửa phân công</text>
+<polyline points="115,455 70,455 70,145 305,145" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="295.8691105968769,149.0776045305957 305,145 295.8691105968769,140.9223954694043" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="885,417 885,500 315,500 315,528" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="310.9223954694043,518.8691105968769 315,528 319.0776045305957,518.8691105968769" fill="none" stroke="#222" stroke-width="1.4"/>
+<text x="915" y="448.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#111">Có</text>
+<rect x="95.0" y="528.0" width="440" height="64" rx="12" fill="white" stroke="#222" stroke-width="1.3"/>
+<text x="315" y="549.375" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="17" font-weight="400" fill="#111">Người được phân công / ADMIN:</text>
+<text x="315" y="570.625" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="17" font-weight="400" fill="#111">chọn ca, nhập tiền đầu ca, vào ca</text>
+<polyline points="315,592 315,618 885,618 885,641" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="880.9223954694043,631.8691105968769 885,641 889.0776045305957,631.8691105968769" fill="none" stroke="#222" stroke-width="1.4"/>
+<rect x="685.0" y="641.0" width="400" height="68" rx="12" fill="white" stroke="#222" stroke-width="1.3"/>
+<text x="885" y="664.375" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="17" font-weight="400" fill="#111">Kiểm tra quyền với ca</text>
+<text x="885" y="685.625" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="17" font-weight="400" fill="#111">và ca chưa được vào</text>
+<polyline points="885,709 885,733" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="880.9223954694043,723.8691105968769 885,733 889.0776045305957,723.8691105968769" fill="none" stroke="#222" stroke-width="1.4"/>
+<polygon points="885,733.0 1035.0,765 885,797.0 735.0,765" fill="white" stroke="#222" stroke-width="1.2"/>
+<text x="885" y="765.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#111">Đủ điều kiện vào ca?</text>
+<polyline points="735,765 315,765 315,803" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="310.9223954694043,793.8691105968769 315,803 319.0776045305957,793.8691105968769" fill="none" stroke="#222" stroke-width="1.4"/>
+<text x="600" y="748.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#111">Không</text>
+<rect x="135.0" y="803.0" width="360" height="54" rx="12" fill="white" stroke="#222" stroke-width="1.3"/>
+<text x="315" y="830.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="17" font-weight="400" fill="#111">Nhận thông báo từ chối</text>
+<polyline points="315,857 315,886" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="310.9223954694043,876.8691105968769 315,886 319.0776045305957,876.8691105968769" fill="none" stroke="#222" stroke-width="1.4"/>
+<circle cx="315" cy="898" r="11" fill="white" stroke="#222"/>
+<circle cx="315" cy="898" r="7" fill="#222"/>
+<polyline points="885,797 885,823" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="880.9223954694043,813.8691105968769 885,823 889.0776045305957,813.8691105968769" fill="none" stroke="#222" stroke-width="1.4"/>
+<text x="915" y="810.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#111">Có</text>
+<rect x="675.0" y="823.0" width="420" height="64" rx="12" fill="white" stroke="#222" stroke-width="1.3"/>
+<text x="885" y="844.375" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="17" font-weight="400" fill="#111">Ghi giờ vào, tiền đầu ca</text>
+<text x="885" y="865.625" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="17" font-weight="400" fill="#111">và trạng thái đang làm</text>
+<polyline points="885,887 885,925 315,925 315,948" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="310.9223954694043,938.8691105968769 315,948 319.0776045305957,938.8691105968769" fill="none" stroke="#222" stroke-width="1.4"/>
+<rect x="105.0" y="948.0" width="420" height="64" rx="12" fill="white" stroke="#222" stroke-width="1.3"/>
+<text x="315" y="980.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="17" font-weight="400" fill="#111">Thực hiện công việc trong ca</text>
+<polyline points="315,1012 315,1043" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="310.9223954694043,1033.869110596877 315,1043 319.0776045305957,1033.869110596877" fill="none" stroke="#222" stroke-width="1.4"/>
+<rect x="95.0" y="1043.0" width="440" height="64" rx="12" fill="white" stroke="#222" stroke-width="1.3"/>
+<text x="315" y="1064.375" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="17" font-weight="400" fill="#111">Nhập tiền mặt kiểm đếm,</text>
+<text x="315" y="1085.625" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="17" font-weight="400" fill="#111">ghi chú bàn giao; yêu cầu kết ca</text>
+<polyline points="315,1107 315,1130 885,1130 885,1153" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="880.9223954694043,1143.869110596877 885,1153 889.0776045305957,1143.869110596877" fill="none" stroke="#222" stroke-width="1.4"/>
+<rect x="675.0" y="1153.0" width="420" height="64" rx="12" fill="white" stroke="#222" stroke-width="1.3"/>
+<text x="885" y="1174.375" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="17" font-weight="400" fill="#111">Kiểm tra quyền: đã vào ca</text>
+<text x="885" y="1195.625" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="17" font-weight="400" fill="#111">và chưa kết ca</text>
+<polyline points="885,1217 885,1243" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="880.9223954694043,1233.869110596877 885,1243 889.0776045305957,1233.869110596877" fill="none" stroke="#222" stroke-width="1.4"/>
+<polygon points="885,1243.0 1035.0,1275 885,1307.0 735.0,1275" fill="white" stroke="#222" stroke-width="1.2"/>
+<text x="885" y="1275.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#111">Đủ điều kiện kết ca?</text>
+<polyline points="735,1275 315,1275 315,1310" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="310.9223954694043,1300.869110596877 315,1310 319.0776045305957,1300.869110596877" fill="none" stroke="#222" stroke-width="1.4"/>
+<text x="600" y="1258.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#111">Không</text>
+<rect x="135.0" y="1310.0" width="360" height="60" rx="12" fill="white" stroke="#222" stroke-width="1.3"/>
+<text x="315" y="1340.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="17" font-weight="400" fill="#111">Nhận thông báo từ chối</text>
+<polyline points="315,1370 315,1410" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="310.9223954694043,1400.869110596877 315,1410 319.0776045305957,1400.869110596877" fill="none" stroke="#222" stroke-width="1.4"/>
+<circle cx="315" cy="1422" r="11" fill="white" stroke="#222"/>
+<circle cx="315" cy="1422" r="7" fill="#222"/>
+<polyline points="885,1307 885,1333" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="880.9223954694043,1323.869110596877 885,1333 889.0776045305957,1323.869110596877" fill="none" stroke="#222" stroke-width="1.4"/>
+<text x="915" y="1320.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#111">Có</text>
+<rect x="670.0" y="1333.0" width="430" height="74" rx="12" fill="white" stroke="#222" stroke-width="1.3"/>
+<text x="885" y="1359.375" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="17" font-weight="400" fill="#111">Tổng hợp doanh thu POS theo</text>
+<text x="885" y="1380.625" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="17" font-weight="400" fill="#111">nhân viên và thời gian ca</text>
+<polyline points="885,1407 885,1433" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="880.9223954694043,1423.869110596877 885,1433 889.0776045305957,1423.869110596877" fill="none" stroke="#222" stroke-width="1.4"/>
+<rect x="650.0" y="1433.0" width="470" height="74" rx="12" fill="white" stroke="#222" stroke-width="1.3"/>
+<text x="885" y="1459.375" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="17" font-weight="400" fill="#111">Tiền dự kiến = đầu ca + thu tiền mặt</text>
+<text x="885" y="1480.625" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="17" font-weight="400" fill="#111">Chênh lệch = kiểm đếm − dự kiến</text>
+<polyline points="885,1507 885,1533" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="880.9223954694043,1523.869110596877 885,1533 889.0776045305957,1523.869110596877" fill="none" stroke="#222" stroke-width="1.4"/>
+<rect x="660.0" y="1533.0" width="450" height="74" rx="12" fill="white" stroke="#222" stroke-width="1.3"/>
+<text x="885" y="1559.375" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="17" font-weight="400" fill="#111">Lưu kết ca, chênh lệch và bàn giao</text>
+<text x="885" y="1580.625" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="17" font-weight="400" fill="#111">Chuyển trạng thái hoàn thành</text>
+<polyline points="885,1607 885,1630 315,1630 315,1653" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="310.9223954694043,1643.869110596877 315,1653 319.0776045305957,1643.869110596877" fill="none" stroke="#222" stroke-width="1.4"/>
+<rect x="115.0" y="1653.0" width="400" height="54" rx="12" fill="white" stroke="#222" stroke-width="1.3"/>
+<text x="315" y="1680.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="17" font-weight="400" fill="#111">Xem kết quả đối soát</text>
+<polyline points="315,1707 315,1720" fill="none" stroke="#222" stroke-width="1.4"/>
+<polyline points="310.9223954694043,1710.869110596877 315,1720 319.0776045305957,1710.869110596877" fill="none" stroke="#222" stroke-width="1.4"/>
+<circle cx="315" cy="1732" r="11" fill="white" stroke="#222"/>
+<circle cx="315" cy="1732" r="7" fill="#222"/>
+</svg>

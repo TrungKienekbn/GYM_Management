@@ -1,0 +1,655 @@
+@startuml
+title ERD logic 43 bảng - Nhóm chức năng xếp dọc
+hide circle
+skinparam monochrome true
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam linetype polyline
+skinparam nodesep 55
+skinparam ranksep 65
+skinparam packageStyle rectangle
+top to bottom direction
+package "1. Tài khoản và theo dõi thể chất" as G1 {
+entity "chat_messages" as g1_chat_messages {
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+}
+entity "endurance_tests" as g1_endurance_tests {
+  id : bigint <<PK>>
+  user_id : bigint <<FK>> <<UK>>
+}
+entity "notifications" as g1_notifications {
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+}
+entity "progress_tracking" as g1_progress_tracking {
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+}
+entity "roles" as g1_roles {
+  id : bigint <<PK>>
+  role_name : varchar <<UK>>
+}
+entity "service_ratings" as g1_service_ratings {
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+}
+entity "user_profiles" as g1_user_profiles {
+  id : bigint <<PK>>
+  user_id : bigint <<FK>> <<UK>>
+}
+entity "users" as g1_users {
+  id : bigint <<PK>>
+  role_id : bigint <<FK>>
+  email : varchar <<UK>>
+}
+g1_users |o--o{ g1_chat_messages : "user_id"
+g1_users ||--o| g1_endurance_tests : "user_id"
+g1_users |o--o{ g1_notifications : "user_id"
+g1_users |o--o{ g1_progress_tracking : "user_id"
+g1_users |o--o{ g1_service_ratings : "user_id"
+g1_users |o--o| g1_user_profiles : "user_id"
+g1_roles |o--o{ g1_users : "role_id"
+}
+package "2. Gói tập và nhân vật đồng hành" as G2 {
+entity "invoices" as g2_invoices {
+  id : bigint <<PK>>
+  membership_id : bigint <<FK>>
+  user_id : bigint <<FK>>
+  momo_order_id : varchar <<UK>>
+  transfer_code : varchar <<UK>>
+}
+entity "memberships" as g2_memberships {
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+}
+entity "pet_profiles" as g2_pet_profiles {
+  user_id : bigint <<PK>> <<FK>>
+}
+entity "user_cosmetic_ownership" as g2_user_cosmetic_ownership {
+  id : bigint <<PK>>
+  user_id : bigint <<REF>>
+}
+entity "users" as g2_users {
+  id : bigint <<PK>>
+  role_id : bigint <<FK>>
+  email : varchar <<UK>>
+}
+g2_memberships |o--o{ g2_invoices : "membership_id"
+g2_users |o--o{ g2_invoices : "user_id"
+g2_users |o--o{ g2_memberships : "user_id"
+g2_users ||--o| g2_pet_profiles : "user_id"
+g2_users ||..o{ g2_user_cosmetic_ownership : "user_id -> id"
+}
+package "3. Hỗ trợ và nhân viên" as G3 {
+entity "customer_addresses" as g3_customer_addresses {
+  id : bigint <<PK>>
+  user_id : bigint <<REF>>
+}
+entity "support_messages" as g3_support_messages {
+  id : bigint <<PK>>
+  session_id : bigint <<FK>>
+}
+entity "support_sessions" as g3_support_sessions {
+  admin_id : bigint <<FK>>
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+}
+entity "users" as g3_users {
+  id : bigint <<PK>>
+  role_id : bigint <<FK>>
+  email : varchar <<UK>>
+}
+entity "work_shifts" as g3_work_shifts {
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+}
+g3_support_sessions |o--o{ g3_support_messages : "session_id"
+g3_users |o--o{ g3_support_sessions : "admin_id"
+g3_users |o--o{ g3_support_sessions : "user_id"
+g3_users |o--o{ g3_work_shifts : "user_id"
+g3_users |o..o{ g3_customer_addresses : "user_id -> id"
+}
+package "4. Giáo án và buổi tập" as G4 {
+entity "exercises" as g4_exercises {
+  id : bigint <<PK>>
+}
+entity "plan_muscle_group_weight" as g4_plan_muscle_group_weight {
+  id : bigint <<PK>>
+  workout_plan_id : bigint <<FK>>
+}
+entity "session_exercise_logs" as g4_session_exercise_logs {
+  exercise_id : bigint <<FK>>
+  id : bigint <<PK>>
+  session_id : bigint <<FK>>
+}
+entity "users" as g4_users {
+  id : bigint <<PK>>
+  role_id : bigint <<FK>>
+  email : varchar <<UK>>
+}
+entity "weekly_reviews" as g4_weekly_reviews {
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+  workout_plan_id : bigint <<FK>>
+}
+entity "workout_plan_days" as g4_workout_plan_days {
+  id : bigint <<PK>>
+  workout_plan_id : bigint <<FK>>
+}
+entity "workout_plan_exercises" as g4_workout_plan_exercises {
+  exercise_id : bigint <<FK>>
+  id : bigint <<PK>>
+  last_low_adjustment_log_id : bigint <<REF>>
+  plan_day_id : bigint <<FK>>
+}
+entity "workout_plans" as g4_workout_plans {
+  id : bigint <<PK>>
+  original_plan_id : bigint <<REF>>
+  user_id : bigint <<FK>>
+}
+entity "workout_sessions" as g4_workout_sessions {
+  id : bigint <<PK>>
+  plan_day_id : bigint <<FK>>
+  user_id : bigint <<FK>>
+  workout_plan_id : bigint <<FK>>
+}
+g4_workout_plans |o--o{ g4_plan_muscle_group_weight : "workout_plan_id"
+g4_exercises |o--o{ g4_session_exercise_logs : "exercise_id"
+g4_workout_sessions |o--o{ g4_session_exercise_logs : "session_id"
+g4_users |o--o{ g4_weekly_reviews : "user_id"
+g4_workout_plans |o--o{ g4_weekly_reviews : "workout_plan_id"
+g4_workout_plans |o--o{ g4_workout_plan_days : "workout_plan_id"
+g4_exercises |o--o{ g4_workout_plan_exercises : "exercise_id"
+g4_workout_plan_days |o--o{ g4_workout_plan_exercises : "plan_day_id"
+g4_users |o--o{ g4_workout_plans : "user_id"
+g4_workout_plan_days |o--o{ g4_workout_sessions : "plan_day_id"
+g4_users |o--o{ g4_workout_sessions : "user_id"
+g4_workout_plans |o--o{ g4_workout_sessions : "workout_plan_id"
+g4_workout_plans |o..o{ g4_workout_plans : "original_plan_id -> id"
+g4_session_exercise_logs |o..o{ g4_workout_plan_exercises : "last_low_adjustment_log_id -> id"
+}
+package "5. Sản phẩm và thuộc tính" as G5 {
+entity "product_attribute_values" as g5_product_attribute_values {
+  attribute_id : bigint <<FK>>
+  id : bigint <<PK>>
+}
+entity "product_attributes" as g5_product_attributes {
+  id : bigint <<PK>>
+  name : varchar <<UK>>
+}
+entity "product_variants" as g5_product_variants {
+  id : bigint <<PK>>
+  product_id : bigint <<FK>>
+}
+entity "shop_products" as g5_shop_products {
+  id : bigint <<PK>>
+}
+entity "variant_attribute_values" as g5_variant_attribute_values {
+  value_id : bigint <<PK>> <<FK>>
+  variant_id : bigint <<PK>> <<FK>>
+}
+entity "voucher_scope_products" as g5_voucher_scope_products {
+  product_id : bigint <<REF>>
+  voucher_id : bigint <<FK>>
+}
+entity "vouchers" as g5_vouchers {
+  id : bigint <<PK>>
+  code : varchar <<UK>>
+}
+g5_product_attributes |o--o{ g5_product_attribute_values : "attribute_id"
+g5_shop_products |o--o{ g5_product_variants : "product_id"
+g5_product_attribute_values ||--o{ g5_variant_attribute_values : "value_id"
+g5_product_variants ||--o{ g5_variant_attribute_values : "variant_id"
+g5_vouchers ||--o{ g5_voucher_scope_products : "voucher_id"
+g5_shop_products |o..o{ g5_voucher_scope_products : "product_id -> id"
+}
+package "6. Đơn hàng và biến động kho" as G6 {
+entity "product_variants" as g6_product_variants {
+  id : bigint <<PK>>
+  product_id : bigint <<FK>>
+}
+entity "shop_inventory_movements" as g6_shop_inventory_movements {
+  id : bigint <<PK>>
+  order_id : bigint <<REF>>
+  product_id : bigint <<REF>>
+  variant_id : bigint <<REF>>
+}
+entity "shop_order_events" as g6_shop_order_events {
+  id : bigint <<PK>>
+  order_id : bigint <<REF>>
+}
+entity "shop_order_items" as g6_shop_order_items {
+  id : bigint <<PK>>
+  order_id : bigint <<FK>>
+  product_id : bigint <<REF>>
+  variant_id : bigint <<REF>>
+}
+entity "shop_orders" as g6_shop_orders {
+  created_by_staff_id : bigint <<REF>>
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+  gateway_reference : varchar <<UK>>
+  transfer_code : varchar <<UK>>
+  voucher_code : varchar <<REF>>
+}
+entity "shop_products" as g6_shop_products {
+  id : bigint <<PK>>
+}
+entity "users" as g6_users {
+  id : bigint <<PK>>
+  role_id : bigint <<FK>>
+  email : varchar <<UK>>
+}
+entity "vouchers" as g6_vouchers {
+  id : bigint <<PK>>
+  code : varchar <<UK>>
+}
+g6_shop_orders |o--o{ g6_shop_order_items : "order_id"
+g6_users |o--o{ g6_shop_orders : "user_id"
+g6_shop_orders |o..o{ g6_shop_order_events : "order_id -> id"
+g6_shop_products |o..o{ g6_shop_inventory_movements : "product_id -> id"
+g6_product_variants |o..o{ g6_shop_inventory_movements : "variant_id -> id"
+g6_shop_orders |o..o{ g6_shop_inventory_movements : "order_id -> id"
+g6_shop_products |o..o{ g6_shop_order_items : "product_id -> id"
+g6_product_variants |o..o{ g6_shop_order_items : "variant_id -> id"
+g6_users |o..o{ g6_shop_orders : "created_by_staff_id -> id"
+g6_vouchers |o..o{ g6_shop_orders : "voucher_code -> code"
+}
+package "7. Giỏ hàng và trải nghiệm khách hàng" as G7 {
+entity "customer_product_states" as g7_customer_product_states {
+  id : bigint <<PK>>
+  product_id : bigint <<REF>>
+  user_id : bigint <<REF>>
+}
+entity "product_reviews" as g7_product_reviews {
+  id : bigint <<PK>>
+  order_id : bigint <<FK>>
+  product_id : bigint <<FK>>
+  user_id : bigint <<FK>>
+}
+entity "product_variants" as g7_product_variants {
+  id : bigint <<PK>>
+  product_id : bigint <<FK>>
+}
+entity "shop_cart_items" as g7_shop_cart_items {
+  id : bigint <<PK>>
+  product_id : bigint <<FK>>
+  user_id : bigint <<FK>>
+  variant_id : bigint <<REF>>
+}
+entity "shop_orders" as g7_shop_orders {
+  created_by_staff_id : bigint <<REF>>
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+  gateway_reference : varchar <<UK>>
+  transfer_code : varchar <<UK>>
+  voucher_code : varchar <<REF>>
+}
+entity "shop_products" as g7_shop_products {
+  id : bigint <<PK>>
+}
+entity "users" as g7_users {
+  id : bigint <<PK>>
+  role_id : bigint <<FK>>
+  email : varchar <<UK>>
+}
+g7_shop_orders |o--o{ g7_product_reviews : "order_id"
+g7_shop_products |o--o{ g7_product_reviews : "product_id"
+g7_users |o--o{ g7_product_reviews : "user_id"
+g7_shop_products |o--o{ g7_shop_cart_items : "product_id"
+g7_users |o--o{ g7_shop_cart_items : "user_id"
+g7_users |o..o{ g7_customer_product_states : "user_id -> id"
+g7_shop_products |o..o{ g7_customer_product_states : "product_id -> id"
+g7_product_variants |o..o{ g7_shop_cart_items : "variant_id -> id"
+}
+package "8. Danh mục và cấu hình độc lập" as G8 {
+entity "foods" as g8_foods {
+  id : bigint <<PK>>
+}
+entity "injury_area_options" as g8_injury_area_options {
+  id : bigint <<PK>>
+}
+entity "muscle_split_configs" as g8_muscle_split_configs {
+  id : bigint <<PK>>
+}
+entity "recommended_schedule_configs" as g8_recommended_schedule_configs {
+  id : bigint <<PK>>
+}
+entity "system_configs" as g8_system_configs {
+  config_key : varchar <<PK>>
+}
+g8_foods -[hidden]down- g8_injury_area_options
+g8_injury_area_options -[hidden]down- g8_muscle_split_configs
+g8_muscle_split_configs -[hidden]down- g8_recommended_schedule_configs
+g8_recommended_schedule_configs -[hidden]down- g8_system_configs
+}
+g1_chat_messages -[hidden]down- g2_invoices
+g1_chat_messages -[hidden]down- g2_memberships
+g1_chat_messages -[hidden]down- g2_pet_profiles
+g1_chat_messages -[hidden]down- g2_user_cosmetic_ownership
+g1_chat_messages -[hidden]down- g2_users
+g1_endurance_tests -[hidden]down- g2_invoices
+g1_endurance_tests -[hidden]down- g2_memberships
+g1_endurance_tests -[hidden]down- g2_pet_profiles
+g1_endurance_tests -[hidden]down- g2_user_cosmetic_ownership
+g1_endurance_tests -[hidden]down- g2_users
+g1_notifications -[hidden]down- g2_invoices
+g1_notifications -[hidden]down- g2_memberships
+g1_notifications -[hidden]down- g2_pet_profiles
+g1_notifications -[hidden]down- g2_user_cosmetic_ownership
+g1_notifications -[hidden]down- g2_users
+g1_progress_tracking -[hidden]down- g2_invoices
+g1_progress_tracking -[hidden]down- g2_memberships
+g1_progress_tracking -[hidden]down- g2_pet_profiles
+g1_progress_tracking -[hidden]down- g2_user_cosmetic_ownership
+g1_progress_tracking -[hidden]down- g2_users
+g1_roles -[hidden]down- g2_invoices
+g1_roles -[hidden]down- g2_memberships
+g1_roles -[hidden]down- g2_pet_profiles
+g1_roles -[hidden]down- g2_user_cosmetic_ownership
+g1_roles -[hidden]down- g2_users
+g1_service_ratings -[hidden]down- g2_invoices
+g1_service_ratings -[hidden]down- g2_memberships
+g1_service_ratings -[hidden]down- g2_pet_profiles
+g1_service_ratings -[hidden]down- g2_user_cosmetic_ownership
+g1_service_ratings -[hidden]down- g2_users
+g1_user_profiles -[hidden]down- g2_invoices
+g1_user_profiles -[hidden]down- g2_memberships
+g1_user_profiles -[hidden]down- g2_pet_profiles
+g1_user_profiles -[hidden]down- g2_user_cosmetic_ownership
+g1_user_profiles -[hidden]down- g2_users
+g1_users -[hidden]down- g2_invoices
+g1_users -[hidden]down- g2_memberships
+g1_users -[hidden]down- g2_pet_profiles
+g1_users -[hidden]down- g2_user_cosmetic_ownership
+g1_users -[hidden]down- g2_users
+g2_invoices -[hidden]down- g3_customer_addresses
+g2_invoices -[hidden]down- g3_support_messages
+g2_invoices -[hidden]down- g3_support_sessions
+g2_invoices -[hidden]down- g3_users
+g2_invoices -[hidden]down- g3_work_shifts
+g2_memberships -[hidden]down- g3_customer_addresses
+g2_memberships -[hidden]down- g3_support_messages
+g2_memberships -[hidden]down- g3_support_sessions
+g2_memberships -[hidden]down- g3_users
+g2_memberships -[hidden]down- g3_work_shifts
+g2_pet_profiles -[hidden]down- g3_customer_addresses
+g2_pet_profiles -[hidden]down- g3_support_messages
+g2_pet_profiles -[hidden]down- g3_support_sessions
+g2_pet_profiles -[hidden]down- g3_users
+g2_pet_profiles -[hidden]down- g3_work_shifts
+g2_user_cosmetic_ownership -[hidden]down- g3_customer_addresses
+g2_user_cosmetic_ownership -[hidden]down- g3_support_messages
+g2_user_cosmetic_ownership -[hidden]down- g3_support_sessions
+g2_user_cosmetic_ownership -[hidden]down- g3_users
+g2_user_cosmetic_ownership -[hidden]down- g3_work_shifts
+g2_users -[hidden]down- g3_customer_addresses
+g2_users -[hidden]down- g3_support_messages
+g2_users -[hidden]down- g3_support_sessions
+g2_users -[hidden]down- g3_users
+g2_users -[hidden]down- g3_work_shifts
+g3_customer_addresses -[hidden]down- g4_exercises
+g3_customer_addresses -[hidden]down- g4_plan_muscle_group_weight
+g3_customer_addresses -[hidden]down- g4_session_exercise_logs
+g3_customer_addresses -[hidden]down- g4_users
+g3_customer_addresses -[hidden]down- g4_weekly_reviews
+g3_customer_addresses -[hidden]down- g4_workout_plan_days
+g3_customer_addresses -[hidden]down- g4_workout_plan_exercises
+g3_customer_addresses -[hidden]down- g4_workout_plans
+g3_customer_addresses -[hidden]down- g4_workout_sessions
+g3_support_messages -[hidden]down- g4_exercises
+g3_support_messages -[hidden]down- g4_plan_muscle_group_weight
+g3_support_messages -[hidden]down- g4_session_exercise_logs
+g3_support_messages -[hidden]down- g4_users
+g3_support_messages -[hidden]down- g4_weekly_reviews
+g3_support_messages -[hidden]down- g4_workout_plan_days
+g3_support_messages -[hidden]down- g4_workout_plan_exercises
+g3_support_messages -[hidden]down- g4_workout_plans
+g3_support_messages -[hidden]down- g4_workout_sessions
+g3_support_sessions -[hidden]down- g4_exercises
+g3_support_sessions -[hidden]down- g4_plan_muscle_group_weight
+g3_support_sessions -[hidden]down- g4_session_exercise_logs
+g3_support_sessions -[hidden]down- g4_users
+g3_support_sessions -[hidden]down- g4_weekly_reviews
+g3_support_sessions -[hidden]down- g4_workout_plan_days
+g3_support_sessions -[hidden]down- g4_workout_plan_exercises
+g3_support_sessions -[hidden]down- g4_workout_plans
+g3_support_sessions -[hidden]down- g4_workout_sessions
+g3_users -[hidden]down- g4_exercises
+g3_users -[hidden]down- g4_plan_muscle_group_weight
+g3_users -[hidden]down- g4_session_exercise_logs
+g3_users -[hidden]down- g4_users
+g3_users -[hidden]down- g4_weekly_reviews
+g3_users -[hidden]down- g4_workout_plan_days
+g3_users -[hidden]down- g4_workout_plan_exercises
+g3_users -[hidden]down- g4_workout_plans
+g3_users -[hidden]down- g4_workout_sessions
+g3_work_shifts -[hidden]down- g4_exercises
+g3_work_shifts -[hidden]down- g4_plan_muscle_group_weight
+g3_work_shifts -[hidden]down- g4_session_exercise_logs
+g3_work_shifts -[hidden]down- g4_users
+g3_work_shifts -[hidden]down- g4_weekly_reviews
+g3_work_shifts -[hidden]down- g4_workout_plan_days
+g3_work_shifts -[hidden]down- g4_workout_plan_exercises
+g3_work_shifts -[hidden]down- g4_workout_plans
+g3_work_shifts -[hidden]down- g4_workout_sessions
+g4_exercises -[hidden]down- g5_product_attribute_values
+g4_exercises -[hidden]down- g5_product_attributes
+g4_exercises -[hidden]down- g5_product_variants
+g4_exercises -[hidden]down- g5_shop_products
+g4_exercises -[hidden]down- g5_variant_attribute_values
+g4_exercises -[hidden]down- g5_voucher_scope_products
+g4_exercises -[hidden]down- g5_vouchers
+g4_plan_muscle_group_weight -[hidden]down- g5_product_attribute_values
+g4_plan_muscle_group_weight -[hidden]down- g5_product_attributes
+g4_plan_muscle_group_weight -[hidden]down- g5_product_variants
+g4_plan_muscle_group_weight -[hidden]down- g5_shop_products
+g4_plan_muscle_group_weight -[hidden]down- g5_variant_attribute_values
+g4_plan_muscle_group_weight -[hidden]down- g5_voucher_scope_products
+g4_plan_muscle_group_weight -[hidden]down- g5_vouchers
+g4_session_exercise_logs -[hidden]down- g5_product_attribute_values
+g4_session_exercise_logs -[hidden]down- g5_product_attributes
+g4_session_exercise_logs -[hidden]down- g5_product_variants
+g4_session_exercise_logs -[hidden]down- g5_shop_products
+g4_session_exercise_logs -[hidden]down- g5_variant_attribute_values
+g4_session_exercise_logs -[hidden]down- g5_voucher_scope_products
+g4_session_exercise_logs -[hidden]down- g5_vouchers
+g4_users -[hidden]down- g5_product_attribute_values
+g4_users -[hidden]down- g5_product_attributes
+g4_users -[hidden]down- g5_product_variants
+g4_users -[hidden]down- g5_shop_products
+g4_users -[hidden]down- g5_variant_attribute_values
+g4_users -[hidden]down- g5_voucher_scope_products
+g4_users -[hidden]down- g5_vouchers
+g4_weekly_reviews -[hidden]down- g5_product_attribute_values
+g4_weekly_reviews -[hidden]down- g5_product_attributes
+g4_weekly_reviews -[hidden]down- g5_product_variants
+g4_weekly_reviews -[hidden]down- g5_shop_products
+g4_weekly_reviews -[hidden]down- g5_variant_attribute_values
+g4_weekly_reviews -[hidden]down- g5_voucher_scope_products
+g4_weekly_reviews -[hidden]down- g5_vouchers
+g4_workout_plan_days -[hidden]down- g5_product_attribute_values
+g4_workout_plan_days -[hidden]down- g5_product_attributes
+g4_workout_plan_days -[hidden]down- g5_product_variants
+g4_workout_plan_days -[hidden]down- g5_shop_products
+g4_workout_plan_days -[hidden]down- g5_variant_attribute_values
+g4_workout_plan_days -[hidden]down- g5_voucher_scope_products
+g4_workout_plan_days -[hidden]down- g5_vouchers
+g4_workout_plan_exercises -[hidden]down- g5_product_attribute_values
+g4_workout_plan_exercises -[hidden]down- g5_product_attributes
+g4_workout_plan_exercises -[hidden]down- g5_product_variants
+g4_workout_plan_exercises -[hidden]down- g5_shop_products
+g4_workout_plan_exercises -[hidden]down- g5_variant_attribute_values
+g4_workout_plan_exercises -[hidden]down- g5_voucher_scope_products
+g4_workout_plan_exercises -[hidden]down- g5_vouchers
+g4_workout_plans -[hidden]down- g5_product_attribute_values
+g4_workout_plans -[hidden]down- g5_product_attributes
+g4_workout_plans -[hidden]down- g5_product_variants
+g4_workout_plans -[hidden]down- g5_shop_products
+g4_workout_plans -[hidden]down- g5_variant_attribute_values
+g4_workout_plans -[hidden]down- g5_voucher_scope_products
+g4_workout_plans -[hidden]down- g5_vouchers
+g4_workout_sessions -[hidden]down- g5_product_attribute_values
+g4_workout_sessions -[hidden]down- g5_product_attributes
+g4_workout_sessions -[hidden]down- g5_product_variants
+g4_workout_sessions -[hidden]down- g5_shop_products
+g4_workout_sessions -[hidden]down- g5_variant_attribute_values
+g4_workout_sessions -[hidden]down- g5_voucher_scope_products
+g4_workout_sessions -[hidden]down- g5_vouchers
+g5_product_attribute_values -[hidden]down- g6_product_variants
+g5_product_attribute_values -[hidden]down- g6_shop_inventory_movements
+g5_product_attribute_values -[hidden]down- g6_shop_order_events
+g5_product_attribute_values -[hidden]down- g6_shop_order_items
+g5_product_attribute_values -[hidden]down- g6_shop_orders
+g5_product_attribute_values -[hidden]down- g6_shop_products
+g5_product_attribute_values -[hidden]down- g6_users
+g5_product_attribute_values -[hidden]down- g6_vouchers
+g5_product_attributes -[hidden]down- g6_product_variants
+g5_product_attributes -[hidden]down- g6_shop_inventory_movements
+g5_product_attributes -[hidden]down- g6_shop_order_events
+g5_product_attributes -[hidden]down- g6_shop_order_items
+g5_product_attributes -[hidden]down- g6_shop_orders
+g5_product_attributes -[hidden]down- g6_shop_products
+g5_product_attributes -[hidden]down- g6_users
+g5_product_attributes -[hidden]down- g6_vouchers
+g5_product_variants -[hidden]down- g6_product_variants
+g5_product_variants -[hidden]down- g6_shop_inventory_movements
+g5_product_variants -[hidden]down- g6_shop_order_events
+g5_product_variants -[hidden]down- g6_shop_order_items
+g5_product_variants -[hidden]down- g6_shop_orders
+g5_product_variants -[hidden]down- g6_shop_products
+g5_product_variants -[hidden]down- g6_users
+g5_product_variants -[hidden]down- g6_vouchers
+g5_shop_products -[hidden]down- g6_product_variants
+g5_shop_products -[hidden]down- g6_shop_inventory_movements
+g5_shop_products -[hidden]down- g6_shop_order_events
+g5_shop_products -[hidden]down- g6_shop_order_items
+g5_shop_products -[hidden]down- g6_shop_orders
+g5_shop_products -[hidden]down- g6_shop_products
+g5_shop_products -[hidden]down- g6_users
+g5_shop_products -[hidden]down- g6_vouchers
+g5_variant_attribute_values -[hidden]down- g6_product_variants
+g5_variant_attribute_values -[hidden]down- g6_shop_inventory_movements
+g5_variant_attribute_values -[hidden]down- g6_shop_order_events
+g5_variant_attribute_values -[hidden]down- g6_shop_order_items
+g5_variant_attribute_values -[hidden]down- g6_shop_orders
+g5_variant_attribute_values -[hidden]down- g6_shop_products
+g5_variant_attribute_values -[hidden]down- g6_users
+g5_variant_attribute_values -[hidden]down- g6_vouchers
+g5_voucher_scope_products -[hidden]down- g6_product_variants
+g5_voucher_scope_products -[hidden]down- g6_shop_inventory_movements
+g5_voucher_scope_products -[hidden]down- g6_shop_order_events
+g5_voucher_scope_products -[hidden]down- g6_shop_order_items
+g5_voucher_scope_products -[hidden]down- g6_shop_orders
+g5_voucher_scope_products -[hidden]down- g6_shop_products
+g5_voucher_scope_products -[hidden]down- g6_users
+g5_voucher_scope_products -[hidden]down- g6_vouchers
+g5_vouchers -[hidden]down- g6_product_variants
+g5_vouchers -[hidden]down- g6_shop_inventory_movements
+g5_vouchers -[hidden]down- g6_shop_order_events
+g5_vouchers -[hidden]down- g6_shop_order_items
+g5_vouchers -[hidden]down- g6_shop_orders
+g5_vouchers -[hidden]down- g6_shop_products
+g5_vouchers -[hidden]down- g6_users
+g5_vouchers -[hidden]down- g6_vouchers
+g6_product_variants -[hidden]down- g7_customer_product_states
+g6_product_variants -[hidden]down- g7_product_reviews
+g6_product_variants -[hidden]down- g7_product_variants
+g6_product_variants -[hidden]down- g7_shop_cart_items
+g6_product_variants -[hidden]down- g7_shop_orders
+g6_product_variants -[hidden]down- g7_shop_products
+g6_product_variants -[hidden]down- g7_users
+g6_shop_inventory_movements -[hidden]down- g7_customer_product_states
+g6_shop_inventory_movements -[hidden]down- g7_product_reviews
+g6_shop_inventory_movements -[hidden]down- g7_product_variants
+g6_shop_inventory_movements -[hidden]down- g7_shop_cart_items
+g6_shop_inventory_movements -[hidden]down- g7_shop_orders
+g6_shop_inventory_movements -[hidden]down- g7_shop_products
+g6_shop_inventory_movements -[hidden]down- g7_users
+g6_shop_order_events -[hidden]down- g7_customer_product_states
+g6_shop_order_events -[hidden]down- g7_product_reviews
+g6_shop_order_events -[hidden]down- g7_product_variants
+g6_shop_order_events -[hidden]down- g7_shop_cart_items
+g6_shop_order_events -[hidden]down- g7_shop_orders
+g6_shop_order_events -[hidden]down- g7_shop_products
+g6_shop_order_events -[hidden]down- g7_users
+g6_shop_order_items -[hidden]down- g7_customer_product_states
+g6_shop_order_items -[hidden]down- g7_product_reviews
+g6_shop_order_items -[hidden]down- g7_product_variants
+g6_shop_order_items -[hidden]down- g7_shop_cart_items
+g6_shop_order_items -[hidden]down- g7_shop_orders
+g6_shop_order_items -[hidden]down- g7_shop_products
+g6_shop_order_items -[hidden]down- g7_users
+g6_shop_orders -[hidden]down- g7_customer_product_states
+g6_shop_orders -[hidden]down- g7_product_reviews
+g6_shop_orders -[hidden]down- g7_product_variants
+g6_shop_orders -[hidden]down- g7_shop_cart_items
+g6_shop_orders -[hidden]down- g7_shop_orders
+g6_shop_orders -[hidden]down- g7_shop_products
+g6_shop_orders -[hidden]down- g7_users
+g6_shop_products -[hidden]down- g7_customer_product_states
+g6_shop_products -[hidden]down- g7_product_reviews
+g6_shop_products -[hidden]down- g7_product_variants
+g6_shop_products -[hidden]down- g7_shop_cart_items
+g6_shop_products -[hidden]down- g7_shop_orders
+g6_shop_products -[hidden]down- g7_shop_products
+g6_shop_products -[hidden]down- g7_users
+g6_users -[hidden]down- g7_customer_product_states
+g6_users -[hidden]down- g7_product_reviews
+g6_users -[hidden]down- g7_product_variants
+g6_users -[hidden]down- g7_shop_cart_items
+g6_users -[hidden]down- g7_shop_orders
+g6_users -[hidden]down- g7_shop_products
+g6_users -[hidden]down- g7_users
+g6_vouchers -[hidden]down- g7_customer_product_states
+g6_vouchers -[hidden]down- g7_product_reviews
+g6_vouchers -[hidden]down- g7_product_variants
+g6_vouchers -[hidden]down- g7_shop_cart_items
+g6_vouchers -[hidden]down- g7_shop_orders
+g6_vouchers -[hidden]down- g7_shop_products
+g6_vouchers -[hidden]down- g7_users
+g7_customer_product_states -[hidden]down- g8_foods
+g7_customer_product_states -[hidden]down- g8_injury_area_options
+g7_customer_product_states -[hidden]down- g8_muscle_split_configs
+g7_customer_product_states -[hidden]down- g8_recommended_schedule_configs
+g7_customer_product_states -[hidden]down- g8_system_configs
+g7_product_reviews -[hidden]down- g8_foods
+g7_product_reviews -[hidden]down- g8_injury_area_options
+g7_product_reviews -[hidden]down- g8_muscle_split_configs
+g7_product_reviews -[hidden]down- g8_recommended_schedule_configs
+g7_product_reviews -[hidden]down- g8_system_configs
+g7_product_variants -[hidden]down- g8_foods
+g7_product_variants -[hidden]down- g8_injury_area_options
+g7_product_variants -[hidden]down- g8_muscle_split_configs
+g7_product_variants -[hidden]down- g8_recommended_schedule_configs
+g7_product_variants -[hidden]down- g8_system_configs
+g7_shop_cart_items -[hidden]down- g8_foods
+g7_shop_cart_items -[hidden]down- g8_injury_area_options
+g7_shop_cart_items -[hidden]down- g8_muscle_split_configs
+g7_shop_cart_items -[hidden]down- g8_recommended_schedule_configs
+g7_shop_cart_items -[hidden]down- g8_system_configs
+g7_shop_orders -[hidden]down- g8_foods
+g7_shop_orders -[hidden]down- g8_injury_area_options
+g7_shop_orders -[hidden]down- g8_muscle_split_configs
+g7_shop_orders -[hidden]down- g8_recommended_schedule_configs
+g7_shop_orders -[hidden]down- g8_system_configs
+g7_shop_products -[hidden]down- g8_foods
+g7_shop_products -[hidden]down- g8_injury_area_options
+g7_shop_products -[hidden]down- g8_muscle_split_configs
+g7_shop_products -[hidden]down- g8_recommended_schedule_configs
+g7_shop_products -[hidden]down- g8_system_configs
+g7_users -[hidden]down- g8_foods
+g7_users -[hidden]down- g8_injury_area_options
+g7_users -[hidden]down- g8_muscle_split_configs
+g7_users -[hidden]down- g8_recommended_schedule_configs
+g7_users -[hidden]down- g8_system_configs
+legend bottom
+  Bảng cùng tên xuất hiện ở nhiều nhóm vẫn là MỘT bảng trong CSDL.
+  Đường liền: 39 FK hiện có. Nét đứt / REF: 16 liên kết logic bổ sung.
+  PK: khóa chính. FK: khóa ngoại. UK: khóa duy nhất.
+  Nhóm 8 đứng độc lập vì chưa có cột tham chiếu phù hợp.
+endlegend
+@enduml

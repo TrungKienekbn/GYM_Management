@@ -1,0 +1,638 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="4080" height="8080">
+<rect width="4080" height="8080" fill="white"/>
+<polyline points="1280,3420 1260,3420 1260,3860 1820,3860 1820,3420 1800,3420" fill="none" stroke="#444" stroke-width="1.5" stroke-dasharray="7 5"/>
+<polyline points="3540,5180 3540,5460" fill="none" stroke="#444" stroke-width="1.5" stroke-dasharray="7 5"/>
+<polyline points="2540,1980 2540,2340" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="2540,1680 2540,1400" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="2540,6020 2540,6300" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="800,1140 1260,1140 1260,1060 1280,1060" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="1280,3060 820,3060 820,3120 800,3120" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="800,4900 1260,4900 1260,4880 1280,4880" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="3280,4920 2820,4920 2820,5000 2800,5000" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="2800,1860 3260,1860 3260,1820 3280,1820" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="2800,5580 3260,5580 3260,5700 3280,5700" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="1280,1800 820,1800 820,1820 800,1820" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="2280,1820 1800,1820" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="2280,1800 2260,1800 2260,1860 1820,1860 1820,1840 1800,1840" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="800,6340 1260,6340 1260,6380 1280,6380" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="1800,3100 2260,3100 2260,3180 2280,3180" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="800,4240 1260,4240 1260,4180 1280,4180" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="2280,5580 1820,5580 1820,5680 1800,5680" fill="none" stroke="#444" stroke-width="1.5" stroke-dasharray="7 5"/>
+<polyline points="3280,4300 2820,4300 2820,4260 2800,4260" fill="none" stroke="#444" stroke-width="1.5" stroke-dasharray="7 5"/>
+<polyline points="3540,3540 3540,4120" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="1540,3840 1540,4120" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="2520,1980 2520,2000 2260,2000 2260,2980 2540,2980 2540,3000" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="2520,1680 2520,1660 2260,1660 2260,440 2540,440 2540,420" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="1280,4940 1260,4940 1260,5500 800,5500" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="2280,5000 2260,5000 2260,5500 1800,5500" fill="none" stroke="#444" stroke-width="1.5" stroke-dasharray="7 5"/>
+<polyline points="2800,4980 3260,4980 3260,5500 3280,5500" fill="none" stroke="#444" stroke-width="1.5" stroke-dasharray="7 5"/>
+<polyline points="2280,1960 1820,1960 1820,2380 1800,2380" fill="none" stroke="#444" stroke-width="1.5" stroke-dasharray="7 5"/>
+<polyline points="2800,1960 3260,1960 3260,2380 3280,2380" fill="none" stroke="#444" stroke-width="1.5" stroke-dasharray="7 5"/>
+<polyline points="2800,1720 2820,1720 2820,1060 3280,1060" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="2280,1720 1820,1720 1820,1380 1800,1380" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="2800,6000 3260,6000 3260,6340 3280,6340" fill="none" stroke="#444" stroke-width="1.5" stroke-dasharray="7 5"/>
+<polyline points="1800,4260 1820,4260 1820,4520 3260,4520 3260,4340 3280,4340" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="800,4220 820,4220 820,4100 2260,4100 2260,4180 2280,4180" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="1280,3820 860,3820 860,4160 800,4160" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="3280,3520 3260,3520 3260,4160 2800,4160" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="2280,1940 2260,1940 2260,1920 1860,1920 1860,3040 1800,3040" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="3280,5160 2820,5160 2820,6340 2800,6340" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="2280,1740 2260,1740 2260,1680 1860,1680 1860,440 1800,440" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="2800,1740 3260,1740 3260,600 3280,600" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="2280,4980 2260,4980 2260,4820 260,4820 260,5580 820,5580 820,5520 800,5520" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="3280,5140 3220,5140 3220,5120 1820,5120 1820,5520 1800,5520" fill="none" stroke="#444" stroke-width="1.5" stroke-dasharray="7 5"/>
+<polyline points="2280,1900 2220,1900 2220,2540 820,2540 820,2380 800,2380" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="2280,1760 1860,1760 1860,1700 1840,1700 1840,1660 820,1660 820,1200 800,1200" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="800,6360 820,6360 820,6420 2260,6420 2260,6000 2280,6000" fill="none" stroke="#444" stroke-width="1.5" stroke-dasharray="7 5"/>
+<polyline points="2280,4960 1860,4960 1860,6980 1800,6980" fill="none" stroke="#444" stroke-width="1.5" stroke-dasharray="7 5"/>
+<polyline points="2280,1880 2180,1880 2180,4160 1800,4160" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="3280,5120 3240,5120 3240,5080 1900,5080 1900,6340 1800,6340" fill="none" stroke="#444" stroke-width="1.5" stroke-dasharray="7 5"/>
+<polyline points="800,260 820,260 820,160 2220,160 2220,1780 2280,1780" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="2560,1980 2560,2000 3220,2000 3220,2980 3820,2980 3820,5740 2860,5740 2860,5440 2540,5440 2540,5460" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="2500,1980 2500,2320 2860,2320 2860,5040 2500,5040 2500,5440 2520,5440 2520,5460" fill="none" stroke="#444" stroke-width="1.5" stroke-dasharray="7 5"/>
+<polyline points="3280,5100 3180,5100 3180,6920 1900,6920 1900,7020 1820,7020 1820,7000 1800,7000" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="2580,1980 2580,2280 3180,2280 3180,2940 3860,2940 3860,6520 2860,6520 2860,6280 2520,6280 2520,6300" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="3320,5180 3320,5200 3900,5200 3900,7240 820,7240 820,6980 800,6980" fill="none" stroke="#444" stroke-width="1.5" stroke-dasharray="7 5"/>
+<polyline points="2320,1980 2320,2320 220,2320 220,6920 1260,6920 1260,7140 1820,7140 1820,7020 1800,7020" fill="none" stroke="#444" stroke-width="1.5"/>
+<polyline points="2340,1980 2340,2040 180,2040 180,7120 860,7120 860,7000 800,7000" fill="none" stroke="#444" stroke-width="1.5" stroke-dasharray="7 5"/>
+<rect x="280" y="180" width="520" height="100" fill="white" stroke="#333"/>
+<rect x="280" y="180" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="540.0" y="206" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">roles</text>
+<text x="290" y="236" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="290" y="256" font-family="Arial" font-size="13">   role_name : VARCHAR(255)  [UK]</text>
+<rect x="1280" y="180" width="520" height="280" fill="white" stroke="#333"/>
+<rect x="1280" y="180" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="1540.0" y="206" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">notifications</text>
+<text x="1290" y="236" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="1290" y="256" font-family="Arial" font-size="13">FK   user_id : BIGINT</text>
+<text x="1290" y="276" font-family="Arial" font-size="13">   is_read : BOOLEAN</text>
+<text x="1290" y="296" font-family="Arial" font-size="13">   created_at : TIMESTAMP(6)</text>
+<text x="1290" y="316" font-family="Arial" font-size="13">   ref_id : BIGINT</text>
+<text x="1290" y="336" font-family="Arial" font-size="13">   scheduled_at : TIMESTAMP(6)</text>
+<text x="1290" y="356" font-family="Arial" font-size="13">   sent_at : TIMESTAMP(6)</text>
+<text x="1290" y="376" font-family="Arial" font-size="13">   message : VARCHAR(255)</text>
+<text x="1290" y="396" font-family="Arial" font-size="13">   ref_type : VARCHAR(255)</text>
+<text x="1290" y="416" font-family="Arial" font-size="13">   title : VARCHAR(255)</text>
+<text x="1290" y="436" font-family="Arial" font-size="13">   type : VARCHAR(255)</text>
+<rect x="2280" y="180" width="520" height="240" fill="white" stroke="#333"/>
+<rect x="2280" y="180" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="2540.0" y="206" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">chat_messages</text>
+<text x="2290" y="236" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="2290" y="256" font-family="Arial" font-size="13">FK   user_id : BIGINT</text>
+<text x="2290" y="276" font-family="Arial" font-size="13">   attachment_size : BIGINT</text>
+<text x="2290" y="296" font-family="Arial" font-size="13">   created_at : TIMESTAMP(6)</text>
+<text x="2290" y="316" font-family="Arial" font-size="13">   content : VARCHAR(2000)</text>
+<text x="2290" y="336" font-family="Arial" font-size="13">   attachment_name : VARCHAR(255)</text>
+<text x="2290" y="356" font-family="Arial" font-size="13">   attachment_type : VARCHAR(255)</text>
+<text x="2290" y="376" font-family="Arial" font-size="13">   attachment_url : VARCHAR(255)</text>
+<text x="2290" y="396" font-family="Arial" font-size="13">   sender : VARCHAR(255)</text>
+<rect x="3280" y="180" width="520" height="440" fill="white" stroke="#333"/>
+<rect x="3280" y="180" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="3540.0" y="206" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">service_ratings</text>
+<text x="3290" y="236" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="3290" y="256" font-family="Arial" font-size="13">FK   user_id : BIGINT</text>
+<text x="3290" y="276" font-family="Arial" font-size="13">   is_public : BOOLEAN</text>
+<text x="3290" y="296" font-family="Arial" font-size="13">   rating : INTEGER</text>
+<text x="3290" y="316" font-family="Arial" font-size="13">   attachment_size : BIGINT</text>
+<text x="3290" y="336" font-family="Arial" font-size="13">   created_at : TIMESTAMP(6)</text>
+<text x="3290" y="356" font-family="Arial" font-size="13">   replied_at : TIMESTAMP(6)</text>
+<text x="3290" y="376" font-family="Arial" font-size="13">   reply_attachment_size : BIGINT</text>
+<text x="3290" y="396" font-family="Arial" font-size="13">   updated_at : TIMESTAMP(6)</text>
+<text x="3290" y="416" font-family="Arial" font-size="13">   admin_reply : VARCHAR(255)</text>
+<text x="3290" y="436" font-family="Arial" font-size="13">   attachment_name : VARCHAR(255)</text>
+<text x="3290" y="456" font-family="Arial" font-size="13">   attachment_type : VARCHAR(255)</text>
+<text x="3290" y="476" font-family="Arial" font-size="13">   attachment_url : VARCHAR(255)</text>
+<text x="3290" y="496" font-family="Arial" font-size="13">   comment : VARCHAR(255)</text>
+<text x="3290" y="516" font-family="Arial" font-size="13">   reply_attachment_name : VARCHAR(255)</text>
+<text x="3290" y="536" font-family="Arial" font-size="13">   reply_attachment_type : VARCHAR(255)</text>
+<text x="3290" y="556" font-family="Arial" font-size="13">   reply_attachment_url : VARCHAR(255)</text>
+<text x="3290" y="576" font-family="Arial" font-size="13">   service_type : VARCHAR(255)</text>
+<text x="3290" y="596" font-family="Arial" font-size="13">   title : VARCHAR(255)</text>
+<rect x="280" y="900" width="520" height="320" fill="white" stroke="#333"/>
+<rect x="280" y="900" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="540.0" y="926" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">memberships</text>
+<text x="290" y="956" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="290" y="976" font-family="Arial" font-size="13">FK   user_id : BIGINT</text>
+<text x="290" y="996" font-family="Arial" font-size="13">   end_date : DATE</text>
+<text x="290" y="1016" font-family="Arial" font-size="13">   is_active : BOOLEAN</text>
+<text x="290" y="1036" font-family="Arial" font-size="13">   price : FLOAT(53)</text>
+<text x="290" y="1056" font-family="Arial" font-size="13">   start_date : DATE</text>
+<text x="290" y="1076" font-family="Arial" font-size="13">   created_at : TIMESTAMP(6)</text>
+<text x="290" y="1096" font-family="Arial" font-size="13">   paid_at : TIMESTAMP(6)</text>
+<text x="290" y="1116" font-family="Arial" font-size="13">   notes : VARCHAR(255)</text>
+<text x="290" y="1136" font-family="Arial" font-size="13">   payment_method : VARCHAR(255)</text>
+<text x="290" y="1156" font-family="Arial" font-size="13">   transaction_id : VARCHAR(255)</text>
+<text x="290" y="1176" font-family="Arial" font-size="13">   membership_type : ENUM</text>
+<text x="290" y="1196" font-family="Arial" font-size="13">   payment_status : ENUM</text>
+<rect x="1280" y="900" width="520" height="500" fill="white" stroke="#333"/>
+<rect x="1280" y="900" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="1540.0" y="926" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">invoices</text>
+<text x="1290" y="956" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="1290" y="976" font-family="Arial" font-size="13">FK   membership_id : BIGINT</text>
+<text x="1290" y="996" font-family="Arial" font-size="13">FK   user_id : BIGINT</text>
+<text x="1290" y="1016" font-family="Arial" font-size="13">   price : FLOAT(53)</text>
+<text x="1290" y="1036" font-family="Arial" font-size="13">   regenerate_count : INTEGER</text>
+<text x="1290" y="1056" font-family="Arial" font-size="13">   cancelled_at : TIMESTAMP(6)</text>
+<text x="1290" y="1076" font-family="Arial" font-size="13">   created_at : TIMESTAMP(6)</text>
+<text x="1290" y="1096" font-family="Arial" font-size="13">   expires_at : TIMESTAMP(6)</text>
+<text x="1290" y="1116" font-family="Arial" font-size="13">   paid_at : TIMESTAMP(6)</text>
+<text x="1290" y="1136" font-family="Arial" font-size="13">   qr_raw_payload : VARCHAR(1000)</text>
+<text x="1290" y="1156" font-family="Arial" font-size="13">   cosmetic_item_code : VARCHAR(255)</text>
+<text x="1290" y="1176" font-family="Arial" font-size="13">   deeplink : VARCHAR(255)</text>
+<text x="1290" y="1196" font-family="Arial" font-size="13">   momo_order_id : VARCHAR(255)  [UK]</text>
+<text x="1290" y="1216" font-family="Arial" font-size="13">   momo_request_id : VARCHAR(255)</text>
+<text x="1290" y="1236" font-family="Arial" font-size="13">   pay_url : VARCHAR(255)</text>
+<text x="1290" y="1256" font-family="Arial" font-size="13">   qr_code_url : VARCHAR(255)</text>
+<text x="1290" y="1276" font-family="Arial" font-size="13">   result_message : VARCHAR(255)</text>
+<text x="1290" y="1296" font-family="Arial" font-size="13">   transaction_id : VARCHAR(255)</text>
+<text x="1290" y="1316" font-family="Arial" font-size="13">   transfer_code : VARCHAR(255)  [UK]</text>
+<text x="1290" y="1336" font-family="Arial" font-size="13">   invoice_type : ENUM</text>
+<text x="1290" y="1356" font-family="Arial" font-size="13">   membership_type : ENUM</text>
+<text x="1290" y="1376" font-family="Arial" font-size="13">   status : ENUM</text>
+<rect x="2280" y="900" width="520" height="500" fill="white" stroke="#333"/>
+<rect x="2280" y="900" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="2540.0" y="926" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">user_profiles</text>
+<text x="2290" y="956" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="2290" y="976" font-family="Arial" font-size="13">FK   user_id : BIGINT  [UK]</text>
+<text x="2290" y="996" font-family="Arial" font-size="13">   age : INTEGER</text>
+<text x="2290" y="1016" font-family="Arial" font-size="13">   available_days_per_week : INTEGER</text>
+<text x="2290" y="1036" font-family="Arial" font-size="13">   bmi : FLOAT(53)</text>
+<text x="2290" y="1056" font-family="Arial" font-size="13">   body_fat_percentage : FLOAT(53)</text>
+<text x="2290" y="1076" font-family="Arial" font-size="13">   date_of_birth : DATE</text>
+<text x="2290" y="1096" font-family="Arial" font-size="13">   height : FLOAT(53)</text>
+<text x="2290" y="1116" font-family="Arial" font-size="13">   initial_weight : FLOAT(53)</text>
+<text x="2290" y="1136" font-family="Arial" font-size="13">   preferred_session_duration : INTEGER</text>
+<text x="2290" y="1156" font-family="Arial" font-size="13">   training_experience_months : INTEGER</text>
+<text x="2290" y="1176" font-family="Arial" font-size="13">   weight : FLOAT(53)</text>
+<text x="2290" y="1196" font-family="Arial" font-size="13">   preferred_training_days : VARCHAR(500)</text>
+<text x="2290" y="1216" font-family="Arial" font-size="13">   available_equipment : VARCHAR(1000)</text>
+<text x="2290" y="1236" font-family="Arial" font-size="13">   disliked_exercises : VARCHAR(1000)</text>
+<text x="2290" y="1256" font-family="Arial" font-size="13">   injury_areas : VARCHAR(1000)</text>
+<text x="2290" y="1276" font-family="Arial" font-size="13">   daily_activity_level : VARCHAR(255)</text>
+<text x="2290" y="1296" font-family="Arial" font-size="13">   gender : VARCHAR(255)</text>
+<text x="2290" y="1316" font-family="Arial" font-size="13">   medical_conditions : VARCHAR(255)</text>
+<text x="2290" y="1336" font-family="Arial" font-size="13">   training_location : VARCHAR(255)</text>
+<text x="2290" y="1356" font-family="Arial" font-size="13">   fitness_level : ENUM</text>
+<text x="2290" y="1376" font-family="Arial" font-size="13">   goal : ENUM</text>
+<rect x="3280" y="900" width="520" height="180" fill="white" stroke="#333"/>
+<rect x="3280" y="900" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="3540.0" y="926" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">endurance_tests</text>
+<text x="3290" y="956" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="3290" y="976" font-family="Arial" font-size="13">FK   user_id : BIGINT  [UK]</text>
+<text x="3290" y="996" font-family="Arial" font-size="13">   plank_seconds : INTEGER</text>
+<text x="3290" y="1016" font-family="Arial" font-size="13">   pushup_reps : INTEGER</text>
+<text x="3290" y="1036" font-family="Arial" font-size="13">   squat_reps : INTEGER</text>
+<text x="3290" y="1056" font-family="Arial" font-size="13">   tested_at : TIMESTAMP(6)</text>
+<rect x="280" y="1680" width="520" height="240" fill="white" stroke="#333"/>
+<rect x="280" y="1680" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="540.0" y="1706" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">support_messages</text>
+<text x="290" y="1736" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="290" y="1756" font-family="Arial" font-size="13">FK   session_id : BIGINT</text>
+<text x="290" y="1776" font-family="Arial" font-size="13">   attachment_size : BIGINT</text>
+<text x="290" y="1796" font-family="Arial" font-size="13">   created_at : TIMESTAMP(6)</text>
+<text x="290" y="1816" font-family="Arial" font-size="13">   content : VARCHAR(2000)</text>
+<text x="290" y="1836" font-family="Arial" font-size="13">   attachment_name : VARCHAR(255)</text>
+<text x="290" y="1856" font-family="Arial" font-size="13">   attachment_type : VARCHAR(255)</text>
+<text x="290" y="1876" font-family="Arial" font-size="13">   attachment_url : VARCHAR(255)</text>
+<text x="290" y="1896" font-family="Arial" font-size="13">   sender_role : VARCHAR(255)</text>
+<rect x="1280" y="1680" width="520" height="280" fill="white" stroke="#333"/>
+<rect x="1280" y="1680" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="1540.0" y="1706" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">support_sessions</text>
+<text x="1290" y="1736" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="1290" y="1756" font-family="Arial" font-size="13">FK   admin_id : BIGINT</text>
+<text x="1290" y="1776" font-family="Arial" font-size="13">FK   user_id : BIGINT</text>
+<text x="1290" y="1796" font-family="Arial" font-size="13">   user_rating : INTEGER</text>
+<text x="1290" y="1816" font-family="Arial" font-size="13">   accepted_at : TIMESTAMP(6)</text>
+<text x="1290" y="1836" font-family="Arial" font-size="13">   closed_at : TIMESTAMP(6)</text>
+<text x="1290" y="1856" font-family="Arial" font-size="13">   created_at : TIMESTAMP(6)</text>
+<text x="1290" y="1876" font-family="Arial" font-size="13">   rated_at : TIMESTAMP(6)</text>
+<text x="1290" y="1896" font-family="Arial" font-size="13">   user_rating_comment : VARCHAR(1000)</text>
+<text x="1290" y="1916" font-family="Arial" font-size="13">   subject : VARCHAR(255)</text>
+<text x="1290" y="1936" font-family="Arial" font-size="13">   status : ENUM</text>
+<rect x="2280" y="1680" width="520" height="300" fill="white" stroke="#333"/>
+<rect x="2280" y="1680" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="2540.0" y="1706" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">users</text>
+<text x="2290" y="1736" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="2290" y="1756" font-family="Arial" font-size="13">FK   role_id : BIGINT</text>
+<text x="2290" y="1776" font-family="Arial" font-size="13">   email_verified : BOOLEAN</text>
+<text x="2290" y="1796" font-family="Arial" font-size="13">   password_reset_attempts : INTEGER</text>
+<text x="2290" y="1816" font-family="Arial" font-size="13">   status : BOOLEAN</text>
+<text x="2290" y="1836" font-family="Arial" font-size="13">   created_at : TIMESTAMP(6)</text>
+<text x="2290" y="1856" font-family="Arial" font-size="13">   password_reset_blocked_until : TIMESTAMP(6)</text>
+<text x="2290" y="1876" font-family="Arial" font-size="13">   email : VARCHAR(255)  [UK]</text>
+<text x="2290" y="1896" font-family="Arial" font-size="13">   full_name : VARCHAR(255)</text>
+<text x="2290" y="1916" font-family="Arial" font-size="13">   password : VARCHAR(255)</text>
+<text x="2290" y="1936" font-family="Arial" font-size="13">   phone : VARCHAR(255)</text>
+<text x="2290" y="1956" font-family="Arial" font-size="13">   verification_token : VARCHAR(255)</text>
+<rect x="3280" y="1680" width="520" height="380" fill="white" stroke="#333"/>
+<rect x="3280" y="1680" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="3540.0" y="1706" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">progress_tracking</text>
+<text x="3290" y="1736" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="3290" y="1756" font-family="Arial" font-size="13">FK   user_id : BIGINT</text>
+<text x="3290" y="1776" font-family="Arial" font-size="13">   arm_cm : FLOAT(53)</text>
+<text x="3290" y="1796" font-family="Arial" font-size="13">   bmi : FLOAT(53)</text>
+<text x="3290" y="1816" font-family="Arial" font-size="13">   body_fat_percentage : FLOAT(53)</text>
+<text x="3290" y="1836" font-family="Arial" font-size="13">   chest_cm : FLOAT(53)</text>
+<text x="3290" y="1856" font-family="Arial" font-size="13">   height : FLOAT(53)</text>
+<text x="3290" y="1876" font-family="Arial" font-size="13">   hip_cm : FLOAT(53)</text>
+<text x="3290" y="1896" font-family="Arial" font-size="13">   muscle_mass_kg : FLOAT(53)</text>
+<text x="3290" y="1916" font-family="Arial" font-size="13">   recorded_date : DATE</text>
+<text x="3290" y="1936" font-family="Arial" font-size="13">   thigh_cm : FLOAT(53)</text>
+<text x="3290" y="1956" font-family="Arial" font-size="13">   waist_cm : FLOAT(53)</text>
+<text x="3290" y="1976" font-family="Arial" font-size="13">   weight : FLOAT(53)</text>
+<text x="3290" y="1996" font-family="Arial" font-size="13">   recorded_at : TIMESTAMP(6)</text>
+<text x="3290" y="2016" font-family="Arial" font-size="13">   notes : VARCHAR(255)</text>
+<text x="3290" y="2036" font-family="Arial" font-size="13">   source : ENUM</text>
+<rect x="280" y="2340" width="520" height="380" fill="white" stroke="#333"/>
+<rect x="280" y="2340" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="540.0" y="2366" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">work_shifts</text>
+<text x="290" y="2396" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="290" y="2416" font-family="Arial" font-size="13">FK   user_id : BIGINT</text>
+<text x="290" y="2436" font-family="Arial" font-size="13">   cash_at_start : FLOAT(53)</text>
+<text x="290" y="2456" font-family="Arial" font-size="13">   cash_counted : FLOAT(53)</text>
+<text x="290" y="2476" font-family="Arial" font-size="13">   cash_difference : FLOAT(53)</text>
+<text x="290" y="2496" font-family="Arial" font-size="13">   expected_cash : FLOAT(53)</text>
+<text x="290" y="2516" font-family="Arial" font-size="13">   planned_end : TIME(6)</text>
+<text x="290" y="2536" font-family="Arial" font-size="13">   planned_start : TIME(6)</text>
+<text x="290" y="2556" font-family="Arial" font-size="13">   pos_bank_revenue : FLOAT(53)</text>
+<text x="290" y="2576" font-family="Arial" font-size="13">   pos_cash_revenue : FLOAT(53)</text>
+<text x="290" y="2596" font-family="Arial" font-size="13">   shift_date : DATE</text>
+<text x="290" y="2616" font-family="Arial" font-size="13">   check_in_at : TIMESTAMP(6)</text>
+<text x="290" y="2636" font-family="Arial" font-size="13">   check_out_at : TIMESTAMP(6)</text>
+<text x="290" y="2656" font-family="Arial" font-size="13">   created_at : TIMESTAMP(6)</text>
+<text x="290" y="2676" font-family="Arial" font-size="13">   handover_note : VARCHAR(2000)</text>
+<text x="290" y="2696" font-family="Arial" font-size="13">   status : ENUM</text>
+<rect x="1280" y="2340" width="520" height="180" fill="white" stroke="#333"/>
+<rect x="1280" y="2340" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="1540.0" y="2366" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">customer_addresses</text>
+<text x="1290" y="2396" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="1290" y="2416" font-family="Arial" font-size="13">REF   user_id : BIGINT</text>
+<text x="1290" y="2436" font-family="Arial" font-size="13">   default_address : BOOLEAN</text>
+<text x="1290" y="2456" font-family="Arial" font-size="13">   address : VARCHAR(1000)</text>
+<text x="1290" y="2476" font-family="Arial" font-size="13">   phone : VARCHAR(255)</text>
+<text x="1290" y="2496" font-family="Arial" font-size="13">   receiver_name : VARCHAR(255)</text>
+<rect x="2280" y="2340" width="520" height="260" fill="white" stroke="#333"/>
+<rect x="2280" y="2340" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="2540.0" y="2366" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">pet_profiles</text>
+<text x="2290" y="2396" font-family="Arial" font-size="13">PK/FK   user_id : BIGINT</text>
+<text x="2290" y="2416" font-family="Arial" font-size="13">   current_streak : INTEGER</text>
+<text x="2290" y="2436" font-family="Arial" font-size="13">   missed_streak : INTEGER</text>
+<text x="2290" y="2456" font-family="Arial" font-size="13">   web_count : INTEGER</text>
+<text x="2290" y="2476" font-family="Arial" font-size="13">   last_calculated_at : TIMESTAMP(6)</text>
+<text x="2290" y="2496" font-family="Arial" font-size="13">   equipped_hair : VARCHAR(255)</text>
+<text x="2290" y="2516" font-family="Arial" font-size="13">   equipped_pants : VARCHAR(255)</text>
+<text x="2290" y="2536" font-family="Arial" font-size="13">   equipped_shirt : VARCHAR(255)</text>
+<text x="2290" y="2556" font-family="Arial" font-size="13">   aura_tier : ENUM</text>
+<text x="2290" y="2576" font-family="Arial" font-size="13">   stage : ENUM</text>
+<rect x="3280" y="2340" width="520" height="140" fill="white" stroke="#333"/>
+<rect x="3280" y="2340" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="3540.0" y="2366" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">user_cosmetic_ownership</text>
+<text x="3290" y="2396" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="3290" y="2416" font-family="Arial" font-size="13">REF   user_id : BIGINT</text>
+<text x="3290" y="2436" font-family="Arial" font-size="13">   purchased_at : TIMESTAMP(6)</text>
+<text x="3290" y="2456" font-family="Arial" font-size="13">   cosmetic_code : VARCHAR(255)</text>
+<rect x="280" y="3000" width="520" height="140" fill="white" stroke="#333"/>
+<rect x="280" y="3000" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="540.0" y="3026" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">plan_muscle_group_weight</text>
+<text x="290" y="3056" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="290" y="3076" font-family="Arial" font-size="13">FK   workout_plan_id : BIGINT</text>
+<text x="290" y="3096" font-family="Arial" font-size="13">   multiplier : FLOAT(53)</text>
+<text x="290" y="3116" font-family="Arial" font-size="13">   muscle_group : ENUM</text>
+<rect x="1280" y="3000" width="520" height="840" fill="white" stroke="#333"/>
+<rect x="1280" y="3000" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="1540.0" y="3026" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">workout_plans</text>
+<text x="1290" y="3056" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="1290" y="3076" font-family="Arial" font-size="13">REF   original_plan_id : BIGINT</text>
+<text x="1290" y="3096" font-family="Arial" font-size="13">FK   user_id : BIGINT</text>
+<text x="1290" y="3116" font-family="Arial" font-size="13">   current_mana : INTEGER</text>
+<text x="1290" y="3136" font-family="Arial" font-size="13">   current_week : INTEGER</text>
+<text x="1290" y="3156" font-family="Arial" font-size="13">   difficulty_adjustment : INTEGER</text>
+<text x="1290" y="3176" font-family="Arial" font-size="13">   duration_weeks : INTEGER</text>
+<text x="1290" y="3196" font-family="Arial" font-size="13">   estimated_weeks : INTEGER</text>
+<text x="1290" y="3216" font-family="Arial" font-size="13">   exercises_adjustment : INTEGER</text>
+<text x="1290" y="3236" font-family="Arial" font-size="13">   fitness_score : INTEGER</text>
+<text x="1290" y="3256" font-family="Arial" font-size="13">   is_active : BOOLEAN</text>
+<text x="1290" y="3276" font-family="Arial" font-size="13">   is_ai_generated : BOOLEAN</text>
+<text x="1290" y="3296" font-family="Arial" font-size="13">   is_completed : BOOLEAN</text>
+<text x="1290" y="3316" font-family="Arial" font-size="13">   is_fitness_improvement : BOOLEAN</text>
+<text x="1290" y="3336" font-family="Arial" font-size="13">   is_template : BOOLEAN</text>
+<text x="1290" y="3356" font-family="Arial" font-size="13">   last_mana_regen_date : DATE</text>
+<text x="1290" y="3376" font-family="Arial" font-size="13">   last_training_date : DATE</text>
+<text x="1290" y="3396" font-family="Arial" font-size="13">   max_mana : INTEGER</text>
+<text x="1290" y="3416" font-family="Arial" font-size="13">   reps_adjustment : INTEGER</text>
+<text x="1290" y="3436" font-family="Arial" font-size="13">   required_max_session_mana_cost : INTEGER</text>
+<text x="1290" y="3456" font-family="Arial" font-size="13">   sessions_per_week : INTEGER</text>
+<text x="1290" y="3476" font-family="Arial" font-size="13">   sets_adjustment : INTEGER</text>
+<text x="1290" y="3496" font-family="Arial" font-size="13">   starting_bmi : FLOAT(53)</text>
+<text x="1290" y="3516" font-family="Arial" font-size="13">   starting_weight : FLOAT(53)</text>
+<text x="1290" y="3536" font-family="Arial" font-size="13">   target_achieved : BOOLEAN</text>
+<text x="1290" y="3556" font-family="Arial" font-size="13">   target_baseline_value : FLOAT(53)</text>
+<text x="1290" y="3576" font-family="Arial" font-size="13">   target_current_value : FLOAT(53)</text>
+<text x="1290" y="3596" font-family="Arial" font-size="13">   target_goal_value : FLOAT(53)</text>
+<text x="1290" y="3616" font-family="Arial" font-size="13">   target_metric_type : TINYINT</text>
+<text x="1290" y="3636" font-family="Arial" font-size="13">   week_start_date : DATE</text>
+<text x="1290" y="3656" font-family="Arial" font-size="13">   created_at : TIMESTAMP(6)</text>
+<text x="1290" y="3676" font-family="Arial" font-size="13">   confirmed_schedule_dows : VARCHAR(255)</text>
+<text x="1290" y="3696" font-family="Arial" font-size="13">   description : VARCHAR(255)</text>
+<text x="1290" y="3716" font-family="Arial" font-size="13">   plan_name : VARCHAR(255)</text>
+<text x="1290" y="3736" font-family="Arial" font-size="13">   weight_adjustment_note : VARCHAR(255)</text>
+<text x="1290" y="3756" font-family="Arial" font-size="13">   body_type : ENUM</text>
+<text x="1290" y="3776" font-family="Arial" font-size="13">   fitness_level : ENUM</text>
+<text x="1290" y="3796" font-family="Arial" font-size="13">   goal : ENUM</text>
+<text x="1290" y="3816" font-family="Arial" font-size="13">   target_level : ENUM</text>
+<rect x="2280" y="3000" width="520" height="200" fill="white" stroke="#333"/>
+<rect x="2280" y="3000" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="2540.0" y="3026" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">weekly_reviews</text>
+<text x="2290" y="3056" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="2290" y="3076" font-family="Arial" font-size="13">FK   user_id : BIGINT</text>
+<text x="2290" y="3096" font-family="Arial" font-size="13">FK   workout_plan_id : BIGINT</text>
+<text x="2290" y="3116" font-family="Arial" font-size="13">   rating : INTEGER</text>
+<text x="2290" y="3136" font-family="Arial" font-size="13">   week_number : INTEGER</text>
+<text x="2290" y="3156" font-family="Arial" font-size="13">   created_at : TIMESTAMP(6)</text>
+<text x="2290" y="3176" font-family="Arial" font-size="13">   comment : VARCHAR(255)</text>
+<rect x="3280" y="3000" width="520" height="540" fill="white" stroke="#333"/>
+<rect x="3280" y="3000" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="3540.0" y="3026" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">exercises</text>
+<text x="3290" y="3056" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="3290" y="3076" font-family="Arial" font-size="13">   calories_burned : INTEGER</text>
+<text x="3290" y="3096" font-family="Arial" font-size="13">   default_duration_seconds : INTEGER</text>
+<text x="3290" y="3116" font-family="Arial" font-size="13">   default_reps : INTEGER</text>
+<text x="3290" y="3136" font-family="Arial" font-size="13">   default_sets : INTEGER</text>
+<text x="3290" y="3156" font-family="Arial" font-size="13">   endurance_score : INTEGER</text>
+<text x="3290" y="3176" font-family="Arial" font-size="13">   flexibility_score : INTEGER</text>
+<text x="3290" y="3196" font-family="Arial" font-size="13">   is_active : BOOLEAN</text>
+<text x="3290" y="3216" font-family="Arial" font-size="13">   is_assessment : BOOLEAN</text>
+<text x="3290" y="3236" font-family="Arial" font-size="13">   maintenance_score : INTEGER</text>
+<text x="3290" y="3256" font-family="Arial" font-size="13">   muscle_gain_score : INTEGER</text>
+<text x="3290" y="3276" font-family="Arial" font-size="13">   rest_seconds : INTEGER</text>
+<text x="3290" y="3296" font-family="Arial" font-size="13">   stamina_cost : INTEGER</text>
+<text x="3290" y="3316" font-family="Arial" font-size="13">   uses_weight : BOOLEAN</text>
+<text x="3290" y="3336" font-family="Arial" font-size="13">   weight_loss_score : INTEGER</text>
+<text x="3290" y="3356" font-family="Arial" font-size="13">   contraindicated_injuries : VARCHAR(255)</text>
+<text x="3290" y="3376" font-family="Arial" font-size="13">   description : VARCHAR(255)</text>
+<text x="3290" y="3396" font-family="Arial" font-size="13">   image_url : VARCHAR(255)</text>
+<text x="3290" y="3416" font-family="Arial" font-size="13">   name : VARCHAR(255)</text>
+<text x="3290" y="3436" font-family="Arial" font-size="13">   secondary_muscle_groups : VARCHAR(255)</text>
+<text x="3290" y="3456" font-family="Arial" font-size="13">   video_url : VARCHAR(255)</text>
+<text x="3290" y="3476" font-family="Arial" font-size="13">   assessment_metric_type : ENUM</text>
+<text x="3290" y="3496" font-family="Arial" font-size="13">   difficulty : ENUM</text>
+<text x="3290" y="3516" font-family="Arial" font-size="13">   muscle_group : ENUM</text>
+<rect x="280" y="4120" width="520" height="140" fill="white" stroke="#333"/>
+<rect x="280" y="4120" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="540.0" y="4146" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">workout_plan_days</text>
+<text x="290" y="4176" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="290" y="4196" font-family="Arial" font-size="13">FK   workout_plan_id : BIGINT</text>
+<text x="290" y="4216" font-family="Arial" font-size="13">   day_of_week : INTEGER</text>
+<text x="290" y="4236" font-family="Arial" font-size="13">   day_name : VARCHAR(255)</text>
+<rect x="1280" y="4120" width="520" height="440" fill="white" stroke="#333"/>
+<rect x="1280" y="4120" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="1540.0" y="4146" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">workout_sessions</text>
+<text x="1290" y="4176" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="1290" y="4196" font-family="Arial" font-size="13">FK   plan_day_id : BIGINT</text>
+<text x="1290" y="4216" font-family="Arial" font-size="13">FK   user_id : BIGINT</text>
+<text x="1290" y="4236" font-family="Arial" font-size="13">FK   workout_plan_id : BIGINT</text>
+<text x="1290" y="4256" font-family="Arial" font-size="13">   checkout_body_fat : FLOAT(53)</text>
+<text x="1290" y="4276" font-family="Arial" font-size="13">   checkout_weight : FLOAT(53)</text>
+<text x="1290" y="4296" font-family="Arial" font-size="13">   completion_rate : INTEGER</text>
+<text x="1290" y="4316" font-family="Arial" font-size="13">   duration_minutes : INTEGER</text>
+<text x="1290" y="4336" font-family="Arial" font-size="13">   is_custom : BOOLEAN</text>
+<text x="1290" y="4356" font-family="Arial" font-size="13">   is_last_session_of_week : BOOLEAN</text>
+<text x="1290" y="4376" font-family="Arial" font-size="13">   scheduled_time : TIME(6)</text>
+<text x="1290" y="4396" font-family="Arial" font-size="13">   session_date : DATE</text>
+<text x="1290" y="4416" font-family="Arial" font-size="13">   total_calories_burned : INTEGER</text>
+<text x="1290" y="4436" font-family="Arial" font-size="13">   week_number : INTEGER</text>
+<text x="1290" y="4456" font-family="Arial" font-size="13">   check_in_time : TIMESTAMP(6)</text>
+<text x="1290" y="4476" font-family="Arial" font-size="13">   check_out_time : TIMESTAMP(6)</text>
+<text x="1290" y="4496" font-family="Arial" font-size="13">   custom_session_name : VARCHAR(255)</text>
+<text x="1290" y="4516" font-family="Arial" font-size="13">   notes : VARCHAR(255)</text>
+<text x="1290" y="4536" font-family="Arial" font-size="13">   status : ENUM</text>
+<rect x="2280" y="4120" width="520" height="380" fill="white" stroke="#333"/>
+<rect x="2280" y="4120" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="2540.0" y="4146" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">workout_plan_exercises</text>
+<text x="2290" y="4176" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="2290" y="4196" font-family="Arial" font-size="13">FK   exercise_id : BIGINT</text>
+<text x="2290" y="4216" font-family="Arial" font-size="13">REF   last_low_adjustment_log_id : BIGINT</text>
+<text x="2290" y="4236" font-family="Arial" font-size="13">FK   plan_day_id : BIGINT</text>
+<text x="2290" y="4256" font-family="Arial" font-size="13">   base_weight_kg : FLOAT(53)</text>
+<text x="2290" y="4276" font-family="Arial" font-size="13">   current_recommended_weight_kg : FLOAT(53)</text>
+<text x="2290" y="4296" font-family="Arial" font-size="13">   current_weight_kg : FLOAT(53)</text>
+<text x="2290" y="4316" font-family="Arial" font-size="13">   duration_seconds : INTEGER</text>
+<text x="2290" y="4336" font-family="Arial" font-size="13">   is_assessment : BOOLEAN</text>
+<text x="2290" y="4356" font-family="Arial" font-size="13">   order_index : INTEGER</text>
+<text x="2290" y="4376" font-family="Arial" font-size="13">   recommended_weight_kg : FLOAT(53)</text>
+<text x="2290" y="4396" font-family="Arial" font-size="13">   reps : INTEGER</text>
+<text x="2290" y="4416" font-family="Arial" font-size="13">   rest_seconds : INTEGER</text>
+<text x="2290" y="4436" font-family="Arial" font-size="13">   sets : INTEGER</text>
+<text x="2290" y="4456" font-family="Arial" font-size="13">   weight_updated_week : INTEGER</text>
+<text x="2290" y="4476" font-family="Arial" font-size="13">   notes : VARCHAR(255)</text>
+<rect x="3280" y="4120" width="520" height="280" fill="white" stroke="#333"/>
+<rect x="3280" y="4120" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="3540.0" y="4146" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">session_exercise_logs</text>
+<text x="3290" y="4176" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="3290" y="4196" font-family="Arial" font-size="13">FK   exercise_id : BIGINT</text>
+<text x="3290" y="4216" font-family="Arial" font-size="13">FK   session_id : BIGINT</text>
+<text x="3290" y="4236" font-family="Arial" font-size="13">   completion_percent : INTEGER</text>
+<text x="3290" y="4256" font-family="Arial" font-size="13">   duration_seconds : INTEGER</text>
+<text x="3290" y="4276" font-family="Arial" font-size="13">   is_completed : BOOLEAN</text>
+<text x="3290" y="4296" font-family="Arial" font-size="13">   reps_completed : INTEGER</text>
+<text x="3290" y="4316" font-family="Arial" font-size="13">   sets_completed : INTEGER</text>
+<text x="3290" y="4336" font-family="Arial" font-size="13">   weight_used_kg : FLOAT(53)</text>
+<text x="3290" y="4356" font-family="Arial" font-size="13">   logged_at : TIMESTAMP(6)</text>
+<text x="3290" y="4376" font-family="Arial" font-size="13">   notes : VARCHAR(255)</text>
+<rect x="280" y="4840" width="520" height="100" fill="white" stroke="#333"/>
+<rect x="280" y="4840" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="540.0" y="4866" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">product_attributes</text>
+<text x="290" y="4896" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="290" y="4916" font-family="Arial" font-size="13">   name : VARCHAR(255)  [UK]</text>
+<rect x="1280" y="4840" width="520" height="120" fill="white" stroke="#333"/>
+<rect x="1280" y="4840" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="1540.0" y="4866" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">product_attribute_values</text>
+<text x="1290" y="4896" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="1290" y="4916" font-family="Arial" font-size="13">FK   attribute_id : BIGINT</text>
+<text x="1290" y="4936" font-family="Arial" font-size="13">   value : VARCHAR(255)</text>
+<rect x="2280" y="4840" width="520" height="180" fill="white" stroke="#333"/>
+<rect x="2280" y="4840" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="2540.0" y="4866" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">product_variants</text>
+<text x="2290" y="4896" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="2290" y="4916" font-family="Arial" font-size="13">FK   product_id : BIGINT</text>
+<text x="2290" y="4936" font-family="Arial" font-size="13">   active : BOOLEAN</text>
+<text x="2290" y="4956" font-family="Arial" font-size="13">   price_override : FLOAT(53)</text>
+<text x="2290" y="4976" font-family="Arial" font-size="13">   stock : INTEGER</text>
+<text x="2290" y="4996" font-family="Arial" font-size="13">   sku : VARCHAR(255)</text>
+<rect x="3280" y="4840" width="520" height="340" fill="white" stroke="#333"/>
+<rect x="3280" y="4840" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="3540.0" y="4866" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">shop_products</text>
+<text x="3290" y="4896" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="3290" y="4916" font-family="Arial" font-size="13">   active : BOOLEAN</text>
+<text x="3290" y="4936" font-family="Arial" font-size="13">   price : FLOAT(53)</text>
+<text x="3290" y="4956" font-family="Arial" font-size="13">   sale_price : FLOAT(53)</text>
+<text x="3290" y="4976" font-family="Arial" font-size="13">   stock : INTEGER</text>
+<text x="3290" y="4996" font-family="Arial" font-size="13">   created_at : TIMESTAMP(6)</text>
+<text x="3290" y="5016" font-family="Arial" font-size="13">   description : VARCHAR(2000)</text>
+<text x="3290" y="5036" font-family="Arial" font-size="13">   images : VARCHAR(20000)</text>
+<text x="3290" y="5056" font-family="Arial" font-size="13">   brand : VARCHAR(255)</text>
+<text x="3290" y="5076" font-family="Arial" font-size="13">   image_url : VARCHAR(255)</text>
+<text x="3290" y="5096" font-family="Arial" font-size="13">   name : VARCHAR(255)</text>
+<text x="3290" y="5116" font-family="Arial" font-size="13">   required_equipment_code : VARCHAR(255)</text>
+<text x="3290" y="5136" font-family="Arial" font-size="13">   suitable_goals : VARCHAR(255)</text>
+<text x="3290" y="5156" font-family="Arial" font-size="13">   category : ENUM</text>
+<rect x="280" y="5460" width="520" height="100" fill="white" stroke="#333"/>
+<rect x="280" y="5460" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="540.0" y="5486" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">variant_attribute_values</text>
+<text x="290" y="5516" font-family="Arial" font-size="13">PK/FK   value_id : BIGINT</text>
+<text x="290" y="5536" font-family="Arial" font-size="13">PK/FK   variant_id : BIGINT</text>
+<rect x="1280" y="5460" width="520" height="240" fill="white" stroke="#333"/>
+<rect x="1280" y="5460" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="1540.0" y="5486" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">shop_inventory_movements</text>
+<text x="1290" y="5516" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="1290" y="5536" font-family="Arial" font-size="13">REF   order_id : BIGINT</text>
+<text x="1290" y="5556" font-family="Arial" font-size="13">REF   product_id : BIGINT</text>
+<text x="1290" y="5576" font-family="Arial" font-size="13">REF   variant_id : BIGINT</text>
+<text x="1290" y="5596" font-family="Arial" font-size="13">   after_stock : INTEGER</text>
+<text x="1290" y="5616" font-family="Arial" font-size="13">   before_stock : INTEGER</text>
+<text x="1290" y="5636" font-family="Arial" font-size="13">   created_at : TIMESTAMP(6)</text>
+<text x="1290" y="5656" font-family="Arial" font-size="13">   reason : VARCHAR(1000)</text>
+<text x="1290" y="5676" font-family="Arial" font-size="13">   actor : VARCHAR(255)</text>
+<rect x="2280" y="5460" width="520" height="560" fill="white" stroke="#333"/>
+<rect x="2280" y="5460" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="2540.0" y="5486" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">shop_orders</text>
+<text x="2290" y="5516" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="2290" y="5536" font-family="Arial" font-size="13">REF   created_by_staff_id : BIGINT</text>
+<text x="2290" y="5556" font-family="Arial" font-size="13">FK   user_id : BIGINT</text>
+<text x="2290" y="5576" font-family="Arial" font-size="13">REF   voucher_code : VARCHAR(255)</text>
+<text x="2290" y="5596" font-family="Arial" font-size="13">   discount : FLOAT(53)</text>
+<text x="2290" y="5616" font-family="Arial" font-size="13">   shipping_fee : FLOAT(53)</text>
+<text x="2290" y="5636" font-family="Arial" font-size="13">   subtotal : FLOAT(53)</text>
+<text x="2290" y="5656" font-family="Arial" font-size="13">   total : FLOAT(53)</text>
+<text x="2290" y="5676" font-family="Arial" font-size="13">   voucher_discount : FLOAT(53)</text>
+<text x="2290" y="5696" font-family="Arial" font-size="13">   created_at : TIMESTAMP(6)</text>
+<text x="2290" y="5716" font-family="Arial" font-size="13">   expires_at : TIMESTAMP(6)</text>
+<text x="2290" y="5736" font-family="Arial" font-size="13">   paid_at : TIMESTAMP(6)</text>
+<text x="2290" y="5756" font-family="Arial" font-size="13">   note : VARCHAR(1000)</text>
+<text x="2290" y="5776" font-family="Arial" font-size="13">   qr_raw_payload : VARCHAR(1000)</text>
+<text x="2290" y="5796" font-family="Arial" font-size="13">   shipping_address : VARCHAR(1000)</text>
+<text x="2290" y="5816" font-family="Arial" font-size="13">   payment_url : VARCHAR(2000)</text>
+<text x="2290" y="5836" font-family="Arial" font-size="13">   gateway_reference : VARCHAR(255)  [UK]</text>
+<text x="2290" y="5856" font-family="Arial" font-size="13">   payment_method : VARCHAR(255)</text>
+<text x="2290" y="5876" font-family="Arial" font-size="13">   phone : VARCHAR(255)</text>
+<text x="2290" y="5896" font-family="Arial" font-size="13">   qr_code_url : VARCHAR(255)</text>
+<text x="2290" y="5916" font-family="Arial" font-size="13">   receiver_name : VARCHAR(255)</text>
+<text x="2290" y="5936" font-family="Arial" font-size="13">   transaction_id : VARCHAR(255)</text>
+<text x="2290" y="5956" font-family="Arial" font-size="13">   transfer_code : VARCHAR(255)  [UK]</text>
+<text x="2290" y="5976" font-family="Arial" font-size="13">   channel : ENUM</text>
+<text x="2290" y="5996" font-family="Arial" font-size="13">   status : ENUM</text>
+<rect x="3280" y="5460" width="520" height="260" fill="white" stroke="#333"/>
+<rect x="3280" y="5460" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="3540.0" y="5486" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">shop_order_items</text>
+<text x="3290" y="5516" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="3290" y="5536" font-family="Arial" font-size="13">FK   order_id : BIGINT</text>
+<text x="3290" y="5556" font-family="Arial" font-size="13">REF   product_id : BIGINT</text>
+<text x="3290" y="5576" font-family="Arial" font-size="13">REF   variant_id : BIGINT</text>
+<text x="3290" y="5596" font-family="Arial" font-size="13">   line_total : FLOAT(53)</text>
+<text x="3290" y="5616" font-family="Arial" font-size="13">   quantity : INTEGER</text>
+<text x="3290" y="5636" font-family="Arial" font-size="13">   unit_price : FLOAT(53)</text>
+<text x="3290" y="5656" font-family="Arial" font-size="13">   image_url : VARCHAR(255)</text>
+<text x="3290" y="5676" font-family="Arial" font-size="13">   product_name : VARCHAR(255)</text>
+<text x="3290" y="5696" font-family="Arial" font-size="13">   variant_label : VARCHAR(255)</text>
+<rect x="280" y="6300" width="520" height="360" fill="white" stroke="#333"/>
+<rect x="280" y="6300" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="540.0" y="6326" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">vouchers</text>
+<text x="290" y="6356" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="290" y="6376" font-family="Arial" font-size="13">   active : BOOLEAN</text>
+<text x="290" y="6396" font-family="Arial" font-size="13">   max_discount_amount : FLOAT(53)</text>
+<text x="290" y="6416" font-family="Arial" font-size="13">   min_order_amount : FLOAT(53)</text>
+<text x="290" y="6436" font-family="Arial" font-size="13">   usage_limit : INTEGER</text>
+<text x="290" y="6456" font-family="Arial" font-size="13">   used_count : INTEGER</text>
+<text x="290" y="6476" font-family="Arial" font-size="13">   value : FLOAT(53)</text>
+<text x="290" y="6496" font-family="Arial" font-size="13">   created_at : TIMESTAMP(6)</text>
+<text x="290" y="6516" font-family="Arial" font-size="13">   end_at : TIMESTAMP(6)</text>
+<text x="290" y="6536" font-family="Arial" font-size="13">   start_at : TIMESTAMP(6)</text>
+<text x="290" y="6556" font-family="Arial" font-size="13">   code : VARCHAR(255)  [UK]</text>
+<text x="290" y="6576" font-family="Arial" font-size="13">   description : VARCHAR(255)</text>
+<text x="290" y="6596" font-family="Arial" font-size="13">   scope_category : ENUM</text>
+<text x="290" y="6616" font-family="Arial" font-size="13">   scope_type : ENUM</text>
+<text x="290" y="6636" font-family="Arial" font-size="13">   type : ENUM</text>
+<rect x="1280" y="6300" width="520" height="100" fill="white" stroke="#333"/>
+<rect x="1280" y="6300" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="1540.0" y="6326" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">voucher_scope_products</text>
+<text x="1290" y="6356" font-family="Arial" font-size="13">REF   product_id : BIGINT</text>
+<text x="1290" y="6376" font-family="Arial" font-size="13">FK   voucher_id : BIGINT</text>
+<rect x="2280" y="6300" width="520" height="220" fill="white" stroke="#333"/>
+<rect x="2280" y="6300" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="2540.0" y="6326" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">product_reviews</text>
+<text x="2290" y="6356" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="2290" y="6376" font-family="Arial" font-size="13">FK   order_id : BIGINT</text>
+<text x="2290" y="6396" font-family="Arial" font-size="13">FK   product_id : BIGINT</text>
+<text x="2290" y="6416" font-family="Arial" font-size="13">FK   user_id : BIGINT</text>
+<text x="2290" y="6436" font-family="Arial" font-size="13">   rating : INTEGER</text>
+<text x="2290" y="6456" font-family="Arial" font-size="13">   created_at : TIMESTAMP(6)</text>
+<text x="2290" y="6476" font-family="Arial" font-size="13">   comment : VARCHAR(2000)</text>
+<text x="2290" y="6496" font-family="Arial" font-size="13">   images : VARCHAR(20000)</text>
+<rect x="3280" y="6300" width="520" height="200" fill="white" stroke="#333"/>
+<rect x="3280" y="6300" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="3540.0" y="6326" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">shop_order_events</text>
+<text x="3290" y="6356" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="3290" y="6376" font-family="Arial" font-size="13">REF   order_id : BIGINT</text>
+<text x="3290" y="6396" font-family="Arial" font-size="13">   created_at : TIMESTAMP(6)</text>
+<text x="3290" y="6416" font-family="Arial" font-size="13">   note : VARCHAR(1000)</text>
+<text x="3290" y="6436" font-family="Arial" font-size="13">   actor : VARCHAR(255)</text>
+<text x="3290" y="6456" font-family="Arial" font-size="13">   from_status : VARCHAR(255)</text>
+<text x="3290" y="6476" font-family="Arial" font-size="13">   to_status : VARCHAR(255)</text>
+<rect x="280" y="6940" width="520" height="160" fill="white" stroke="#333"/>
+<rect x="280" y="6940" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="540.0" y="6966" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">customer_product_states</text>
+<text x="290" y="6996" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="290" y="7016" font-family="Arial" font-size="13">REF   product_id : BIGINT</text>
+<text x="290" y="7036" font-family="Arial" font-size="13">REF   user_id : BIGINT</text>
+<text x="290" y="7056" font-family="Arial" font-size="13">   wishlisted : BOOLEAN</text>
+<text x="290" y="7076" font-family="Arial" font-size="13">   viewed_at : TIMESTAMP(6)</text>
+<rect x="1280" y="6940" width="520" height="180" fill="white" stroke="#333"/>
+<rect x="1280" y="6940" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="1540.0" y="6966" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">shop_cart_items</text>
+<text x="1290" y="6996" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="1290" y="7016" font-family="Arial" font-size="13">FK   product_id : BIGINT</text>
+<text x="1290" y="7036" font-family="Arial" font-size="13">FK   user_id : BIGINT</text>
+<text x="1290" y="7056" font-family="Arial" font-size="13">REF   variant_id : BIGINT</text>
+<text x="1290" y="7076" font-family="Arial" font-size="13">   quantity : INTEGER</text>
+<text x="1290" y="7096" font-family="Arial" font-size="13">   variant_label : VARCHAR(255)</text>
+<rect x="2280" y="6940" width="520" height="280" fill="white" stroke="#333"/>
+<rect x="2280" y="6940" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="2540.0" y="6966" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">foods</text>
+<text x="2290" y="6996" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="2290" y="7016" font-family="Arial" font-size="13">   calories : INTEGER</text>
+<text x="2290" y="7036" font-family="Arial" font-size="13">   fat_grams : FLOAT(53)</text>
+<text x="2290" y="7056" font-family="Arial" font-size="13">   is_active : BOOLEAN</text>
+<text x="2290" y="7076" font-family="Arial" font-size="13">   protein_grams : FLOAT(53)</text>
+<text x="2290" y="7096" font-family="Arial" font-size="13">   weight_grams : FLOAT(53)</text>
+<text x="2290" y="7116" font-family="Arial" font-size="13">   image_url : VARCHAR(255)</text>
+<text x="2290" y="7136" font-family="Arial" font-size="13">   name : VARCHAR(255)</text>
+<text x="2290" y="7156" font-family="Arial" font-size="13">   suitable_goals : VARCHAR(255)</text>
+<text x="2290" y="7176" font-family="Arial" font-size="13">   ingredients : CLOB</text>
+<text x="2290" y="7196" font-family="Arial" font-size="13">   instructions : CLOB</text>
+<rect x="3280" y="6940" width="520" height="120" fill="white" stroke="#333"/>
+<rect x="3280" y="6940" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="3540.0" y="6966" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">injury_area_options</text>
+<text x="3290" y="6996" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="3290" y="7016" font-family="Arial" font-size="13">   code : VARCHAR(100)</text>
+<text x="3290" y="7036" font-family="Arial" font-size="13">   label : VARCHAR(100)</text>
+<rect x="280" y="7500" width="520" height="140" fill="white" stroke="#333"/>
+<rect x="280" y="7500" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="540.0" y="7526" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">system_configs</text>
+<text x="290" y="7556" font-family="Arial" font-size="13">PK   config_key : VARCHAR(255)</text>
+<text x="290" y="7576" font-family="Arial" font-size="13">   config_value : FLOAT(53)</text>
+<text x="290" y="7596" font-family="Arial" font-size="13">   category : VARCHAR(255)</text>
+<text x="290" y="7616" font-family="Arial" font-size="13">   description : CLOB</text>
+<rect x="1280" y="7500" width="520" height="140" fill="white" stroke="#333"/>
+<rect x="1280" y="7500" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="1540.0" y="7526" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">muscle_split_configs</text>
+<text x="1290" y="7556" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="1290" y="7576" font-family="Arial" font-size="13">   sessions_per_week : INTEGER</text>
+<text x="1290" y="7596" font-family="Arial" font-size="13">   day_groups : VARCHAR(1000)</text>
+<text x="1290" y="7616" font-family="Arial" font-size="13">   goal : ENUM</text>
+<rect x="2280" y="7500" width="520" height="120" fill="white" stroke="#333"/>
+<rect x="2280" y="7500" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="2540.0" y="7526" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">recommended_schedule_configs</text>
+<text x="2290" y="7556" font-family="Arial" font-size="13">PK   id : BIGINT</text>
+<text x="2290" y="7576" font-family="Arial" font-size="13">   sessions_per_week : INTEGER</text>
+<text x="2290" y="7596" font-family="Arial" font-size="13">   recommended_days : VARCHAR(30)</text>
+</svg>

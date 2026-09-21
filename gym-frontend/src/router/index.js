@@ -5,6 +5,7 @@ const router = createRouter({
     history: createWebHistory(),
 
     routes: [
+        { path: '/shop/product/:id', component: () => import('@/views/ProductDetailView.vue'), meta: { guest: true, allowAuthenticated: true } },
 
         // ─────────────────────────────────────────
         // PUBLIC
@@ -13,6 +14,20 @@ const router = createRouter({
             path: '/',
             name: 'Home',
             component: () => import('@/views/HomeView.vue'),
+            meta: { guest: true, allowAuthenticated: true }
+        },
+
+        {
+            path: '/shop',
+            name: 'PublicShop',
+            component: () => import('@/views/PublicShopView.vue'),
+            meta: { guest: true, allowAuthenticated: true }
+        },
+        
+        {
+            path: '/tra-cuu-don',
+            name: 'OrderLookup',
+            component: () => import('@/views/OrderLookupView.vue'),
             meta: { guest: true, allowAuthenticated: true }
         },
 
@@ -103,12 +118,6 @@ const router = createRouter({
                     name: 'UserShop',
                     component: () =>
                         import('@/views/user/ShopView.vue')
-                },
-                {
-                    path: '/shop',
-                    name: 'PublicShop',
-                    component: () => import('@/views/PublicShopView.vue'),
-                    meta: { guest: true, allowAuthenticated: true }
                 },
 
                 {
@@ -206,6 +215,7 @@ const router = createRouter({
                     component: () =>
                         import('@/views/admin/FoodsAdmin.vue')
                 },
+                { path: 'shop-reports', component: () => import('@/views/admin/ShopReportsView.vue') },
                 { path: 'shop', name: 'AdminShop', component: () => import('@/views/admin/ShopAdmin.vue') },
 
                 {
@@ -237,6 +247,7 @@ const router = createRouter({
                 },
                 { path: 'staff-schedule', name: 'AdminStaffSchedule', component: () => import('@/views/admin/StaffScheduleAdmin.vue') },
                 { path: 'vouchers', name: 'AdminVouchers', component: () => import('@/views/admin/VoucherAdmin.vue') },
+                { path: 'product-attributes', name: 'AdminProductAttributes', component: () => import('@/views/admin/ProductAttributesAdmin.vue') },
                 {
                     path: 'system-configs',
                     name: 'AdminSystemConfigs',

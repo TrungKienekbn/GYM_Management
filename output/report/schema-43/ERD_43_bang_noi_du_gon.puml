@@ -1,0 +1,265 @@
+@startuml
+title ERD logic 43 bảng - 39 FK và 16 liên kết logic bổ sung
+hide circle
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 65
+top to bottom direction
+
+entity "chat_messages" as chat_messages {
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+}
+entity "customer_addresses" as customer_addresses {
+  id : bigint <<PK>>
+  user_id : bigint <<REF>>
+}
+entity "customer_product_states" as customer_product_states {
+  id : bigint <<PK>>
+  product_id : bigint <<REF>>
+  user_id : bigint <<REF>>
+}
+entity "endurance_tests" as endurance_tests {
+  id : bigint <<PK>>
+  user_id : bigint <<FK>> <<UK>>
+}
+entity "exercises" as exercises {
+  id : bigint <<PK>>
+}
+entity "foods" as foods {
+  id : bigint <<PK>>
+}
+entity "injury_area_options" as injury_area_options {
+  id : bigint <<PK>>
+}
+entity "invoices" as invoices {
+  id : bigint <<PK>>
+  membership_id : bigint <<FK>>
+  user_id : bigint <<FK>>
+  momo_order_id : varchar <<UK>>
+  transfer_code : varchar <<UK>>
+}
+entity "memberships" as memberships {
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+}
+entity "muscle_split_configs" as muscle_split_configs {
+  id : bigint <<PK>>
+}
+entity "notifications" as notifications {
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+}
+entity "pet_profiles" as pet_profiles {
+  user_id : bigint <<PK>> <<FK>>
+}
+entity "plan_muscle_group_weight" as plan_muscle_group_weight {
+  id : bigint <<PK>>
+  workout_plan_id : bigint <<FK>>
+}
+entity "product_attribute_values" as product_attribute_values {
+  attribute_id : bigint <<FK>>
+  id : bigint <<PK>>
+}
+entity "product_attributes" as product_attributes {
+  id : bigint <<PK>>
+  name : varchar <<UK>>
+}
+entity "product_reviews" as product_reviews {
+  id : bigint <<PK>>
+  order_id : bigint <<FK>>
+  product_id : bigint <<FK>>
+  user_id : bigint <<FK>>
+}
+entity "product_variants" as product_variants {
+  id : bigint <<PK>>
+  product_id : bigint <<FK>>
+}
+entity "progress_tracking" as progress_tracking {
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+}
+entity "recommended_schedule_configs" as recommended_schedule_configs {
+  id : bigint <<PK>>
+}
+entity "roles" as roles {
+  id : bigint <<PK>>
+  role_name : varchar <<UK>>
+}
+entity "service_ratings" as service_ratings {
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+}
+entity "session_exercise_logs" as session_exercise_logs {
+  exercise_id : bigint <<FK>>
+  id : bigint <<PK>>
+  session_id : bigint <<FK>>
+}
+entity "shop_cart_items" as shop_cart_items {
+  id : bigint <<PK>>
+  product_id : bigint <<FK>>
+  user_id : bigint <<FK>>
+  variant_id : bigint <<REF>>
+}
+entity "shop_inventory_movements" as shop_inventory_movements {
+  id : bigint <<PK>>
+  order_id : bigint <<REF>>
+  product_id : bigint <<REF>>
+  variant_id : bigint <<REF>>
+}
+entity "shop_order_events" as shop_order_events {
+  id : bigint <<PK>>
+  order_id : bigint <<REF>>
+}
+entity "shop_order_items" as shop_order_items {
+  id : bigint <<PK>>
+  order_id : bigint <<FK>>
+  product_id : bigint <<REF>>
+  variant_id : bigint <<REF>>
+}
+entity "shop_orders" as shop_orders {
+  created_by_staff_id : bigint <<REF>>
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+  gateway_reference : varchar <<UK>>
+  transfer_code : varchar <<UK>>
+  voucher_code : varchar <<REF>>
+}
+entity "shop_products" as shop_products {
+  id : bigint <<PK>>
+}
+entity "support_messages" as support_messages {
+  id : bigint <<PK>>
+  session_id : bigint <<FK>>
+}
+entity "support_sessions" as support_sessions {
+  admin_id : bigint <<FK>>
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+}
+entity "system_configs" as system_configs {
+  config_key : varchar <<PK>>
+}
+entity "user_cosmetic_ownership" as user_cosmetic_ownership {
+  id : bigint <<PK>>
+  user_id : bigint <<REF>>
+}
+entity "user_profiles" as user_profiles {
+  id : bigint <<PK>>
+  user_id : bigint <<FK>> <<UK>>
+}
+entity "users" as users {
+  id : bigint <<PK>>
+  role_id : bigint <<FK>>
+  email : varchar <<UK>>
+}
+entity "variant_attribute_values" as variant_attribute_values {
+  value_id : bigint <<PK>> <<FK>>
+  variant_id : bigint <<PK>> <<FK>>
+}
+entity "voucher_scope_products" as voucher_scope_products {
+  product_id : bigint <<REF>>
+  voucher_id : bigint <<FK>>
+}
+entity "vouchers" as vouchers {
+  id : bigint <<PK>>
+  code : varchar <<UK>>
+}
+entity "weekly_reviews" as weekly_reviews {
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+  workout_plan_id : bigint <<FK>>
+}
+entity "work_shifts" as work_shifts {
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+}
+entity "workout_plan_days" as workout_plan_days {
+  id : bigint <<PK>>
+  workout_plan_id : bigint <<FK>>
+}
+entity "workout_plan_exercises" as workout_plan_exercises {
+  exercise_id : bigint <<FK>>
+  id : bigint <<PK>>
+  last_low_adjustment_log_id : bigint <<REF>>
+  plan_day_id : bigint <<FK>>
+}
+entity "workout_plans" as workout_plans {
+  id : bigint <<PK>>
+  original_plan_id : bigint <<REF>>
+  user_id : bigint <<FK>>
+}
+entity "workout_sessions" as workout_sessions {
+  id : bigint <<PK>>
+  plan_day_id : bigint <<FK>>
+  user_id : bigint <<FK>>
+  workout_plan_id : bigint <<FK>>
+}
+users |o--o{ chat_messages : "user_id"
+users ||--o| endurance_tests : "user_id"
+memberships |o--o{ invoices : "membership_id"
+users |o--o{ invoices : "user_id"
+users |o--o{ memberships : "user_id"
+users |o--o{ notifications : "user_id"
+users ||--o| pet_profiles : "user_id"
+workout_plans |o--o{ plan_muscle_group_weight : "workout_plan_id"
+product_attributes |o--o{ product_attribute_values : "attribute_id"
+shop_orders |o--o{ product_reviews : "order_id"
+shop_products |o--o{ product_reviews : "product_id"
+users |o--o{ product_reviews : "user_id"
+shop_products |o--o{ product_variants : "product_id"
+users |o--o{ progress_tracking : "user_id"
+users |o--o{ service_ratings : "user_id"
+exercises |o--o{ session_exercise_logs : "exercise_id"
+workout_sessions |o--o{ session_exercise_logs : "session_id"
+shop_products |o--o{ shop_cart_items : "product_id"
+users |o--o{ shop_cart_items : "user_id"
+shop_orders |o--o{ shop_order_items : "order_id"
+users |o--o{ shop_orders : "user_id"
+support_sessions |o--o{ support_messages : "session_id"
+users |o--o{ support_sessions : "admin_id"
+users |o--o{ support_sessions : "user_id"
+users |o--o| user_profiles : "user_id"
+roles |o--o{ users : "role_id"
+product_attribute_values ||--o{ variant_attribute_values : "value_id"
+product_variants ||--o{ variant_attribute_values : "variant_id"
+vouchers ||--o{ voucher_scope_products : "voucher_id"
+users |o--o{ weekly_reviews : "user_id"
+workout_plans |o--o{ weekly_reviews : "workout_plan_id"
+users |o--o{ work_shifts : "user_id"
+workout_plans |o--o{ workout_plan_days : "workout_plan_id"
+exercises |o--o{ workout_plan_exercises : "exercise_id"
+workout_plan_days |o--o{ workout_plan_exercises : "plan_day_id"
+users |o--o{ workout_plans : "user_id"
+workout_plan_days |o--o{ workout_sessions : "plan_day_id"
+users |o--o{ workout_sessions : "user_id"
+workout_plans |o--o{ workout_sessions : "workout_plan_id"
+' Dotted lines are logical references, not existing database FK constraints.
+users |o..o{ customer_addresses : "user_id -> id"
+users |o..o{ customer_product_states : "user_id -> id"
+shop_products |o..o{ customer_product_states : "product_id -> id"
+users ||..o{ user_cosmetic_ownership : "user_id -> id"
+shop_orders |o..o{ shop_order_events : "order_id -> id"
+shop_products |o..o{ shop_inventory_movements : "product_id -> id"
+product_variants |o..o{ shop_inventory_movements : "variant_id -> id"
+shop_orders |o..o{ shop_inventory_movements : "order_id -> id"
+product_variants |o..o{ shop_cart_items : "variant_id -> id"
+shop_products |o..o{ shop_order_items : "product_id -> id"
+product_variants |o..o{ shop_order_items : "variant_id -> id"
+users |o..o{ shop_orders : "created_by_staff_id -> id"
+vouchers |o..o{ shop_orders : "voucher_code -> code"
+shop_products |o..o{ voucher_scope_products : "product_id -> id"
+workout_plans |o..o{ workout_plans : "original_plan_id -> id"
+session_exercise_logs |o..o{ workout_plan_exercises : "last_low_adjustment_log_id -> id"
+legend bottom
+  Đường liền: 39 khóa ngoại trong schema gốc.
+  Đường nét đứt / REF: 16 liên kết logic bổ sung; chưa phải FK của ứng dụng.
+  PK: khóa chính. FK: khóa ngoại hiện có. UK: khóa duy nhất.
+  Năm bảng danh mục/cấu hình đứng riêng do chưa có cột tham chiếu phù hợp.
+  notifications.ref_id phụ thuộc ref_type, không có một bảng đích cố định.
+endlegend
+@enduml

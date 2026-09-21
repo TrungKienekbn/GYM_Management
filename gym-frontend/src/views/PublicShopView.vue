@@ -1,162 +1,21 @@
-<template>
-  <div class="public-shop">
-    <header class="shop-header">
-      <router-link to="/" class="brand">GYM<span>PRO</span></router-link>
-      <el-input v-model="keyword" placeholder="Tìm sản phẩm..." clearable style="width:280px" @input="load" />
-      <div class="header-actions">
-        <el-badge :value="wishlist.length" :hidden="!wishlist.length"><el-button circle @click="wishlistVisible = true">♥</el-button></el-badge>
-        <el-badge :value="compareList.length" :hidden="!compareList.length"><el-button circle @click="compareVisible = true">⇄</el-button></el-badge>
-        <el-badge :value="cartCount" :hidden="!cartCount"><el-button type="primary" @click="goToCart">Giỏ hàng</el-button></el-badge>
-      </div>
-    </header>
-
-    <div v-if="activeVouchers.length" class="promo-bar">
-      🎁 Khuyến mãi đang chạy:
-      <span v-for="v in activeVouchers" :key="v.code" class="promo-tag">{{ v.code }} - {{ v.type === 'PERCENT' ? v.value + '%' : formatVnd(v.value) }}</span>
-    </div>
-
-    <div class="product-grid" v-loading="loading">
-      <el-card v-for="p in products" :key="p.id" class="product-card">
-        <img :src="p.imageUrl || fallback" class="product-img" />
-        <div class="product-name">{{ p.name }}</div>
-        <div class="product-price">
-          <b>{{ formatVnd(p.salePrice || p.price) }}</b>
-          <span v-if="p.salePrice" class="old-price">{{ formatVnd(p.price) }}</span>
-        </div>
-        <div class="product-actions">
-          <el-button size="small" :disabled="p.stock <= 0" type="primary" @click="addToCart(p)">Thêm giỏ</el-button>
-          <el-button size="small" :type="isWishlisted(p) ? 'danger' : 'default'" @click="toggleWishlist(p)">♥</el-button>
-          <el-checkbox :model-value="isCompared(p)" @change="toggleCompare(p)">So sánh</el-checkbox>
-        </div>
-      </el-card>
-    </div>
-
-    <el-dialog v-model="wishlistVisible" title="Sản phẩm yêu thích" width="600">
-      <el-empty v-if="!wishlist.length" description="Chưa có sản phẩm yêu thích" />
-      <div v-for="p in wishlist" :key="p.id" class="wishlist-row">
-        <span>{{ p.name }}</span><b>{{ formatVnd(p.salePrice || p.price) }}</b>
-        <el-button size="small" type="primary" @click="addToCart(p)">Thêm giỏ</el-button>
-        <el-button size="small" text type="danger" @click="toggleWishlist(p)">Xóa</el-button>
-      </div>
-    </el-dialog>
-
-    <el-dialog v-model="compareVisible" title="So sánh sản phẩm" width="700">
-      <el-empty v-if="!compareList.length" description="Chưa chọn sản phẩm để so sánh (tối đa 3)" />
-      <el-table v-else :data="compareRows">
-        <el-table-column prop="label" label="" width="120" />
-        <el-table-column v-for="p in compareList" :key="p.id" :prop="'p' + p.id" :label="p.name" />
-      </el-table>
-    </el-dialog>
-
-    <el-dialog v-model="loginPrompt" title="Cần đăng nhập" width="380">
-      <p>Giỏ hàng của bạn đã được lưu tạm. Đăng nhập hoặc đăng ký để tiếp tục thanh toán.</p>
-      <template #footer>
-        <el-button @click="loginPrompt = false">Để sau</el-button>
-        <el-button type="primary" @click="router.push('/login')">Đăng nhập</el-button>
-      </template>
-    </el-dialog>
-  </div>
-</template>
-
+<template><main class="public-shop">
+<header><router-link to="/">GYMPRO</router-link><router-link to="/tra-cuu-don">Tra cứu đơn</router-link><router-link v-if="auth.isLoggedIn" to="/app/shop">Đơn hàng của tôi</router-link><el-button type="primary" @click="openCart">Giỏ hàng ({{count}})</el-button></header>
+<div v-if="vouchers.length" class="promo">Khuyến mãi: <el-tag v-for="v in vouchers" :key="v.code">{{v.code}} — {{v.type==='PERCENT'?v.value+'%':money(v.value)}}</el-tag></div>
+<ShopCatalog @add="add"/>
+<ProductVariantPicker ref="picker" :add-item="addSelected"/>
+<el-drawer v-model="cartOpen" title="Giỏ hàng của bạn" size="min(560px, 100vw)">
+ <el-empty v-if="!guestCart.length" description="Giỏ hàng đang trống"/>
+ <div v-for="(i,index) in guestCart" :key="i.id+':'+i.variantId" class="cart-row"><router-link :to="'/shop/product/'+i.id">{{i.name}}</router-link><p>{{i.variantLabel}}</p><b>{{money(i.unitPrice??i.salePrice??i.price)}}</b><el-input-number v-model="i.quantity" :min="1" :max="Math.max(1,i.stock||0)" :disabled="i.stock<=0" @change="persistCart"/><el-button text type="danger" @click="guestCart.splice(index,1);persistCart()">Xóa</el-button><small v-if="i.stock<=0">Hết hàng, vui lòng xóa khỏi giỏ.</small></div>
+ <template #footer><p>Tạm tính: <b>{{money(total)}}</b></p><small>Giá và tồn kho được kiểm tra lại khi đặt hàng.</small><el-button type="primary" :disabled="!guestCart.length" @click="router.push('/login')">Đăng nhập để thanh toán</el-button></template>
+</el-drawer>
+</main></template>
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { shopAPI } from '@/api'
-import { useAuthStore } from '@/stores/auth'
-import { ElMessage } from 'element-plus'
-
-const router = useRouter()
-const auth = useAuthStore()
-
-const products = ref([])
-const keyword = ref('')
-const loading = ref(false)
-const activeVouchers = ref([])
-const fallback = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=70'
-
-const wishlist = ref(JSON.parse(localStorage.getItem('guest_wishlist') || '[]'))
-const compareList = ref(JSON.parse(localStorage.getItem('guest_compare') || '[]'))
-const guestCart = ref(JSON.parse(localStorage.getItem('guest_cart') || '[]'))
-const wishlistVisible = ref(false)
-const compareVisible = ref(false)
-const loginPrompt = ref(false)
-
-const cartCount = computed(() => guestCart.value.reduce((s, i) => s + i.quantity, 0))
-const compareRows = computed(() => {
-  const fields = [['name', 'Tên'], ['price', 'Giá gốc'], ['salePrice', 'Giá KM'], ['brand', 'Thương hiệu'], ['stock', 'Tồn kho']]
-  return fields.map(([key, label]) => {
-    const row = { label }
-    compareList.value.forEach(p => { row['p' + p.id] = p[key] ?? '-' })
-    return row
-  })
-})
-
-function formatVnd(v) { return (v || 0).toLocaleString('vi-VN') + ' đ' }
-
-async function load() {
-  loading.value = true
-  try {
-    const [p, v] = await Promise.all([
-      shopAPI.products({ keyword: keyword.value || undefined }),
-      shopAPI.publicVouchers()
-    ])
-    products.value = p.data || []
-    activeVouchers.value = v.data || []
-  } finally { loading.value = false }
-}
-
-function persist() {
-  localStorage.setItem('guest_wishlist', JSON.stringify(wishlist.value))
-  localStorage.setItem('guest_compare', JSON.stringify(compareList.value))
-  localStorage.setItem('guest_cart', JSON.stringify(guestCart.value))
-}
-
-function isWishlisted(p) { return wishlist.value.some(i => i.id === p.id) }
-function toggleWishlist(p) {
-  if (isWishlisted(p)) wishlist.value = wishlist.value.filter(i => i.id !== p.id)
-  else wishlist.value.push(p)
-  persist()
-}
-
-function isCompared(p) { return compareList.value.some(i => i.id === p.id) }
-function toggleCompare(p) {
-  if (isCompared(p)) { compareList.value = compareList.value.filter(i => i.id !== p.id); persist(); return }
-  if (compareList.value.length >= 3) { ElMessage.warning('Chỉ so sánh tối đa 3 sản phẩm'); return }
-  compareList.value.push(p); persist()
-}
-
-async function addToCart(p) {
-  if (auth.isAuthenticated) {
-    try { await shopAPI.addCart(p.id); ElMessage.success('Đã thêm vào giỏ hàng') } catch { }
-    return
-  }
-  const existing = guestCart.value.find(i => i.id === p.id)
-  if (existing) existing.quantity++
-  else guestCart.value.push({ ...p, quantity: 1 })
-  persist()
-  ElMessage.success('Đã thêm vào giỏ (khách vãng lai)')
-}
-
-function goToCart() {
-  if (auth.isAuthenticated) { router.push('/app/shop'); return }
-  if (cartCount.value === 0) { ElMessage.info('Giỏ hàng đang trống'); return }
-  loginPrompt.value = true
-}
-
-onMounted(load)
-</script>
-
-<style scoped>
-.shop-header { display: flex; align-items: center; gap: 16px; padding: 16px 24px; }
-.brand { font-family: var(--font-display, inherit); font-weight: 700; text-decoration: none; color: inherit; }
-.header-actions { margin-left: auto; display: flex; gap: 10px; align-items: center; }
-.promo-bar { background: #fff7e6; padding: 8px 24px; font-size: 0.85rem; }
-.promo-tag { margin-left: 10px; font-weight: 600; }
-.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; padding: 20px 24px; }
-.product-card { text-align: center; }
-.product-img { width: 100%; height: 140px; object-fit: cover; border-radius: 6px; }
-.product-name { margin-top: 8px; font-weight: 600; }
-.old-price { text-decoration: line-through; color: #999; margin-left: 6px; font-size: 0.85rem; }
-.product-actions { margin-top: 8px; display: flex; gap: 6px; justify-content: center; align-items: center; flex-wrap: wrap; }
-.wishlist-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid #eee; }
-</style>
+import {ref,computed,onMounted} from 'vue';import {useRouter} from 'vue-router';import {shopAPI} from '@/api';import {useAuthStore} from '@/stores/auth';import {useShopCustomer} from '@/composables/useShopCustomer';import {ElMessage} from 'element-plus';import ShopCatalog from '@/components/shop/ShopCatalog.vue';import ProductVariantPicker from '@/components/shop/ProductVariantPicker.vue'
+const router=useRouter(),auth=useAuthStore(),{guestCart,persistCart}=useShopCustomer(),picker=ref(null),cartOpen=ref(false),serverCount=ref(0),vouchers=ref([])
+const money=v=>Number(v||0).toLocaleString('vi-VN')+' đ',count=computed(()=>auth.isLoggedIn?serverCount.value:guestCart.value.reduce((s,i)=>s+i.quantity,0)),total=computed(()=>guestCart.value.reduce((s,i)=>s+(i.unitPrice??i.salePrice??i.price)*i.quantity,0))
+async function refreshCount(){if(auth.isLoggedIn)serverCount.value=((await shopAPI.cart()).data||[]).reduce((s,i)=>s+i.quantity,0)}
+async function openCart(){if(auth.isLoggedIn){router.push('/app/shop?tab=cart');return}cartOpen.value=true}
+async function add(p){try{const current=(await shopAPI.detail(p.id)).data;if(current.hasVariants)picker.value.open(current);else await addSelected(current)}catch{}}
+async function addSelected(p,v=null){if(auth.isLoggedIn){await shopAPI.addCart(p.id,1,v?.id??null);await refreshCount()}else{const stock=v?.stock??p.stock,id=v?.id??null,existing=guestCart.value.find(i=>i.id===p.id&&(i.variantId??null)===id);if((existing?.quantity||0)+1>stock){ElMessage.warning('Số lượng đã đạt tồn kho');return false}const data={...p,variantId:id,variantLabel:v?.label??null,stock,unitPrice:v?.priceOverride>0?v.priceOverride:p.salePrice||p.price,quantity:(existing?.quantity||0)+1};if(existing)Object.assign(existing,data);else guestCart.value.push(data);persistCart()}ElMessage.success('Đã thêm vào giỏ')}
+onMounted(async()=>{vouchers.value=(await shopAPI.publicVouchers()).data||[];await refreshCount()})
+</script><style scoped>.public-shop{max-width:1280px;margin:auto;padding:20px}header{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-bottom:20px}header>a:first-child{font-weight:900;margin-right:auto}a{color:inherit}.promo{padding:12px;background:var(--el-color-warning-light-9)}.promo .el-tag{margin:4px}.cart-row{padding:16px 0;border-bottom:1px solid var(--el-border-color)}.cart-row p{margin:6px 0}.cart-row .el-input-number{margin:10px}.cart-row small{display:block;color:var(--el-color-danger)}</style>

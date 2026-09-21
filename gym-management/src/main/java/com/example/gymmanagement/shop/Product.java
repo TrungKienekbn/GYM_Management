@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 @Entity @Table(name="shop_products")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class Product {
+ @Convert(converter=ShopImageListConverter.class) @Column(length=20000) private java.util.List<String> images;
  @Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
  @Column(nullable=false) private String name;
  @Enumerated(EnumType.STRING) private ProductCategory category;

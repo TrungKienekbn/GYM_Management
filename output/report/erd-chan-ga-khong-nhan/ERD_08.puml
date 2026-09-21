@@ -1,0 +1,36 @@
+@startuml
+title ERD logic - 8. Danh mục và cấu hình độc lập
+hide circle
+skinparam monochrome true
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam linetype polyline
+skinparam nodesep 65
+skinparam ranksep 100
+top to bottom direction
+entity "foods" as foods {
+  id : bigint <<PK>>
+}
+entity "injury_area_options" as injury_area_options {
+  id : bigint <<PK>>
+}
+entity "muscle_split_configs" as muscle_split_configs {
+  id : bigint <<PK>>
+}
+entity "recommended_schedule_configs" as recommended_schedule_configs {
+  id : bigint <<PK>>
+}
+entity "system_configs" as system_configs {
+  config_key : varchar <<PK>>
+}
+foods -[hidden]down- injury_area_options
+injury_area_options -[hidden]down- muscle_split_configs
+muscle_split_configs -[hidden]down- recommended_schedule_configs
+recommended_schedule_configs -[hidden]down- system_configs
+legend bottom
+  Liền: FK hiện có. Nét đứt / REF: liên kết logic bổ sung.
+  Bảng cùng tên ở các hình là cùng một bảng trong CSDL.
+endlegend
+@enduml

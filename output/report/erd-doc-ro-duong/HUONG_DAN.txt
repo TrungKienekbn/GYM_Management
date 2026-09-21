@@ -1,0 +1,11 @@
+Tám sơ đồ là các phần của cùng ERD 43 bảng và 55 quan hệ.
+Mở từng file TXT, copy toàn bộ vào PlantUML. Chèn các hình nối tiếp trong Word.
+01 Tài khoản và thể chất
+02 Gói tập và nhân vật
+03 Hỗ trợ và nhân viên
+04 Giáo án và buổi tập
+05 Sản phẩm và thuộc tính
+06 Đơn hàng và kho
+07 Giỏ hàng và trải nghiệm
+08 Danh mục độc lập
+Các bảng dùng chung lặp lại để tránh đường nối xuyên nhóm.

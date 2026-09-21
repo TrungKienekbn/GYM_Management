@@ -1,0 +1,161 @@
+@startuml
+' Code PlantUML: copy this entire file, including @startuml and @enduml.
+hide circle
+hide methods
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam roundcorner 0
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 65
+skinparam ranksep 85
+skinparam class {
+  BackgroundColor White
+  HeaderBackgroundColor #EEEEEE
+  BorderColor Black
+  FontColor Black
+  FontStyle bold
+  AttributeFontStyle plain
+}
+top to bottom direction
+
+title ERD logic - 6. Đơn hàng và biến động kho
+
+entity "product_variants" as product_variants {
+  {field} **PK**  id : BIGINT
+  {field} **FK**  product_id : BIGINT
+  {field}       active : BOOLEAN
+  {field}       price_override : FLOAT(53)
+  {field}       stock : INTEGER
+  {field}       sku : VARCHAR(255)
+}
+
+entity "shop_inventory_movements" as shop_inventory_movements {
+  {field} **PK**  id : BIGINT
+  {field} **REF**  order_id : BIGINT
+  {field} **REF**  product_id : BIGINT
+  {field} **REF**  variant_id : BIGINT
+  {field}       after_stock : INTEGER
+  {field}       before_stock : INTEGER
+  {field}       created_at : TIMESTAMP(6)
+  {field}       reason : VARCHAR(1000)
+  {field}       actor : VARCHAR(255)
+}
+
+entity "shop_order_events" as shop_order_events {
+  {field} **PK**  id : BIGINT
+  {field} **REF**  order_id : BIGINT
+  {field}       created_at : TIMESTAMP(6)
+  {field}       note : VARCHAR(1000)
+  {field}       actor : VARCHAR(255)
+  {field}       from_status : VARCHAR(255)
+  {field}       to_status : VARCHAR(255)
+}
+
+entity "shop_order_items" as shop_order_items {
+  {field} **PK**  id : BIGINT
+  {field} **FK**  order_id : BIGINT
+  {field} **REF**  product_id : BIGINT
+  {field} **REF**  variant_id : BIGINT
+  {field}       line_total : FLOAT(53)
+  {field}       quantity : INTEGER
+  {field}       unit_price : FLOAT(53)
+  {field}       image_url : VARCHAR(255)
+  {field}       product_name : VARCHAR(255)
+  {field}       variant_label : VARCHAR(255)
+}
+
+entity "shop_orders" as shop_orders {
+  {field} **PK**  id : BIGINT
+  {field} **REF**  created_by_staff_id : BIGINT
+  {field} **FK**  user_id : BIGINT
+  {field} **REF**  voucher_code : VARCHAR(255)
+  {field}       discount : FLOAT(53)
+  {field}       shipping_fee : FLOAT(53)
+  {field}       subtotal : FLOAT(53)
+  {field}       total : FLOAT(53)
+  {field}       voucher_discount : FLOAT(53)
+  {field}       created_at : TIMESTAMP(6)
+  {field}       expires_at : TIMESTAMP(6)
+  {field}       paid_at : TIMESTAMP(6)
+  {field}       note : VARCHAR(1000)
+  {field}       qr_raw_payload : VARCHAR(1000)
+  {field}       shipping_address : VARCHAR(1000)
+  {field}       payment_url : VARCHAR(2000)
+  {field}       gateway_reference : VARCHAR(255)  [UK]
+  {field}       payment_method : VARCHAR(255)
+  {field}       phone : VARCHAR(255)
+  {field}       qr_code_url : VARCHAR(255)
+  {field}       receiver_name : VARCHAR(255)
+  {field}       transaction_id : VARCHAR(255)
+  {field}       transfer_code : VARCHAR(255)  [UK]
+  {field}       channel : ENUM
+  {field}       status : ENUM
+}
+
+entity "shop_products" as shop_products {
+  {field} **PK**  id : BIGINT
+  {field}       active : BOOLEAN
+  {field}       price : FLOAT(53)
+  {field}       sale_price : FLOAT(53)
+  {field}       stock : INTEGER
+  {field}       created_at : TIMESTAMP(6)
+  {field}       description : VARCHAR(2000)
+  {field}       images : VARCHAR(20000)
+  {field}       brand : VARCHAR(255)
+  {field}       image_url : VARCHAR(255)
+  {field}       name : VARCHAR(255)
+  {field}       required_equipment_code : VARCHAR(255)
+  {field}       suitable_goals : VARCHAR(255)
+  {field}       category : ENUM
+}
+
+entity "users" as users {
+  {field} **PK**  id : BIGINT
+  {field} **FK**  role_id : BIGINT
+  {field}       email_verified : BOOLEAN
+  {field}       password_reset_attempts : INTEGER
+  {field}       status : BOOLEAN
+  {field}       created_at : TIMESTAMP(6)
+  {field}       password_reset_blocked_until : TIMESTAMP(6)
+  {field}       email : VARCHAR(255)  [UK]
+  {field}       full_name : VARCHAR(255)
+  {field}       password : VARCHAR(255)
+  {field}       phone : VARCHAR(255)
+  {field}       verification_token : VARCHAR(255)
+}
+
+entity "vouchers" as vouchers {
+  {field} **PK**  id : BIGINT
+  {field}       active : BOOLEAN
+  {field}       max_discount_amount : FLOAT(53)
+  {field}       min_order_amount : FLOAT(53)
+  {field}       usage_limit : INTEGER
+  {field}       used_count : INTEGER
+  {field}       value : FLOAT(53)
+  {field}       created_at : TIMESTAMP(6)
+  {field}       end_at : TIMESTAMP(6)
+  {field}       start_at : TIMESTAMP(6)
+  {field}       code : VARCHAR(255)  [UK]
+  {field}       description : VARCHAR(255)
+  {field}       scope_category : ENUM
+  {field}       scope_type : ENUM
+  {field}       type : ENUM
+}
+shop_orders |o--o{ shop_order_items
+users |o--o{ shop_orders
+shop_orders |o..o{ shop_order_events
+shop_products |o..o{ shop_inventory_movements
+product_variants |o..o{ shop_inventory_movements
+shop_orders |o..o{ shop_inventory_movements
+shop_products |o..o{ shop_order_items
+product_variants |o..o{ shop_order_items
+users |o..o{ shop_orders
+vouchers |o..o{ shop_orders
+legend bottom
+  PK: khóa chính. FK: khóa ngoại hiện có. UK: khóa duy nhất.
+  REF / nét đứt: liên kết logic bổ sung, chưa phải FK của ứng dụng.
+endlegend
+@enduml

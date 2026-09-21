@@ -1,0 +1,1150 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="4080" height="8080" viewBox="0 0 4080 8080">
+<rect width="100%" height="100%" fill="white"/>
+<defs>
+<marker id="one" markerUnits="userSpaceOnUse" markerWidth="30" markerHeight="20" viewBox="-27 -10 30 20" refX="0" refY="0" orient="auto-start-reverse"><g stroke="#333" stroke-width="1.4" fill="none"><path d="M -5 -7 V 7 M -11 -7 V 7"/></g></marker>
+<marker id="zeroone" markerUnits="userSpaceOnUse" markerWidth="30" markerHeight="20" viewBox="-27 -10 30 20" refX="0" refY="0" orient="auto-start-reverse"><g stroke="#333" stroke-width="1.4" fill="none"><path d="M -5 -7 V 7"/><circle cx="-17" cy="0" r="5" fill="white"/></g></marker>
+<marker id="zeromany" markerUnits="userSpaceOnUse" markerWidth="30" markerHeight="20" viewBox="-27 -10 30 20" refX="0" refY="0" orient="auto-start-reverse"><g stroke="#333" stroke-width="1.4" fill="none"><path d="M 0 -7 L -12 0 L 0 7 M 0 0 H -12"/><circle cx="-20" cy="0" r="5" fill="white"/></g></marker>
+<marker id="onemany" markerUnits="userSpaceOnUse" markerWidth="30" markerHeight="20" viewBox="-27 -10 30 20" refX="0" refY="0" orient="auto-start-reverse"><g stroke="#333" stroke-width="1.4" fill="none"><path d="M 0 -7 L -12 0 L 0 7 M 0 0 H -12 M -19 -7 V 7"/></g></marker>
+</defs>
+<polyline points="1280,3420 1260,3420 1260,3860 1820,3860 1820,3420 1800,3420" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="1280,3420 1260,3420 1260,3860 1820,3860 1820,3420 1800,3420" fill="none" stroke="#333" stroke-width="1.4" stroke-dasharray="7 5" marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="3540,5180 3540,5460" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="3540,5180 3540,5460" fill="none" stroke="#333" stroke-width="1.4" stroke-dasharray="7 5" marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="2540,1980 2540,2340" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2540,1980 2540,2340" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#one)" marker-end="url(#zeroone)"/>
+<polyline points="2540,1680 2540,1400" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2540,1680 2540,1400" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeroone)"/>
+<polyline points="2540,6020 2540,6300" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2540,6020 2540,6300" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="800,1140 1260,1140 1260,1060 1280,1060" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="800,1140 1260,1140 1260,1060 1280,1060" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="1280,3060 820,3060 820,3120 800,3120" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="1280,3060 820,3060 820,3120 800,3120" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="800,4900 1260,4900 1260,4880 1280,4880" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="800,4900 1260,4900 1260,4880 1280,4880" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="3280,4920 2820,4920 2820,5000 2800,5000" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="3280,4920 2820,4920 2820,5000 2800,5000" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="2800,1860 3260,1860 3260,1820 3280,1820" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2800,1860 3260,1860 3260,1820 3280,1820" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="2800,5580 3260,5580 3260,5700 3280,5700" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2800,5580 3260,5580 3260,5700 3280,5700" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="1280,1800 820,1800 820,1820 800,1820" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="1280,1800 820,1800 820,1820 800,1820" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="2280,1820 1800,1820" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2280,1820 1800,1820" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="2280,1800 2260,1800 2260,1860 1820,1860 1820,1840 1800,1840" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2280,1800 2260,1800 2260,1860 1820,1860 1820,1840 1800,1840" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="800,6340 1260,6340 1260,6380 1280,6380" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="800,6340 1260,6340 1260,6380 1280,6380" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#one)" marker-end="url(#zeromany)"/>
+<polyline points="1800,3100 2260,3100 2260,3180 2280,3180" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="1800,3100 2260,3100 2260,3180 2280,3180" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="800,4240 1260,4240 1260,4180 1280,4180" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="800,4240 1260,4240 1260,4180 1280,4180" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="2280,5580 1820,5580 1820,5680 1800,5680" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2280,5580 1820,5580 1820,5680 1800,5680" fill="none" stroke="#333" stroke-width="1.4" stroke-dasharray="7 5" marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="3280,4300 2820,4300 2820,4260 2800,4260" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="3280,4300 2820,4300 2820,4260 2800,4260" fill="none" stroke="#333" stroke-width="1.4" stroke-dasharray="7 5" marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="3540,3540 3540,4120" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="3540,3540 3540,4120" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="1540,3840 1540,4120" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="1540,3840 1540,4120" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="2520,1980 2520,2000 2260,2000 2260,2980 2540,2980 2540,3000" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2520,1980 2520,2000 2260,2000 2260,2980 2540,2980 2540,3000" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="2520,1680 2520,1660 2260,1660 2260,440 2540,440 2540,420" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2520,1680 2520,1660 2260,1660 2260,440 2540,440 2540,420" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="1280,4940 1260,4940 1260,5500 800,5500" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="1280,4940 1260,4940 1260,5500 800,5500" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#one)" marker-end="url(#zeromany)"/>
+<polyline points="2280,5000 2260,5000 2260,5500 1800,5500" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2280,5000 2260,5000 2260,5500 1800,5500" fill="none" stroke="#333" stroke-width="1.4" stroke-dasharray="7 5" marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="2800,4980 3260,4980 3260,5500 3280,5500" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2800,4980 3260,4980 3260,5500 3280,5500" fill="none" stroke="#333" stroke-width="1.4" stroke-dasharray="7 5" marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="2280,1960 1820,1960 1820,2380 1800,2380" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2280,1960 1820,1960 1820,2380 1800,2380" fill="none" stroke="#333" stroke-width="1.4" stroke-dasharray="7 5" marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="2800,1960 3260,1960 3260,2380 3280,2380" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2800,1960 3260,1960 3260,2380 3280,2380" fill="none" stroke="#333" stroke-width="1.4" stroke-dasharray="7 5" marker-start="url(#one)" marker-end="url(#zeromany)"/>
+<polyline points="2800,1720 2820,1720 2820,1060 3280,1060" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2800,1720 2820,1720 2820,1060 3280,1060" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#one)" marker-end="url(#zeroone)"/>
+<polyline points="2280,1720 1820,1720 1820,1380 1800,1380" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2280,1720 1820,1720 1820,1380 1800,1380" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="2800,6000 3260,6000 3260,6340 3280,6340" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2800,6000 3260,6000 3260,6340 3280,6340" fill="none" stroke="#333" stroke-width="1.4" stroke-dasharray="7 5" marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="1800,4260 1820,4260 1820,4520 3260,4520 3260,4340 3280,4340" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="1800,4260 1820,4260 1820,4520 3260,4520 3260,4340 3280,4340" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="800,4220 820,4220 820,4100 2260,4100 2260,4180 2280,4180" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="800,4220 820,4220 820,4100 2260,4100 2260,4180 2280,4180" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="1280,3820 860,3820 860,4160 800,4160" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="1280,3820 860,3820 860,4160 800,4160" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="3280,3520 3260,3520 3260,4160 2800,4160" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="3280,3520 3260,3520 3260,4160 2800,4160" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="2280,1940 2260,1940 2260,1920 1860,1920 1860,3040 1800,3040" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2280,1940 2260,1940 2260,1920 1860,1920 1860,3040 1800,3040" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="3280,5160 2820,5160 2820,6340 2800,6340" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="3280,5160 2820,5160 2820,6340 2800,6340" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="2280,1740 2260,1740 2260,1680 1860,1680 1860,440 1800,440" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2280,1740 2260,1740 2260,1680 1860,1680 1860,440 1800,440" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="2800,1740 3260,1740 3260,600 3280,600" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2800,1740 3260,1740 3260,600 3280,600" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="2280,4980 2260,4980 2260,4820 260,4820 260,5580 820,5580 820,5520 800,5520" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2280,4980 2260,4980 2260,4820 260,4820 260,5580 820,5580 820,5520 800,5520" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#one)" marker-end="url(#zeromany)"/>
+<polyline points="3280,5140 3220,5140 3220,5120 1820,5120 1820,5520 1800,5520" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="3280,5140 3220,5140 3220,5120 1820,5120 1820,5520 1800,5520" fill="none" stroke="#333" stroke-width="1.4" stroke-dasharray="7 5" marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="2280,1900 2220,1900 2220,2540 820,2540 820,2380 800,2380" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2280,1900 2220,1900 2220,2540 820,2540 820,2380 800,2380" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="2280,1760 1860,1760 1860,1700 1840,1700 1840,1660 820,1660 820,1200 800,1200" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2280,1760 1860,1760 1860,1700 1840,1700 1840,1660 820,1660 820,1200 800,1200" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="800,6360 820,6360 820,6420 2260,6420 2260,6000 2280,6000" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="800,6360 820,6360 820,6420 2260,6420 2260,6000 2280,6000" fill="none" stroke="#333" stroke-width="1.4" stroke-dasharray="7 5" marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="2280,4960 1860,4960 1860,6980 1800,6980" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2280,4960 1860,4960 1860,6980 1800,6980" fill="none" stroke="#333" stroke-width="1.4" stroke-dasharray="7 5" marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="2280,1880 2180,1880 2180,4160 1800,4160" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2280,1880 2180,1880 2180,4160 1800,4160" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="3280,5120 3240,5120 3240,5080 1900,5080 1900,6340 1800,6340" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="3280,5120 3240,5120 3240,5080 1900,5080 1900,6340 1800,6340" fill="none" stroke="#333" stroke-width="1.4" stroke-dasharray="7 5" marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="800,260 820,260 820,160 2220,160 2220,1780 2280,1780" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="800,260 820,260 820,160 2220,160 2220,1780 2280,1780" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="2560,1980 2560,2000 3220,2000 3220,2980 3820,2980 3820,5740 2860,5740 2860,5440 2540,5440 2540,5460" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2560,1980 2560,2000 3220,2000 3220,2980 3820,2980 3820,5740 2860,5740 2860,5440 2540,5440 2540,5460" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="2500,1980 2500,2320 2860,2320 2860,5040 2500,5040 2500,5440 2520,5440 2520,5460" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2500,1980 2500,2320 2860,2320 2860,5040 2500,5040 2500,5440 2520,5440 2520,5460" fill="none" stroke="#333" stroke-width="1.4" stroke-dasharray="7 5" marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="3280,5100 3180,5100 3180,6920 1900,6920 1900,7020 1820,7020 1820,7000 1800,7000" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="3280,5100 3180,5100 3180,6920 1900,6920 1900,7020 1820,7020 1820,7000 1800,7000" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="2580,1980 2580,2280 3180,2280 3180,2940 3860,2940 3860,6520 2860,6520 2860,6280 2520,6280 2520,6300" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2580,1980 2580,2280 3180,2280 3180,2940 3860,2940 3860,6520 2860,6520 2860,6280 2520,6280 2520,6300" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="3320,5180 3320,5200 3900,5200 3900,7240 820,7240 820,6980 800,6980" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="3320,5180 3320,5200 3900,5200 3900,7240 820,7240 820,6980 800,6980" fill="none" stroke="#333" stroke-width="1.4" stroke-dasharray="7 5" marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="2320,1980 2320,2320 220,2320 220,6920 1260,6920 1260,7140 1820,7140 1820,7020 1800,7020" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2320,1980 2320,2320 220,2320 220,6920 1260,6920 1260,7140 1820,7140 1820,7020 1800,7020" fill="none" stroke="#333" stroke-width="1.4"  marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<polyline points="2340,1980 2340,2040 180,2040 180,7120 860,7120 860,7000 800,7000" fill="none" stroke="white" stroke-width="7"/>
+<polyline points="2340,1980 2340,2040 180,2040 180,7120 860,7120 860,7000 800,7000" fill="none" stroke="#333" stroke-width="1.4" stroke-dasharray="7 5" marker-start="url(#zeroone)" marker-end="url(#zeromany)"/>
+<rect x="280" y="180" width="520" height="100" fill="white" stroke="#333"/>
+<rect x="280" y="180" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="540.0" y="206" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">roles</text>
+<text x="290.0" y="235.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="290.0" y="255.0" text-anchor="start" font-family="Arial" font-size="14">role_name [UK]</text>
+<text x="790.0" y="235.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="790.0" y="255.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255) </text>
+<rect x="1280" y="180" width="520" height="280" fill="white" stroke="#333"/>
+<rect x="1280" y="180" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="1540.0" y="206" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">notifications</text>
+<text x="1290.0" y="235.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="1290.0" y="255.0" text-anchor="start" font-family="Arial" font-size="14">FK   user_id</text>
+<text x="1290.0" y="275.0" text-anchor="start" font-family="Arial" font-size="14">is_read</text>
+<text x="1290.0" y="295.0" text-anchor="start" font-family="Arial" font-size="14">created_at</text>
+<text x="1290.0" y="315.0" text-anchor="start" font-family="Arial" font-size="14">ref_id</text>
+<text x="1290.0" y="335.0" text-anchor="start" font-family="Arial" font-size="14">scheduled_at</text>
+<text x="1290.0" y="355.0" text-anchor="start" font-family="Arial" font-size="14">sent_at</text>
+<text x="1290.0" y="375.0" text-anchor="start" font-family="Arial" font-size="14">message</text>
+<text x="1290.0" y="395.0" text-anchor="start" font-family="Arial" font-size="14">ref_type</text>
+<text x="1290.0" y="415.0" text-anchor="start" font-family="Arial" font-size="14">title</text>
+<text x="1290.0" y="435.0" text-anchor="start" font-family="Arial" font-size="14">type</text>
+<text x="1790.0" y="235.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="255.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="275.0" text-anchor="end" font-family="Arial" font-size="14">BOOLEAN</text>
+<text x="1790.0" y="295.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="1790.0" y="315.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="335.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="1790.0" y="355.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="1790.0" y="375.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="1790.0" y="395.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="1790.0" y="415.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="1790.0" y="435.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<rect x="2280" y="180" width="520" height="240" fill="white" stroke="#333"/>
+<rect x="2280" y="180" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="2540.0" y="206" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">chat_messages</text>
+<text x="2290.0" y="235.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="2290.0" y="255.0" text-anchor="start" font-family="Arial" font-size="14">FK   user_id</text>
+<text x="2290.0" y="275.0" text-anchor="start" font-family="Arial" font-size="14">attachment_size</text>
+<text x="2290.0" y="295.0" text-anchor="start" font-family="Arial" font-size="14">created_at</text>
+<text x="2290.0" y="315.0" text-anchor="start" font-family="Arial" font-size="14">content</text>
+<text x="2290.0" y="335.0" text-anchor="start" font-family="Arial" font-size="14">attachment_name</text>
+<text x="2290.0" y="355.0" text-anchor="start" font-family="Arial" font-size="14">attachment_type</text>
+<text x="2290.0" y="375.0" text-anchor="start" font-family="Arial" font-size="14">attachment_url</text>
+<text x="2290.0" y="395.0" text-anchor="start" font-family="Arial" font-size="14">sender</text>
+<text x="2790.0" y="235.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="2790.0" y="255.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="2790.0" y="275.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="2790.0" y="295.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="2790.0" y="315.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(2000)</text>
+<text x="2790.0" y="335.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="2790.0" y="355.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="2790.0" y="375.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="2790.0" y="395.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<rect x="3280" y="180" width="520" height="440" fill="white" stroke="#333"/>
+<rect x="3280" y="180" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="3540.0" y="206" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">service_ratings</text>
+<text x="3290.0" y="235.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="3290.0" y="255.0" text-anchor="start" font-family="Arial" font-size="14">FK   user_id</text>
+<text x="3290.0" y="275.0" text-anchor="start" font-family="Arial" font-size="14">is_public</text>
+<text x="3290.0" y="295.0" text-anchor="start" font-family="Arial" font-size="14">rating</text>
+<text x="3290.0" y="315.0" text-anchor="start" font-family="Arial" font-size="14">attachment_size</text>
+<text x="3290.0" y="335.0" text-anchor="start" font-family="Arial" font-size="14">created_at</text>
+<text x="3290.0" y="355.0" text-anchor="start" font-family="Arial" font-size="14">replied_at</text>
+<text x="3290.0" y="375.0" text-anchor="start" font-family="Arial" font-size="14">reply_attachment_size</text>
+<text x="3290.0" y="395.0" text-anchor="start" font-family="Arial" font-size="14">updated_at</text>
+<text x="3290.0" y="415.0" text-anchor="start" font-family="Arial" font-size="14">admin_reply</text>
+<text x="3290.0" y="435.0" text-anchor="start" font-family="Arial" font-size="14">attachment_name</text>
+<text x="3290.0" y="455.0" text-anchor="start" font-family="Arial" font-size="14">attachment_type</text>
+<text x="3290.0" y="475.0" text-anchor="start" font-family="Arial" font-size="14">attachment_url</text>
+<text x="3290.0" y="495.0" text-anchor="start" font-family="Arial" font-size="14">comment</text>
+<text x="3290.0" y="515.0" text-anchor="start" font-family="Arial" font-size="14">reply_attachment_name</text>
+<text x="3290.0" y="535.0" text-anchor="start" font-family="Arial" font-size="14">reply_attachment_type</text>
+<text x="3290.0" y="555.0" text-anchor="start" font-family="Arial" font-size="14">reply_attachment_url</text>
+<text x="3290.0" y="575.0" text-anchor="start" font-family="Arial" font-size="14">service_type</text>
+<text x="3290.0" y="595.0" text-anchor="start" font-family="Arial" font-size="14">title</text>
+<text x="3790.0" y="235.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="3790.0" y="255.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="3790.0" y="275.0" text-anchor="end" font-family="Arial" font-size="14">BOOLEAN</text>
+<text x="3790.0" y="295.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="3790.0" y="315.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="3790.0" y="335.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="3790.0" y="355.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="3790.0" y="375.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="3790.0" y="395.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="3790.0" y="415.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="3790.0" y="435.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="3790.0" y="455.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="3790.0" y="475.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="3790.0" y="495.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="3790.0" y="515.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="3790.0" y="535.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="3790.0" y="555.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="3790.0" y="575.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="3790.0" y="595.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<rect x="280" y="900" width="520" height="320" fill="white" stroke="#333"/>
+<rect x="280" y="900" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="540.0" y="926" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">memberships</text>
+<text x="290.0" y="955.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="290.0" y="975.0" text-anchor="start" font-family="Arial" font-size="14">FK   user_id</text>
+<text x="290.0" y="995.0" text-anchor="start" font-family="Arial" font-size="14">end_date</text>
+<text x="290.0" y="1015.0" text-anchor="start" font-family="Arial" font-size="14">is_active</text>
+<text x="290.0" y="1035.0" text-anchor="start" font-family="Arial" font-size="14">price</text>
+<text x="290.0" y="1055.0" text-anchor="start" font-family="Arial" font-size="14">start_date</text>
+<text x="290.0" y="1075.0" text-anchor="start" font-family="Arial" font-size="14">created_at</text>
+<text x="290.0" y="1095.0" text-anchor="start" font-family="Arial" font-size="14">paid_at</text>
+<text x="290.0" y="1115.0" text-anchor="start" font-family="Arial" font-size="14">notes</text>
+<text x="290.0" y="1135.0" text-anchor="start" font-family="Arial" font-size="14">payment_method</text>
+<text x="290.0" y="1155.0" text-anchor="start" font-family="Arial" font-size="14">transaction_id</text>
+<text x="290.0" y="1175.0" text-anchor="start" font-family="Arial" font-size="14">membership_type</text>
+<text x="290.0" y="1195.0" text-anchor="start" font-family="Arial" font-size="14">payment_status</text>
+<text x="790.0" y="955.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="790.0" y="975.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="790.0" y="995.0" text-anchor="end" font-family="Arial" font-size="14">DATE</text>
+<text x="790.0" y="1015.0" text-anchor="end" font-family="Arial" font-size="14">BOOLEAN</text>
+<text x="790.0" y="1035.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="790.0" y="1055.0" text-anchor="end" font-family="Arial" font-size="14">DATE</text>
+<text x="790.0" y="1075.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="790.0" y="1095.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="790.0" y="1115.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="790.0" y="1135.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="790.0" y="1155.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="790.0" y="1175.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<text x="790.0" y="1195.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<rect x="1280" y="900" width="520" height="500" fill="white" stroke="#333"/>
+<rect x="1280" y="900" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="1540.0" y="926" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">invoices</text>
+<text x="1290.0" y="955.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="1290.0" y="975.0" text-anchor="start" font-family="Arial" font-size="14">FK   membership_id</text>
+<text x="1290.0" y="995.0" text-anchor="start" font-family="Arial" font-size="14">FK   user_id</text>
+<text x="1290.0" y="1015.0" text-anchor="start" font-family="Arial" font-size="14">price</text>
+<text x="1290.0" y="1035.0" text-anchor="start" font-family="Arial" font-size="14">regenerate_count</text>
+<text x="1290.0" y="1055.0" text-anchor="start" font-family="Arial" font-size="14">cancelled_at</text>
+<text x="1290.0" y="1075.0" text-anchor="start" font-family="Arial" font-size="14">created_at</text>
+<text x="1290.0" y="1095.0" text-anchor="start" font-family="Arial" font-size="14">expires_at</text>
+<text x="1290.0" y="1115.0" text-anchor="start" font-family="Arial" font-size="14">paid_at</text>
+<text x="1290.0" y="1135.0" text-anchor="start" font-family="Arial" font-size="14">qr_raw_payload</text>
+<text x="1290.0" y="1155.0" text-anchor="start" font-family="Arial" font-size="14">cosmetic_item_code</text>
+<text x="1290.0" y="1175.0" text-anchor="start" font-family="Arial" font-size="14">deeplink</text>
+<text x="1290.0" y="1195.0" text-anchor="start" font-family="Arial" font-size="14">momo_order_id [UK]</text>
+<text x="1290.0" y="1215.0" text-anchor="start" font-family="Arial" font-size="14">momo_request_id</text>
+<text x="1290.0" y="1235.0" text-anchor="start" font-family="Arial" font-size="14">pay_url</text>
+<text x="1290.0" y="1255.0" text-anchor="start" font-family="Arial" font-size="14">qr_code_url</text>
+<text x="1290.0" y="1275.0" text-anchor="start" font-family="Arial" font-size="14">result_message</text>
+<text x="1290.0" y="1295.0" text-anchor="start" font-family="Arial" font-size="14">transaction_id</text>
+<text x="1290.0" y="1315.0" text-anchor="start" font-family="Arial" font-size="14">transfer_code [UK]</text>
+<text x="1290.0" y="1335.0" text-anchor="start" font-family="Arial" font-size="14">invoice_type</text>
+<text x="1290.0" y="1355.0" text-anchor="start" font-family="Arial" font-size="14">membership_type</text>
+<text x="1290.0" y="1375.0" text-anchor="start" font-family="Arial" font-size="14">status</text>
+<text x="1790.0" y="955.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="975.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="995.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="1015.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="1790.0" y="1035.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="1790.0" y="1055.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="1790.0" y="1075.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="1790.0" y="1095.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="1790.0" y="1115.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="1790.0" y="1135.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(1000)</text>
+<text x="1790.0" y="1155.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="1790.0" y="1175.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="1790.0" y="1195.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255) </text>
+<text x="1790.0" y="1215.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="1790.0" y="1235.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="1790.0" y="1255.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="1790.0" y="1275.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="1790.0" y="1295.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="1790.0" y="1315.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255) </text>
+<text x="1790.0" y="1335.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<text x="1790.0" y="1355.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<text x="1790.0" y="1375.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<rect x="2280" y="900" width="520" height="500" fill="white" stroke="#333"/>
+<rect x="2280" y="900" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="2540.0" y="926" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">user_profiles</text>
+<text x="2290.0" y="955.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="2290.0" y="975.0" text-anchor="start" font-family="Arial" font-size="14">FK   user_id [UK]</text>
+<text x="2290.0" y="995.0" text-anchor="start" font-family="Arial" font-size="14">age</text>
+<text x="2290.0" y="1015.0" text-anchor="start" font-family="Arial" font-size="14">available_days_per_week</text>
+<text x="2290.0" y="1035.0" text-anchor="start" font-family="Arial" font-size="14">bmi</text>
+<text x="2290.0" y="1055.0" text-anchor="start" font-family="Arial" font-size="14">body_fat_percentage</text>
+<text x="2290.0" y="1075.0" text-anchor="start" font-family="Arial" font-size="14">date_of_birth</text>
+<text x="2290.0" y="1095.0" text-anchor="start" font-family="Arial" font-size="14">height</text>
+<text x="2290.0" y="1115.0" text-anchor="start" font-family="Arial" font-size="14">initial_weight</text>
+<text x="2290.0" y="1135.0" text-anchor="start" font-family="Arial" font-size="14">preferred_session_duration</text>
+<text x="2290.0" y="1155.0" text-anchor="start" font-family="Arial" font-size="14">training_experience_months</text>
+<text x="2290.0" y="1175.0" text-anchor="start" font-family="Arial" font-size="14">weight</text>
+<text x="2290.0" y="1195.0" text-anchor="start" font-family="Arial" font-size="14">preferred_training_days</text>
+<text x="2290.0" y="1215.0" text-anchor="start" font-family="Arial" font-size="14">available_equipment</text>
+<text x="2290.0" y="1235.0" text-anchor="start" font-family="Arial" font-size="14">disliked_exercises</text>
+<text x="2290.0" y="1255.0" text-anchor="start" font-family="Arial" font-size="14">injury_areas</text>
+<text x="2290.0" y="1275.0" text-anchor="start" font-family="Arial" font-size="14">daily_activity_level</text>
+<text x="2290.0" y="1295.0" text-anchor="start" font-family="Arial" font-size="14">gender</text>
+<text x="2290.0" y="1315.0" text-anchor="start" font-family="Arial" font-size="14">medical_conditions</text>
+<text x="2290.0" y="1335.0" text-anchor="start" font-family="Arial" font-size="14">training_location</text>
+<text x="2290.0" y="1355.0" text-anchor="start" font-family="Arial" font-size="14">fitness_level</text>
+<text x="2290.0" y="1375.0" text-anchor="start" font-family="Arial" font-size="14">goal</text>
+<text x="2790.0" y="955.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="2790.0" y="975.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT </text>
+<text x="2790.0" y="995.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="2790.0" y="1015.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="2790.0" y="1035.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="2790.0" y="1055.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="2790.0" y="1075.0" text-anchor="end" font-family="Arial" font-size="14">DATE</text>
+<text x="2790.0" y="1095.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="2790.0" y="1115.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="2790.0" y="1135.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="2790.0" y="1155.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="2790.0" y="1175.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="2790.0" y="1195.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(500)</text>
+<text x="2790.0" y="1215.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(1000)</text>
+<text x="2790.0" y="1235.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(1000)</text>
+<text x="2790.0" y="1255.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(1000)</text>
+<text x="2790.0" y="1275.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="2790.0" y="1295.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="2790.0" y="1315.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="2790.0" y="1335.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="2790.0" y="1355.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<text x="2790.0" y="1375.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<rect x="3280" y="900" width="520" height="180" fill="white" stroke="#333"/>
+<rect x="3280" y="900" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="3540.0" y="926" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">endurance_tests</text>
+<text x="3290.0" y="955.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="3290.0" y="975.0" text-anchor="start" font-family="Arial" font-size="14">FK   user_id [UK]</text>
+<text x="3290.0" y="995.0" text-anchor="start" font-family="Arial" font-size="14">plank_seconds</text>
+<text x="3290.0" y="1015.0" text-anchor="start" font-family="Arial" font-size="14">pushup_reps</text>
+<text x="3290.0" y="1035.0" text-anchor="start" font-family="Arial" font-size="14">squat_reps</text>
+<text x="3290.0" y="1055.0" text-anchor="start" font-family="Arial" font-size="14">tested_at</text>
+<text x="3790.0" y="955.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="3790.0" y="975.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT </text>
+<text x="3790.0" y="995.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="3790.0" y="1015.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="3790.0" y="1035.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="3790.0" y="1055.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<rect x="280" y="1680" width="520" height="240" fill="white" stroke="#333"/>
+<rect x="280" y="1680" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="540.0" y="1706" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">support_messages</text>
+<text x="290.0" y="1735.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="290.0" y="1755.0" text-anchor="start" font-family="Arial" font-size="14">FK   session_id</text>
+<text x="290.0" y="1775.0" text-anchor="start" font-family="Arial" font-size="14">attachment_size</text>
+<text x="290.0" y="1795.0" text-anchor="start" font-family="Arial" font-size="14">created_at</text>
+<text x="290.0" y="1815.0" text-anchor="start" font-family="Arial" font-size="14">content</text>
+<text x="290.0" y="1835.0" text-anchor="start" font-family="Arial" font-size="14">attachment_name</text>
+<text x="290.0" y="1855.0" text-anchor="start" font-family="Arial" font-size="14">attachment_type</text>
+<text x="290.0" y="1875.0" text-anchor="start" font-family="Arial" font-size="14">attachment_url</text>
+<text x="290.0" y="1895.0" text-anchor="start" font-family="Arial" font-size="14">sender_role</text>
+<text x="790.0" y="1735.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="790.0" y="1755.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="790.0" y="1775.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="790.0" y="1795.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="790.0" y="1815.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(2000)</text>
+<text x="790.0" y="1835.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="790.0" y="1855.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="790.0" y="1875.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="790.0" y="1895.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<rect x="1280" y="1680" width="520" height="280" fill="white" stroke="#333"/>
+<rect x="1280" y="1680" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="1540.0" y="1706" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">support_sessions</text>
+<text x="1290.0" y="1735.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="1290.0" y="1755.0" text-anchor="start" font-family="Arial" font-size="14">FK   admin_id</text>
+<text x="1290.0" y="1775.0" text-anchor="start" font-family="Arial" font-size="14">FK   user_id</text>
+<text x="1290.0" y="1795.0" text-anchor="start" font-family="Arial" font-size="14">user_rating</text>
+<text x="1290.0" y="1815.0" text-anchor="start" font-family="Arial" font-size="14">accepted_at</text>
+<text x="1290.0" y="1835.0" text-anchor="start" font-family="Arial" font-size="14">closed_at</text>
+<text x="1290.0" y="1855.0" text-anchor="start" font-family="Arial" font-size="14">created_at</text>
+<text x="1290.0" y="1875.0" text-anchor="start" font-family="Arial" font-size="14">rated_at</text>
+<text x="1290.0" y="1895.0" text-anchor="start" font-family="Arial" font-size="14">user_rating_comment</text>
+<text x="1290.0" y="1915.0" text-anchor="start" font-family="Arial" font-size="14">subject</text>
+<text x="1290.0" y="1935.0" text-anchor="start" font-family="Arial" font-size="14">status</text>
+<text x="1790.0" y="1735.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="1755.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="1775.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="1795.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="1790.0" y="1815.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="1790.0" y="1835.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="1790.0" y="1855.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="1790.0" y="1875.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="1790.0" y="1895.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(1000)</text>
+<text x="1790.0" y="1915.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="1790.0" y="1935.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<rect x="2280" y="1680" width="520" height="300" fill="white" stroke="#333"/>
+<rect x="2280" y="1680" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="2540.0" y="1706" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">users</text>
+<text x="2290.0" y="1735.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="2290.0" y="1755.0" text-anchor="start" font-family="Arial" font-size="14">FK   role_id</text>
+<text x="2290.0" y="1775.0" text-anchor="start" font-family="Arial" font-size="14">email_verified</text>
+<text x="2290.0" y="1795.0" text-anchor="start" font-family="Arial" font-size="14">password_reset_attempts</text>
+<text x="2290.0" y="1815.0" text-anchor="start" font-family="Arial" font-size="14">status</text>
+<text x="2290.0" y="1835.0" text-anchor="start" font-family="Arial" font-size="14">created_at</text>
+<text x="2290.0" y="1855.0" text-anchor="start" font-family="Arial" font-size="14">password_reset_blocked_until</text>
+<text x="2290.0" y="1875.0" text-anchor="start" font-family="Arial" font-size="14">email [UK]</text>
+<text x="2290.0" y="1895.0" text-anchor="start" font-family="Arial" font-size="14">full_name</text>
+<text x="2290.0" y="1915.0" text-anchor="start" font-family="Arial" font-size="14">password</text>
+<text x="2290.0" y="1935.0" text-anchor="start" font-family="Arial" font-size="14">phone</text>
+<text x="2290.0" y="1955.0" text-anchor="start" font-family="Arial" font-size="14">verification_token</text>
+<text x="2790.0" y="1735.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="2790.0" y="1755.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="2790.0" y="1775.0" text-anchor="end" font-family="Arial" font-size="14">BOOLEAN</text>
+<text x="2790.0" y="1795.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="2790.0" y="1815.0" text-anchor="end" font-family="Arial" font-size="14">BOOLEAN</text>
+<text x="2790.0" y="1835.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="2790.0" y="1855.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="2790.0" y="1875.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255) </text>
+<text x="2790.0" y="1895.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="2790.0" y="1915.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="2790.0" y="1935.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="2790.0" y="1955.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<rect x="3280" y="1680" width="520" height="380" fill="white" stroke="#333"/>
+<rect x="3280" y="1680" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="3540.0" y="1706" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">progress_tracking</text>
+<text x="3290.0" y="1735.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="3290.0" y="1755.0" text-anchor="start" font-family="Arial" font-size="14">FK   user_id</text>
+<text x="3290.0" y="1775.0" text-anchor="start" font-family="Arial" font-size="14">arm_cm</text>
+<text x="3290.0" y="1795.0" text-anchor="start" font-family="Arial" font-size="14">bmi</text>
+<text x="3290.0" y="1815.0" text-anchor="start" font-family="Arial" font-size="14">body_fat_percentage</text>
+<text x="3290.0" y="1835.0" text-anchor="start" font-family="Arial" font-size="14">chest_cm</text>
+<text x="3290.0" y="1855.0" text-anchor="start" font-family="Arial" font-size="14">height</text>
+<text x="3290.0" y="1875.0" text-anchor="start" font-family="Arial" font-size="14">hip_cm</text>
+<text x="3290.0" y="1895.0" text-anchor="start" font-family="Arial" font-size="14">muscle_mass_kg</text>
+<text x="3290.0" y="1915.0" text-anchor="start" font-family="Arial" font-size="14">recorded_date</text>
+<text x="3290.0" y="1935.0" text-anchor="start" font-family="Arial" font-size="14">thigh_cm</text>
+<text x="3290.0" y="1955.0" text-anchor="start" font-family="Arial" font-size="14">waist_cm</text>
+<text x="3290.0" y="1975.0" text-anchor="start" font-family="Arial" font-size="14">weight</text>
+<text x="3290.0" y="1995.0" text-anchor="start" font-family="Arial" font-size="14">recorded_at</text>
+<text x="3290.0" y="2015.0" text-anchor="start" font-family="Arial" font-size="14">notes</text>
+<text x="3290.0" y="2035.0" text-anchor="start" font-family="Arial" font-size="14">source</text>
+<text x="3790.0" y="1735.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="3790.0" y="1755.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="3790.0" y="1775.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="3790.0" y="1795.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="3790.0" y="1815.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="3790.0" y="1835.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="3790.0" y="1855.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="3790.0" y="1875.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="3790.0" y="1895.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="3790.0" y="1915.0" text-anchor="end" font-family="Arial" font-size="14">DATE</text>
+<text x="3790.0" y="1935.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="3790.0" y="1955.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="3790.0" y="1975.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="3790.0" y="1995.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="3790.0" y="2015.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="3790.0" y="2035.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<rect x="280" y="2340" width="520" height="380" fill="white" stroke="#333"/>
+<rect x="280" y="2340" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="540.0" y="2366" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">work_shifts</text>
+<text x="290.0" y="2395.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="290.0" y="2415.0" text-anchor="start" font-family="Arial" font-size="14">FK   user_id</text>
+<text x="290.0" y="2435.0" text-anchor="start" font-family="Arial" font-size="14">cash_at_start</text>
+<text x="290.0" y="2455.0" text-anchor="start" font-family="Arial" font-size="14">cash_counted</text>
+<text x="290.0" y="2475.0" text-anchor="start" font-family="Arial" font-size="14">cash_difference</text>
+<text x="290.0" y="2495.0" text-anchor="start" font-family="Arial" font-size="14">expected_cash</text>
+<text x="290.0" y="2515.0" text-anchor="start" font-family="Arial" font-size="14">planned_end</text>
+<text x="290.0" y="2535.0" text-anchor="start" font-family="Arial" font-size="14">planned_start</text>
+<text x="290.0" y="2555.0" text-anchor="start" font-family="Arial" font-size="14">pos_bank_revenue</text>
+<text x="290.0" y="2575.0" text-anchor="start" font-family="Arial" font-size="14">pos_cash_revenue</text>
+<text x="290.0" y="2595.0" text-anchor="start" font-family="Arial" font-size="14">shift_date</text>
+<text x="290.0" y="2615.0" text-anchor="start" font-family="Arial" font-size="14">check_in_at</text>
+<text x="290.0" y="2635.0" text-anchor="start" font-family="Arial" font-size="14">check_out_at</text>
+<text x="290.0" y="2655.0" text-anchor="start" font-family="Arial" font-size="14">created_at</text>
+<text x="290.0" y="2675.0" text-anchor="start" font-family="Arial" font-size="14">handover_note</text>
+<text x="290.0" y="2695.0" text-anchor="start" font-family="Arial" font-size="14">status</text>
+<text x="790.0" y="2395.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="790.0" y="2415.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="790.0" y="2435.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="790.0" y="2455.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="790.0" y="2475.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="790.0" y="2495.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="790.0" y="2515.0" text-anchor="end" font-family="Arial" font-size="14">TIME(6)</text>
+<text x="790.0" y="2535.0" text-anchor="end" font-family="Arial" font-size="14">TIME(6)</text>
+<text x="790.0" y="2555.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="790.0" y="2575.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="790.0" y="2595.0" text-anchor="end" font-family="Arial" font-size="14">DATE</text>
+<text x="790.0" y="2615.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="790.0" y="2635.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="790.0" y="2655.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="790.0" y="2675.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(2000)</text>
+<text x="790.0" y="2695.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<rect x="1280" y="2340" width="520" height="180" fill="white" stroke="#333"/>
+<rect x="1280" y="2340" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="1540.0" y="2366" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">customer_addresses</text>
+<text x="1290.0" y="2395.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="1290.0" y="2415.0" text-anchor="start" font-family="Arial" font-size="14">REF   user_id</text>
+<text x="1290.0" y="2435.0" text-anchor="start" font-family="Arial" font-size="14">default_address</text>
+<text x="1290.0" y="2455.0" text-anchor="start" font-family="Arial" font-size="14">address</text>
+<text x="1290.0" y="2475.0" text-anchor="start" font-family="Arial" font-size="14">phone</text>
+<text x="1290.0" y="2495.0" text-anchor="start" font-family="Arial" font-size="14">receiver_name</text>
+<text x="1790.0" y="2395.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="2415.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="2435.0" text-anchor="end" font-family="Arial" font-size="14">BOOLEAN</text>
+<text x="1790.0" y="2455.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(1000)</text>
+<text x="1790.0" y="2475.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="1790.0" y="2495.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<rect x="2280" y="2340" width="520" height="260" fill="white" stroke="#333"/>
+<rect x="2280" y="2340" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="2540.0" y="2366" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">pet_profiles</text>
+<text x="2290.0" y="2395.0" text-anchor="start" font-family="Arial" font-size="14">PK/FK   user_id</text>
+<text x="2290.0" y="2415.0" text-anchor="start" font-family="Arial" font-size="14">current_streak</text>
+<text x="2290.0" y="2435.0" text-anchor="start" font-family="Arial" font-size="14">missed_streak</text>
+<text x="2290.0" y="2455.0" text-anchor="start" font-family="Arial" font-size="14">web_count</text>
+<text x="2290.0" y="2475.0" text-anchor="start" font-family="Arial" font-size="14">last_calculated_at</text>
+<text x="2290.0" y="2495.0" text-anchor="start" font-family="Arial" font-size="14">equipped_hair</text>
+<text x="2290.0" y="2515.0" text-anchor="start" font-family="Arial" font-size="14">equipped_pants</text>
+<text x="2290.0" y="2535.0" text-anchor="start" font-family="Arial" font-size="14">equipped_shirt</text>
+<text x="2290.0" y="2555.0" text-anchor="start" font-family="Arial" font-size="14">aura_tier</text>
+<text x="2290.0" y="2575.0" text-anchor="start" font-family="Arial" font-size="14">stage</text>
+<text x="2790.0" y="2395.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="2790.0" y="2415.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="2790.0" y="2435.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="2790.0" y="2455.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="2790.0" y="2475.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="2790.0" y="2495.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="2790.0" y="2515.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="2790.0" y="2535.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="2790.0" y="2555.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<text x="2790.0" y="2575.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<rect x="3280" y="2340" width="520" height="140" fill="white" stroke="#333"/>
+<rect x="3280" y="2340" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="3540.0" y="2366" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">user_cosmetic_ownership</text>
+<text x="3290.0" y="2395.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="3290.0" y="2415.0" text-anchor="start" font-family="Arial" font-size="14">REF   user_id</text>
+<text x="3290.0" y="2435.0" text-anchor="start" font-family="Arial" font-size="14">purchased_at</text>
+<text x="3290.0" y="2455.0" text-anchor="start" font-family="Arial" font-size="14">cosmetic_code</text>
+<text x="3790.0" y="2395.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="3790.0" y="2415.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="3790.0" y="2435.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="3790.0" y="2455.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<rect x="280" y="3000" width="520" height="140" fill="white" stroke="#333"/>
+<rect x="280" y="3000" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="540.0" y="3026" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">plan_muscle_group_weight</text>
+<text x="290.0" y="3055.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="290.0" y="3075.0" text-anchor="start" font-family="Arial" font-size="14">FK   workout_plan_id</text>
+<text x="290.0" y="3095.0" text-anchor="start" font-family="Arial" font-size="14">multiplier</text>
+<text x="290.0" y="3115.0" text-anchor="start" font-family="Arial" font-size="14">muscle_group</text>
+<text x="790.0" y="3055.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="790.0" y="3075.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="790.0" y="3095.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="790.0" y="3115.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<rect x="1280" y="3000" width="520" height="840" fill="white" stroke="#333"/>
+<rect x="1280" y="3000" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="1540.0" y="3026" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">workout_plans</text>
+<text x="1290.0" y="3055.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="1290.0" y="3075.0" text-anchor="start" font-family="Arial" font-size="14">REF   original_plan_id</text>
+<text x="1290.0" y="3095.0" text-anchor="start" font-family="Arial" font-size="14">FK   user_id</text>
+<text x="1290.0" y="3115.0" text-anchor="start" font-family="Arial" font-size="14">current_mana</text>
+<text x="1290.0" y="3135.0" text-anchor="start" font-family="Arial" font-size="14">current_week</text>
+<text x="1290.0" y="3155.0" text-anchor="start" font-family="Arial" font-size="14">difficulty_adjustment</text>
+<text x="1290.0" y="3175.0" text-anchor="start" font-family="Arial" font-size="14">duration_weeks</text>
+<text x="1290.0" y="3195.0" text-anchor="start" font-family="Arial" font-size="14">estimated_weeks</text>
+<text x="1290.0" y="3215.0" text-anchor="start" font-family="Arial" font-size="14">exercises_adjustment</text>
+<text x="1290.0" y="3235.0" text-anchor="start" font-family="Arial" font-size="14">fitness_score</text>
+<text x="1290.0" y="3255.0" text-anchor="start" font-family="Arial" font-size="14">is_active</text>
+<text x="1290.0" y="3275.0" text-anchor="start" font-family="Arial" font-size="14">is_ai_generated</text>
+<text x="1290.0" y="3295.0" text-anchor="start" font-family="Arial" font-size="14">is_completed</text>
+<text x="1290.0" y="3315.0" text-anchor="start" font-family="Arial" font-size="14">is_fitness_improvement</text>
+<text x="1290.0" y="3335.0" text-anchor="start" font-family="Arial" font-size="14">is_template</text>
+<text x="1290.0" y="3355.0" text-anchor="start" font-family="Arial" font-size="14">last_mana_regen_date</text>
+<text x="1290.0" y="3375.0" text-anchor="start" font-family="Arial" font-size="14">last_training_date</text>
+<text x="1290.0" y="3395.0" text-anchor="start" font-family="Arial" font-size="14">max_mana</text>
+<text x="1290.0" y="3415.0" text-anchor="start" font-family="Arial" font-size="14">reps_adjustment</text>
+<text x="1290.0" y="3435.0" text-anchor="start" font-family="Arial" font-size="14">required_max_session_mana_cost</text>
+<text x="1290.0" y="3455.0" text-anchor="start" font-family="Arial" font-size="14">sessions_per_week</text>
+<text x="1290.0" y="3475.0" text-anchor="start" font-family="Arial" font-size="14">sets_adjustment</text>
+<text x="1290.0" y="3495.0" text-anchor="start" font-family="Arial" font-size="14">starting_bmi</text>
+<text x="1290.0" y="3515.0" text-anchor="start" font-family="Arial" font-size="14">starting_weight</text>
+<text x="1290.0" y="3535.0" text-anchor="start" font-family="Arial" font-size="14">target_achieved</text>
+<text x="1290.0" y="3555.0" text-anchor="start" font-family="Arial" font-size="14">target_baseline_value</text>
+<text x="1290.0" y="3575.0" text-anchor="start" font-family="Arial" font-size="14">target_current_value</text>
+<text x="1290.0" y="3595.0" text-anchor="start" font-family="Arial" font-size="14">target_goal_value</text>
+<text x="1290.0" y="3615.0" text-anchor="start" font-family="Arial" font-size="14">target_metric_type</text>
+<text x="1290.0" y="3635.0" text-anchor="start" font-family="Arial" font-size="14">week_start_date</text>
+<text x="1290.0" y="3655.0" text-anchor="start" font-family="Arial" font-size="14">created_at</text>
+<text x="1290.0" y="3675.0" text-anchor="start" font-family="Arial" font-size="14">confirmed_schedule_dows</text>
+<text x="1290.0" y="3695.0" text-anchor="start" font-family="Arial" font-size="14">description</text>
+<text x="1290.0" y="3715.0" text-anchor="start" font-family="Arial" font-size="14">plan_name</text>
+<text x="1290.0" y="3735.0" text-anchor="start" font-family="Arial" font-size="14">weight_adjustment_note</text>
+<text x="1290.0" y="3755.0" text-anchor="start" font-family="Arial" font-size="14">body_type</text>
+<text x="1290.0" y="3775.0" text-anchor="start" font-family="Arial" font-size="14">fitness_level</text>
+<text x="1290.0" y="3795.0" text-anchor="start" font-family="Arial" font-size="14">goal</text>
+<text x="1290.0" y="3815.0" text-anchor="start" font-family="Arial" font-size="14">target_level</text>
+<text x="1790.0" y="3055.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="3075.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="3095.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="3115.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="1790.0" y="3135.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="1790.0" y="3155.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="1790.0" y="3175.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="1790.0" y="3195.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="1790.0" y="3215.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="1790.0" y="3235.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="1790.0" y="3255.0" text-anchor="end" font-family="Arial" font-size="14">BOOLEAN</text>
+<text x="1790.0" y="3275.0" text-anchor="end" font-family="Arial" font-size="14">BOOLEAN</text>
+<text x="1790.0" y="3295.0" text-anchor="end" font-family="Arial" font-size="14">BOOLEAN</text>
+<text x="1790.0" y="3315.0" text-anchor="end" font-family="Arial" font-size="14">BOOLEAN</text>
+<text x="1790.0" y="3335.0" text-anchor="end" font-family="Arial" font-size="14">BOOLEAN</text>
+<text x="1790.0" y="3355.0" text-anchor="end" font-family="Arial" font-size="14">DATE</text>
+<text x="1790.0" y="3375.0" text-anchor="end" font-family="Arial" font-size="14">DATE</text>
+<text x="1790.0" y="3395.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="1790.0" y="3415.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="1790.0" y="3435.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="1790.0" y="3455.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="1790.0" y="3475.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="1790.0" y="3495.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="1790.0" y="3515.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="1790.0" y="3535.0" text-anchor="end" font-family="Arial" font-size="14">BOOLEAN</text>
+<text x="1790.0" y="3555.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="1790.0" y="3575.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="1790.0" y="3595.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="1790.0" y="3615.0" text-anchor="end" font-family="Arial" font-size="14">TINYINT</text>
+<text x="1790.0" y="3635.0" text-anchor="end" font-family="Arial" font-size="14">DATE</text>
+<text x="1790.0" y="3655.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="1790.0" y="3675.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="1790.0" y="3695.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="1790.0" y="3715.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="1790.0" y="3735.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="1790.0" y="3755.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<text x="1790.0" y="3775.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<text x="1790.0" y="3795.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<text x="1790.0" y="3815.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<rect x="2280" y="3000" width="520" height="200" fill="white" stroke="#333"/>
+<rect x="2280" y="3000" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="2540.0" y="3026" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">weekly_reviews</text>
+<text x="2290.0" y="3055.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="2290.0" y="3075.0" text-anchor="start" font-family="Arial" font-size="14">FK   user_id</text>
+<text x="2290.0" y="3095.0" text-anchor="start" font-family="Arial" font-size="14">FK   workout_plan_id</text>
+<text x="2290.0" y="3115.0" text-anchor="start" font-family="Arial" font-size="14">rating</text>
+<text x="2290.0" y="3135.0" text-anchor="start" font-family="Arial" font-size="14">week_number</text>
+<text x="2290.0" y="3155.0" text-anchor="start" font-family="Arial" font-size="14">created_at</text>
+<text x="2290.0" y="3175.0" text-anchor="start" font-family="Arial" font-size="14">comment</text>
+<text x="2790.0" y="3055.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="2790.0" y="3075.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="2790.0" y="3095.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="2790.0" y="3115.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="2790.0" y="3135.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="2790.0" y="3155.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="2790.0" y="3175.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<rect x="3280" y="3000" width="520" height="540" fill="white" stroke="#333"/>
+<rect x="3280" y="3000" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="3540.0" y="3026" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">exercises</text>
+<text x="3290.0" y="3055.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="3290.0" y="3075.0" text-anchor="start" font-family="Arial" font-size="14">calories_burned</text>
+<text x="3290.0" y="3095.0" text-anchor="start" font-family="Arial" font-size="14">default_duration_seconds</text>
+<text x="3290.0" y="3115.0" text-anchor="start" font-family="Arial" font-size="14">default_reps</text>
+<text x="3290.0" y="3135.0" text-anchor="start" font-family="Arial" font-size="14">default_sets</text>
+<text x="3290.0" y="3155.0" text-anchor="start" font-family="Arial" font-size="14">endurance_score</text>
+<text x="3290.0" y="3175.0" text-anchor="start" font-family="Arial" font-size="14">flexibility_score</text>
+<text x="3290.0" y="3195.0" text-anchor="start" font-family="Arial" font-size="14">is_active</text>
+<text x="3290.0" y="3215.0" text-anchor="start" font-family="Arial" font-size="14">is_assessment</text>
+<text x="3290.0" y="3235.0" text-anchor="start" font-family="Arial" font-size="14">maintenance_score</text>
+<text x="3290.0" y="3255.0" text-anchor="start" font-family="Arial" font-size="14">muscle_gain_score</text>
+<text x="3290.0" y="3275.0" text-anchor="start" font-family="Arial" font-size="14">rest_seconds</text>
+<text x="3290.0" y="3295.0" text-anchor="start" font-family="Arial" font-size="14">stamina_cost</text>
+<text x="3290.0" y="3315.0" text-anchor="start" font-family="Arial" font-size="14">uses_weight</text>
+<text x="3290.0" y="3335.0" text-anchor="start" font-family="Arial" font-size="14">weight_loss_score</text>
+<text x="3290.0" y="3355.0" text-anchor="start" font-family="Arial" font-size="14">contraindicated_injuries</text>
+<text x="3290.0" y="3375.0" text-anchor="start" font-family="Arial" font-size="14">description</text>
+<text x="3290.0" y="3395.0" text-anchor="start" font-family="Arial" font-size="14">image_url</text>
+<text x="3290.0" y="3415.0" text-anchor="start" font-family="Arial" font-size="14">name</text>
+<text x="3290.0" y="3435.0" text-anchor="start" font-family="Arial" font-size="14">secondary_muscle_groups</text>
+<text x="3290.0" y="3455.0" text-anchor="start" font-family="Arial" font-size="14">video_url</text>
+<text x="3290.0" y="3475.0" text-anchor="start" font-family="Arial" font-size="14">assessment_metric_type</text>
+<text x="3290.0" y="3495.0" text-anchor="start" font-family="Arial" font-size="14">difficulty</text>
+<text x="3290.0" y="3515.0" text-anchor="start" font-family="Arial" font-size="14">muscle_group</text>
+<text x="3790.0" y="3055.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="3790.0" y="3075.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="3790.0" y="3095.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="3790.0" y="3115.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="3790.0" y="3135.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="3790.0" y="3155.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="3790.0" y="3175.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="3790.0" y="3195.0" text-anchor="end" font-family="Arial" font-size="14">BOOLEAN</text>
+<text x="3790.0" y="3215.0" text-anchor="end" font-family="Arial" font-size="14">BOOLEAN</text>
+<text x="3790.0" y="3235.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="3790.0" y="3255.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="3790.0" y="3275.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="3790.0" y="3295.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="3790.0" y="3315.0" text-anchor="end" font-family="Arial" font-size="14">BOOLEAN</text>
+<text x="3790.0" y="3335.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="3790.0" y="3355.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="3790.0" y="3375.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="3790.0" y="3395.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="3790.0" y="3415.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="3790.0" y="3435.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="3790.0" y="3455.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="3790.0" y="3475.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<text x="3790.0" y="3495.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<text x="3790.0" y="3515.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<rect x="280" y="4120" width="520" height="140" fill="white" stroke="#333"/>
+<rect x="280" y="4120" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="540.0" y="4146" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">workout_plan_days</text>
+<text x="290.0" y="4175.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="290.0" y="4195.0" text-anchor="start" font-family="Arial" font-size="14">FK   workout_plan_id</text>
+<text x="290.0" y="4215.0" text-anchor="start" font-family="Arial" font-size="14">day_of_week</text>
+<text x="290.0" y="4235.0" text-anchor="start" font-family="Arial" font-size="14">day_name</text>
+<text x="790.0" y="4175.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="790.0" y="4195.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="790.0" y="4215.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="790.0" y="4235.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<rect x="1280" y="4120" width="520" height="440" fill="white" stroke="#333"/>
+<rect x="1280" y="4120" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="1540.0" y="4146" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">workout_sessions</text>
+<text x="1290.0" y="4175.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="1290.0" y="4195.0" text-anchor="start" font-family="Arial" font-size="14">FK   plan_day_id</text>
+<text x="1290.0" y="4215.0" text-anchor="start" font-family="Arial" font-size="14">FK   user_id</text>
+<text x="1290.0" y="4235.0" text-anchor="start" font-family="Arial" font-size="14">FK   workout_plan_id</text>
+<text x="1290.0" y="4255.0" text-anchor="start" font-family="Arial" font-size="14">checkout_body_fat</text>
+<text x="1290.0" y="4275.0" text-anchor="start" font-family="Arial" font-size="14">checkout_weight</text>
+<text x="1290.0" y="4295.0" text-anchor="start" font-family="Arial" font-size="14">completion_rate</text>
+<text x="1290.0" y="4315.0" text-anchor="start" font-family="Arial" font-size="14">duration_minutes</text>
+<text x="1290.0" y="4335.0" text-anchor="start" font-family="Arial" font-size="14">is_custom</text>
+<text x="1290.0" y="4355.0" text-anchor="start" font-family="Arial" font-size="14">is_last_session_of_week</text>
+<text x="1290.0" y="4375.0" text-anchor="start" font-family="Arial" font-size="14">scheduled_time</text>
+<text x="1290.0" y="4395.0" text-anchor="start" font-family="Arial" font-size="14">session_date</text>
+<text x="1290.0" y="4415.0" text-anchor="start" font-family="Arial" font-size="14">total_calories_burned</text>
+<text x="1290.0" y="4435.0" text-anchor="start" font-family="Arial" font-size="14">week_number</text>
+<text x="1290.0" y="4455.0" text-anchor="start" font-family="Arial" font-size="14">check_in_time</text>
+<text x="1290.0" y="4475.0" text-anchor="start" font-family="Arial" font-size="14">check_out_time</text>
+<text x="1290.0" y="4495.0" text-anchor="start" font-family="Arial" font-size="14">custom_session_name</text>
+<text x="1290.0" y="4515.0" text-anchor="start" font-family="Arial" font-size="14">notes</text>
+<text x="1290.0" y="4535.0" text-anchor="start" font-family="Arial" font-size="14">status</text>
+<text x="1790.0" y="4175.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="4195.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="4215.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="4235.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="4255.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="1790.0" y="4275.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="1790.0" y="4295.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="1790.0" y="4315.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="1790.0" y="4335.0" text-anchor="end" font-family="Arial" font-size="14">BOOLEAN</text>
+<text x="1790.0" y="4355.0" text-anchor="end" font-family="Arial" font-size="14">BOOLEAN</text>
+<text x="1790.0" y="4375.0" text-anchor="end" font-family="Arial" font-size="14">TIME(6)</text>
+<text x="1790.0" y="4395.0" text-anchor="end" font-family="Arial" font-size="14">DATE</text>
+<text x="1790.0" y="4415.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="1790.0" y="4435.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="1790.0" y="4455.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="1790.0" y="4475.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="1790.0" y="4495.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="1790.0" y="4515.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="1790.0" y="4535.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<rect x="2280" y="4120" width="520" height="380" fill="white" stroke="#333"/>
+<rect x="2280" y="4120" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="2540.0" y="4146" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">workout_plan_exercises</text>
+<text x="2290.0" y="4175.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="2290.0" y="4195.0" text-anchor="start" font-family="Arial" font-size="14">FK   exercise_id</text>
+<text x="2290.0" y="4215.0" text-anchor="start" font-family="Arial" font-size="14">REF   last_low_adjustment_log_id</text>
+<text x="2290.0" y="4235.0" text-anchor="start" font-family="Arial" font-size="14">FK   plan_day_id</text>
+<text x="2290.0" y="4255.0" text-anchor="start" font-family="Arial" font-size="14">base_weight_kg</text>
+<text x="2290.0" y="4275.0" text-anchor="start" font-family="Arial" font-size="14">current_recommended_weight_kg</text>
+<text x="2290.0" y="4295.0" text-anchor="start" font-family="Arial" font-size="14">current_weight_kg</text>
+<text x="2290.0" y="4315.0" text-anchor="start" font-family="Arial" font-size="14">duration_seconds</text>
+<text x="2290.0" y="4335.0" text-anchor="start" font-family="Arial" font-size="14">is_assessment</text>
+<text x="2290.0" y="4355.0" text-anchor="start" font-family="Arial" font-size="14">order_index</text>
+<text x="2290.0" y="4375.0" text-anchor="start" font-family="Arial" font-size="14">recommended_weight_kg</text>
+<text x="2290.0" y="4395.0" text-anchor="start" font-family="Arial" font-size="14">reps</text>
+<text x="2290.0" y="4415.0" text-anchor="start" font-family="Arial" font-size="14">rest_seconds</text>
+<text x="2290.0" y="4435.0" text-anchor="start" font-family="Arial" font-size="14">sets</text>
+<text x="2290.0" y="4455.0" text-anchor="start" font-family="Arial" font-size="14">weight_updated_week</text>
+<text x="2290.0" y="4475.0" text-anchor="start" font-family="Arial" font-size="14">notes</text>
+<text x="2790.0" y="4175.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="2790.0" y="4195.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="2790.0" y="4215.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="2790.0" y="4235.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="2790.0" y="4255.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="2790.0" y="4275.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="2790.0" y="4295.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="2790.0" y="4315.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="2790.0" y="4335.0" text-anchor="end" font-family="Arial" font-size="14">BOOLEAN</text>
+<text x="2790.0" y="4355.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="2790.0" y="4375.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="2790.0" y="4395.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="2790.0" y="4415.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="2790.0" y="4435.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="2790.0" y="4455.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="2790.0" y="4475.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<rect x="3280" y="4120" width="520" height="280" fill="white" stroke="#333"/>
+<rect x="3280" y="4120" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="3540.0" y="4146" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">session_exercise_logs</text>
+<text x="3290.0" y="4175.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="3290.0" y="4195.0" text-anchor="start" font-family="Arial" font-size="14">FK   exercise_id</text>
+<text x="3290.0" y="4215.0" text-anchor="start" font-family="Arial" font-size="14">FK   session_id</text>
+<text x="3290.0" y="4235.0" text-anchor="start" font-family="Arial" font-size="14">completion_percent</text>
+<text x="3290.0" y="4255.0" text-anchor="start" font-family="Arial" font-size="14">duration_seconds</text>
+<text x="3290.0" y="4275.0" text-anchor="start" font-family="Arial" font-size="14">is_completed</text>
+<text x="3290.0" y="4295.0" text-anchor="start" font-family="Arial" font-size="14">reps_completed</text>
+<text x="3290.0" y="4315.0" text-anchor="start" font-family="Arial" font-size="14">sets_completed</text>
+<text x="3290.0" y="4335.0" text-anchor="start" font-family="Arial" font-size="14">weight_used_kg</text>
+<text x="3290.0" y="4355.0" text-anchor="start" font-family="Arial" font-size="14">logged_at</text>
+<text x="3290.0" y="4375.0" text-anchor="start" font-family="Arial" font-size="14">notes</text>
+<text x="3790.0" y="4175.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="3790.0" y="4195.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="3790.0" y="4215.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="3790.0" y="4235.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="3790.0" y="4255.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="3790.0" y="4275.0" text-anchor="end" font-family="Arial" font-size="14">BOOLEAN</text>
+<text x="3790.0" y="4295.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="3790.0" y="4315.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="3790.0" y="4335.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="3790.0" y="4355.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="3790.0" y="4375.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<rect x="280" y="4840" width="520" height="100" fill="white" stroke="#333"/>
+<rect x="280" y="4840" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="540.0" y="4866" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">product_attributes</text>
+<text x="290.0" y="4895.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="290.0" y="4915.0" text-anchor="start" font-family="Arial" font-size="14">name [UK]</text>
+<text x="790.0" y="4895.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="790.0" y="4915.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255) </text>
+<rect x="1280" y="4840" width="520" height="120" fill="white" stroke="#333"/>
+<rect x="1280" y="4840" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="1540.0" y="4866" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">product_attribute_values</text>
+<text x="1290.0" y="4895.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="1290.0" y="4915.0" text-anchor="start" font-family="Arial" font-size="14">FK   attribute_id</text>
+<text x="1290.0" y="4935.0" text-anchor="start" font-family="Arial" font-size="14">value</text>
+<text x="1790.0" y="4895.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="4915.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="4935.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<rect x="2280" y="4840" width="520" height="180" fill="white" stroke="#333"/>
+<rect x="2280" y="4840" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="2540.0" y="4866" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">product_variants</text>
+<text x="2290.0" y="4895.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="2290.0" y="4915.0" text-anchor="start" font-family="Arial" font-size="14">FK   product_id</text>
+<text x="2290.0" y="4935.0" text-anchor="start" font-family="Arial" font-size="14">active</text>
+<text x="2290.0" y="4955.0" text-anchor="start" font-family="Arial" font-size="14">price_override</text>
+<text x="2290.0" y="4975.0" text-anchor="start" font-family="Arial" font-size="14">stock</text>
+<text x="2290.0" y="4995.0" text-anchor="start" font-family="Arial" font-size="14">sku</text>
+<text x="2790.0" y="4895.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="2790.0" y="4915.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="2790.0" y="4935.0" text-anchor="end" font-family="Arial" font-size="14">BOOLEAN</text>
+<text x="2790.0" y="4955.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="2790.0" y="4975.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="2790.0" y="4995.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<rect x="3280" y="4840" width="520" height="340" fill="white" stroke="#333"/>
+<rect x="3280" y="4840" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="3540.0" y="4866" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">shop_products</text>
+<text x="3290.0" y="4895.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="3290.0" y="4915.0" text-anchor="start" font-family="Arial" font-size="14">active</text>
+<text x="3290.0" y="4935.0" text-anchor="start" font-family="Arial" font-size="14">price</text>
+<text x="3290.0" y="4955.0" text-anchor="start" font-family="Arial" font-size="14">sale_price</text>
+<text x="3290.0" y="4975.0" text-anchor="start" font-family="Arial" font-size="14">stock</text>
+<text x="3290.0" y="4995.0" text-anchor="start" font-family="Arial" font-size="14">created_at</text>
+<text x="3290.0" y="5015.0" text-anchor="start" font-family="Arial" font-size="14">description</text>
+<text x="3290.0" y="5035.0" text-anchor="start" font-family="Arial" font-size="14">images</text>
+<text x="3290.0" y="5055.0" text-anchor="start" font-family="Arial" font-size="14">brand</text>
+<text x="3290.0" y="5075.0" text-anchor="start" font-family="Arial" font-size="14">image_url</text>
+<text x="3290.0" y="5095.0" text-anchor="start" font-family="Arial" font-size="14">name</text>
+<text x="3290.0" y="5115.0" text-anchor="start" font-family="Arial" font-size="14">required_equipment_code</text>
+<text x="3290.0" y="5135.0" text-anchor="start" font-family="Arial" font-size="14">suitable_goals</text>
+<text x="3290.0" y="5155.0" text-anchor="start" font-family="Arial" font-size="14">category</text>
+<text x="3790.0" y="4895.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="3790.0" y="4915.0" text-anchor="end" font-family="Arial" font-size="14">BOOLEAN</text>
+<text x="3790.0" y="4935.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="3790.0" y="4955.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="3790.0" y="4975.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="3790.0" y="4995.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="3790.0" y="5015.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(2000)</text>
+<text x="3790.0" y="5035.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(20000)</text>
+<text x="3790.0" y="5055.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="3790.0" y="5075.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="3790.0" y="5095.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="3790.0" y="5115.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="3790.0" y="5135.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="3790.0" y="5155.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<rect x="280" y="5460" width="520" height="100" fill="white" stroke="#333"/>
+<rect x="280" y="5460" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="540.0" y="5486" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">variant_attribute_values</text>
+<text x="290.0" y="5515.0" text-anchor="start" font-family="Arial" font-size="14">PK/FK   value_id</text>
+<text x="290.0" y="5535.0" text-anchor="start" font-family="Arial" font-size="14">PK/FK   variant_id</text>
+<text x="790.0" y="5515.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="790.0" y="5535.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<rect x="1280" y="5460" width="520" height="240" fill="white" stroke="#333"/>
+<rect x="1280" y="5460" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="1540.0" y="5486" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">shop_inventory_movements</text>
+<text x="1290.0" y="5515.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="1290.0" y="5535.0" text-anchor="start" font-family="Arial" font-size="14">REF   order_id</text>
+<text x="1290.0" y="5555.0" text-anchor="start" font-family="Arial" font-size="14">REF   product_id</text>
+<text x="1290.0" y="5575.0" text-anchor="start" font-family="Arial" font-size="14">REF   variant_id</text>
+<text x="1290.0" y="5595.0" text-anchor="start" font-family="Arial" font-size="14">after_stock</text>
+<text x="1290.0" y="5615.0" text-anchor="start" font-family="Arial" font-size="14">before_stock</text>
+<text x="1290.0" y="5635.0" text-anchor="start" font-family="Arial" font-size="14">created_at</text>
+<text x="1290.0" y="5655.0" text-anchor="start" font-family="Arial" font-size="14">reason</text>
+<text x="1290.0" y="5675.0" text-anchor="start" font-family="Arial" font-size="14">actor</text>
+<text x="1790.0" y="5515.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="5535.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="5555.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="5575.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="5595.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="1790.0" y="5615.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="1790.0" y="5635.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="1790.0" y="5655.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(1000)</text>
+<text x="1790.0" y="5675.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<rect x="2280" y="5460" width="520" height="560" fill="white" stroke="#333"/>
+<rect x="2280" y="5460" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="2540.0" y="5486" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">shop_orders</text>
+<text x="2290.0" y="5515.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="2290.0" y="5535.0" text-anchor="start" font-family="Arial" font-size="14">REF   created_by_staff_id</text>
+<text x="2290.0" y="5555.0" text-anchor="start" font-family="Arial" font-size="14">FK   user_id</text>
+<text x="2290.0" y="5575.0" text-anchor="start" font-family="Arial" font-size="14">REF   voucher_code</text>
+<text x="2290.0" y="5595.0" text-anchor="start" font-family="Arial" font-size="14">discount</text>
+<text x="2290.0" y="5615.0" text-anchor="start" font-family="Arial" font-size="14">shipping_fee</text>
+<text x="2290.0" y="5635.0" text-anchor="start" font-family="Arial" font-size="14">subtotal</text>
+<text x="2290.0" y="5655.0" text-anchor="start" font-family="Arial" font-size="14">total</text>
+<text x="2290.0" y="5675.0" text-anchor="start" font-family="Arial" font-size="14">voucher_discount</text>
+<text x="2290.0" y="5695.0" text-anchor="start" font-family="Arial" font-size="14">created_at</text>
+<text x="2290.0" y="5715.0" text-anchor="start" font-family="Arial" font-size="14">expires_at</text>
+<text x="2290.0" y="5735.0" text-anchor="start" font-family="Arial" font-size="14">paid_at</text>
+<text x="2290.0" y="5755.0" text-anchor="start" font-family="Arial" font-size="14">note</text>
+<text x="2290.0" y="5775.0" text-anchor="start" font-family="Arial" font-size="14">qr_raw_payload</text>
+<text x="2290.0" y="5795.0" text-anchor="start" font-family="Arial" font-size="14">shipping_address</text>
+<text x="2290.0" y="5815.0" text-anchor="start" font-family="Arial" font-size="14">payment_url</text>
+<text x="2290.0" y="5835.0" text-anchor="start" font-family="Arial" font-size="14">gateway_reference [UK]</text>
+<text x="2290.0" y="5855.0" text-anchor="start" font-family="Arial" font-size="14">payment_method</text>
+<text x="2290.0" y="5875.0" text-anchor="start" font-family="Arial" font-size="14">phone</text>
+<text x="2290.0" y="5895.0" text-anchor="start" font-family="Arial" font-size="14">qr_code_url</text>
+<text x="2290.0" y="5915.0" text-anchor="start" font-family="Arial" font-size="14">receiver_name</text>
+<text x="2290.0" y="5935.0" text-anchor="start" font-family="Arial" font-size="14">transaction_id</text>
+<text x="2290.0" y="5955.0" text-anchor="start" font-family="Arial" font-size="14">transfer_code [UK]</text>
+<text x="2290.0" y="5975.0" text-anchor="start" font-family="Arial" font-size="14">channel</text>
+<text x="2290.0" y="5995.0" text-anchor="start" font-family="Arial" font-size="14">status</text>
+<text x="2790.0" y="5515.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="2790.0" y="5535.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="2790.0" y="5555.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="2790.0" y="5575.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="2790.0" y="5595.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="2790.0" y="5615.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="2790.0" y="5635.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="2790.0" y="5655.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="2790.0" y="5675.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="2790.0" y="5695.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="2790.0" y="5715.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="2790.0" y="5735.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="2790.0" y="5755.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(1000)</text>
+<text x="2790.0" y="5775.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(1000)</text>
+<text x="2790.0" y="5795.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(1000)</text>
+<text x="2790.0" y="5815.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(2000)</text>
+<text x="2790.0" y="5835.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255) </text>
+<text x="2790.0" y="5855.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="2790.0" y="5875.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="2790.0" y="5895.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="2790.0" y="5915.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="2790.0" y="5935.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="2790.0" y="5955.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255) </text>
+<text x="2790.0" y="5975.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<text x="2790.0" y="5995.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<rect x="3280" y="5460" width="520" height="260" fill="white" stroke="#333"/>
+<rect x="3280" y="5460" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="3540.0" y="5486" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">shop_order_items</text>
+<text x="3290.0" y="5515.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="3290.0" y="5535.0" text-anchor="start" font-family="Arial" font-size="14">FK   order_id</text>
+<text x="3290.0" y="5555.0" text-anchor="start" font-family="Arial" font-size="14">REF   product_id</text>
+<text x="3290.0" y="5575.0" text-anchor="start" font-family="Arial" font-size="14">REF   variant_id</text>
+<text x="3290.0" y="5595.0" text-anchor="start" font-family="Arial" font-size="14">line_total</text>
+<text x="3290.0" y="5615.0" text-anchor="start" font-family="Arial" font-size="14">quantity</text>
+<text x="3290.0" y="5635.0" text-anchor="start" font-family="Arial" font-size="14">unit_price</text>
+<text x="3290.0" y="5655.0" text-anchor="start" font-family="Arial" font-size="14">image_url</text>
+<text x="3290.0" y="5675.0" text-anchor="start" font-family="Arial" font-size="14">product_name</text>
+<text x="3290.0" y="5695.0" text-anchor="start" font-family="Arial" font-size="14">variant_label</text>
+<text x="3790.0" y="5515.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="3790.0" y="5535.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="3790.0" y="5555.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="3790.0" y="5575.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="3790.0" y="5595.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="3790.0" y="5615.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="3790.0" y="5635.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="3790.0" y="5655.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="3790.0" y="5675.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="3790.0" y="5695.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<rect x="280" y="6300" width="520" height="360" fill="white" stroke="#333"/>
+<rect x="280" y="6300" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="540.0" y="6326" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">vouchers</text>
+<text x="290.0" y="6355.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="290.0" y="6375.0" text-anchor="start" font-family="Arial" font-size="14">active</text>
+<text x="290.0" y="6395.0" text-anchor="start" font-family="Arial" font-size="14">max_discount_amount</text>
+<text x="290.0" y="6415.0" text-anchor="start" font-family="Arial" font-size="14">min_order_amount</text>
+<text x="290.0" y="6435.0" text-anchor="start" font-family="Arial" font-size="14">usage_limit</text>
+<text x="290.0" y="6455.0" text-anchor="start" font-family="Arial" font-size="14">used_count</text>
+<text x="290.0" y="6475.0" text-anchor="start" font-family="Arial" font-size="14">value</text>
+<text x="290.0" y="6495.0" text-anchor="start" font-family="Arial" font-size="14">created_at</text>
+<text x="290.0" y="6515.0" text-anchor="start" font-family="Arial" font-size="14">end_at</text>
+<text x="290.0" y="6535.0" text-anchor="start" font-family="Arial" font-size="14">start_at</text>
+<text x="290.0" y="6555.0" text-anchor="start" font-family="Arial" font-size="14">code [UK]</text>
+<text x="290.0" y="6575.0" text-anchor="start" font-family="Arial" font-size="14">description</text>
+<text x="290.0" y="6595.0" text-anchor="start" font-family="Arial" font-size="14">scope_category</text>
+<text x="290.0" y="6615.0" text-anchor="start" font-family="Arial" font-size="14">scope_type</text>
+<text x="290.0" y="6635.0" text-anchor="start" font-family="Arial" font-size="14">type</text>
+<text x="790.0" y="6355.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="790.0" y="6375.0" text-anchor="end" font-family="Arial" font-size="14">BOOLEAN</text>
+<text x="790.0" y="6395.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="790.0" y="6415.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="790.0" y="6435.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="790.0" y="6455.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="790.0" y="6475.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="790.0" y="6495.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="790.0" y="6515.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="790.0" y="6535.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="790.0" y="6555.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255) </text>
+<text x="790.0" y="6575.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="790.0" y="6595.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<text x="790.0" y="6615.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<text x="790.0" y="6635.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<rect x="1280" y="6300" width="520" height="100" fill="white" stroke="#333"/>
+<rect x="1280" y="6300" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="1540.0" y="6326" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">voucher_scope_products</text>
+<text x="1290.0" y="6355.0" text-anchor="start" font-family="Arial" font-size="14">REF   product_id</text>
+<text x="1290.0" y="6375.0" text-anchor="start" font-family="Arial" font-size="14">FK   voucher_id</text>
+<text x="1790.0" y="6355.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="6375.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<rect x="2280" y="6300" width="520" height="220" fill="white" stroke="#333"/>
+<rect x="2280" y="6300" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="2540.0" y="6326" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">product_reviews</text>
+<text x="2290.0" y="6355.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="2290.0" y="6375.0" text-anchor="start" font-family="Arial" font-size="14">FK   order_id</text>
+<text x="2290.0" y="6395.0" text-anchor="start" font-family="Arial" font-size="14">FK   product_id</text>
+<text x="2290.0" y="6415.0" text-anchor="start" font-family="Arial" font-size="14">FK   user_id</text>
+<text x="2290.0" y="6435.0" text-anchor="start" font-family="Arial" font-size="14">rating</text>
+<text x="2290.0" y="6455.0" text-anchor="start" font-family="Arial" font-size="14">created_at</text>
+<text x="2290.0" y="6475.0" text-anchor="start" font-family="Arial" font-size="14">comment</text>
+<text x="2290.0" y="6495.0" text-anchor="start" font-family="Arial" font-size="14">images</text>
+<text x="2790.0" y="6355.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="2790.0" y="6375.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="2790.0" y="6395.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="2790.0" y="6415.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="2790.0" y="6435.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="2790.0" y="6455.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="2790.0" y="6475.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(2000)</text>
+<text x="2790.0" y="6495.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(20000)</text>
+<rect x="3280" y="6300" width="520" height="200" fill="white" stroke="#333"/>
+<rect x="3280" y="6300" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="3540.0" y="6326" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">shop_order_events</text>
+<text x="3290.0" y="6355.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="3290.0" y="6375.0" text-anchor="start" font-family="Arial" font-size="14">REF   order_id</text>
+<text x="3290.0" y="6395.0" text-anchor="start" font-family="Arial" font-size="14">created_at</text>
+<text x="3290.0" y="6415.0" text-anchor="start" font-family="Arial" font-size="14">note</text>
+<text x="3290.0" y="6435.0" text-anchor="start" font-family="Arial" font-size="14">actor</text>
+<text x="3290.0" y="6455.0" text-anchor="start" font-family="Arial" font-size="14">from_status</text>
+<text x="3290.0" y="6475.0" text-anchor="start" font-family="Arial" font-size="14">to_status</text>
+<text x="3790.0" y="6355.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="3790.0" y="6375.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="3790.0" y="6395.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<text x="3790.0" y="6415.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(1000)</text>
+<text x="3790.0" y="6435.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="3790.0" y="6455.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="3790.0" y="6475.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<rect x="280" y="6940" width="520" height="160" fill="white" stroke="#333"/>
+<rect x="280" y="6940" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="540.0" y="6966" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">customer_product_states</text>
+<text x="290.0" y="6995.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="290.0" y="7015.0" text-anchor="start" font-family="Arial" font-size="14">REF   product_id</text>
+<text x="290.0" y="7035.0" text-anchor="start" font-family="Arial" font-size="14">REF   user_id</text>
+<text x="290.0" y="7055.0" text-anchor="start" font-family="Arial" font-size="14">wishlisted</text>
+<text x="290.0" y="7075.0" text-anchor="start" font-family="Arial" font-size="14">viewed_at</text>
+<text x="790.0" y="6995.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="790.0" y="7015.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="790.0" y="7035.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="790.0" y="7055.0" text-anchor="end" font-family="Arial" font-size="14">BOOLEAN</text>
+<text x="790.0" y="7075.0" text-anchor="end" font-family="Arial" font-size="14">TIMESTAMP(6)</text>
+<rect x="1280" y="6940" width="520" height="180" fill="white" stroke="#333"/>
+<rect x="1280" y="6940" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="1540.0" y="6966" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">shop_cart_items</text>
+<text x="1290.0" y="6995.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="1290.0" y="7015.0" text-anchor="start" font-family="Arial" font-size="14">FK   product_id</text>
+<text x="1290.0" y="7035.0" text-anchor="start" font-family="Arial" font-size="14">FK   user_id</text>
+<text x="1290.0" y="7055.0" text-anchor="start" font-family="Arial" font-size="14">REF   variant_id</text>
+<text x="1290.0" y="7075.0" text-anchor="start" font-family="Arial" font-size="14">quantity</text>
+<text x="1290.0" y="7095.0" text-anchor="start" font-family="Arial" font-size="14">variant_label</text>
+<text x="1790.0" y="6995.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="7015.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="7035.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="7055.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="7075.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="1790.0" y="7095.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<rect x="2280" y="6940" width="520" height="280" fill="white" stroke="#333"/>
+<rect x="2280" y="6940" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="2540.0" y="6966" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">foods</text>
+<text x="2290.0" y="6995.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="2290.0" y="7015.0" text-anchor="start" font-family="Arial" font-size="14">calories</text>
+<text x="2290.0" y="7035.0" text-anchor="start" font-family="Arial" font-size="14">fat_grams</text>
+<text x="2290.0" y="7055.0" text-anchor="start" font-family="Arial" font-size="14">is_active</text>
+<text x="2290.0" y="7075.0" text-anchor="start" font-family="Arial" font-size="14">protein_grams</text>
+<text x="2290.0" y="7095.0" text-anchor="start" font-family="Arial" font-size="14">weight_grams</text>
+<text x="2290.0" y="7115.0" text-anchor="start" font-family="Arial" font-size="14">image_url</text>
+<text x="2290.0" y="7135.0" text-anchor="start" font-family="Arial" font-size="14">name</text>
+<text x="2290.0" y="7155.0" text-anchor="start" font-family="Arial" font-size="14">suitable_goals</text>
+<text x="2290.0" y="7175.0" text-anchor="start" font-family="Arial" font-size="14">ingredients</text>
+<text x="2290.0" y="7195.0" text-anchor="start" font-family="Arial" font-size="14">instructions</text>
+<text x="2790.0" y="6995.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="2790.0" y="7015.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="2790.0" y="7035.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="2790.0" y="7055.0" text-anchor="end" font-family="Arial" font-size="14">BOOLEAN</text>
+<text x="2790.0" y="7075.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="2790.0" y="7095.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="2790.0" y="7115.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="2790.0" y="7135.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="2790.0" y="7155.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="2790.0" y="7175.0" text-anchor="end" font-family="Arial" font-size="14">CLOB</text>
+<text x="2790.0" y="7195.0" text-anchor="end" font-family="Arial" font-size="14">CLOB</text>
+<rect x="3280" y="6940" width="520" height="120" fill="white" stroke="#333"/>
+<rect x="3280" y="6940" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="3540.0" y="6966" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">injury_area_options</text>
+<text x="3290.0" y="6995.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="3290.0" y="7015.0" text-anchor="start" font-family="Arial" font-size="14">code</text>
+<text x="3290.0" y="7035.0" text-anchor="start" font-family="Arial" font-size="14">label</text>
+<text x="3790.0" y="6995.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="3790.0" y="7015.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(100)</text>
+<text x="3790.0" y="7035.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(100)</text>
+<rect x="280" y="7500" width="520" height="140" fill="white" stroke="#333"/>
+<rect x="280" y="7500" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="540.0" y="7526" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">system_configs</text>
+<text x="290.0" y="7555.0" text-anchor="start" font-family="Arial" font-size="14">PK   config_key</text>
+<text x="290.0" y="7575.0" text-anchor="start" font-family="Arial" font-size="14">config_value</text>
+<text x="290.0" y="7595.0" text-anchor="start" font-family="Arial" font-size="14">category</text>
+<text x="290.0" y="7615.0" text-anchor="start" font-family="Arial" font-size="14">description</text>
+<text x="790.0" y="7555.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="790.0" y="7575.0" text-anchor="end" font-family="Arial" font-size="14">FLOAT(53)</text>
+<text x="790.0" y="7595.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(255)</text>
+<text x="790.0" y="7615.0" text-anchor="end" font-family="Arial" font-size="14">CLOB</text>
+<rect x="1280" y="7500" width="520" height="140" fill="white" stroke="#333"/>
+<rect x="1280" y="7500" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="1540.0" y="7526" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">muscle_split_configs</text>
+<text x="1290.0" y="7555.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="1290.0" y="7575.0" text-anchor="start" font-family="Arial" font-size="14">sessions_per_week</text>
+<text x="1290.0" y="7595.0" text-anchor="start" font-family="Arial" font-size="14">day_groups</text>
+<text x="1290.0" y="7615.0" text-anchor="start" font-family="Arial" font-size="14">goal</text>
+<text x="1790.0" y="7555.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="1790.0" y="7575.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="1790.0" y="7595.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(1000)</text>
+<text x="1790.0" y="7615.0" text-anchor="end" font-family="Arial" font-size="14">ENUM</text>
+<rect x="2280" y="7500" width="520" height="120" fill="white" stroke="#333"/>
+<rect x="2280" y="7500" width="520" height="40" fill="#eee" stroke="#333"/>
+<text x="2540.0" y="7526" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">recommended_schedule_configs</text>
+<text x="2290.0" y="7555.0" text-anchor="start" font-family="Arial" font-size="14">PK   id</text>
+<text x="2290.0" y="7575.0" text-anchor="start" font-family="Arial" font-size="14">sessions_per_week</text>
+<text x="2290.0" y="7595.0" text-anchor="start" font-family="Arial" font-size="14">recommended_days</text>
+<text x="2790.0" y="7555.0" text-anchor="end" font-family="Arial" font-size="14">BIGINT</text>
+<text x="2790.0" y="7575.0" text-anchor="end" font-family="Arial" font-size="14">INTEGER</text>
+<text x="2790.0" y="7595.0" text-anchor="end" font-family="Arial" font-size="14">VARCHAR(30)</text>
+</svg>

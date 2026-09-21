@@ -4,5 +4,5 @@ import jakarta.persistence.*; import lombok.*;
 public class OrderItem {
  @Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
  @ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="order_id") private StoreOrder order;
- private Long productId; private String productName; private String imageUrl; private Double unitPrice; private Integer quantity; private Double lineTotal;
+ private Long productId; private String productName; private String imageUrl; private Long variantId; private String variantLabel; private Double unitPrice; private Integer quantity; private Double lineTotal;
 }

@@ -1,0 +1,613 @@
+@startuml
+title ERD logic 43 bảng - 39 FK và 16 liên kết logic bổ sung
+hide circle
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 65
+top to bottom direction
+
+entity "chat_messages" as chat_messages {
+  attachment_size : bigint
+  created_at : timestamp
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+  content : varchar
+  attachment_name : varchar
+  attachment_type : varchar
+  attachment_url : varchar
+  sender : varchar
+}
+entity "customer_addresses" as customer_addresses {
+  default_address : boolean
+  id : bigint <<PK>>
+  user_id : bigint <<REF>>
+  address : varchar
+  phone : varchar
+  receiver_name : varchar
+}
+entity "customer_product_states" as customer_product_states {
+  wishlisted : boolean
+  id : bigint <<PK>>
+  product_id : bigint <<REF>>
+  user_id : bigint <<REF>>
+  viewed_at : timestamp
+}
+entity "endurance_tests" as endurance_tests {
+  plank_seconds : integer
+  pushup_reps : integer
+  squat_reps : integer
+  id : bigint <<PK>>
+  tested_at : timestamp
+  user_id : bigint <<FK>> <<UK>>
+}
+entity "exercises" as exercises {
+  calories_burned : integer
+  default_duration_seconds : integer
+  default_reps : integer
+  default_sets : integer
+  endurance_score : integer
+  flexibility_score : integer
+  is_active : boolean
+  is_assessment : boolean
+  maintenance_score : integer
+  muscle_gain_score : integer
+  rest_seconds : integer
+  stamina_cost : integer
+  uses_weight : boolean
+  weight_loss_score : integer
+  id : bigint <<PK>>
+  contraindicated_injuries : varchar
+  description : varchar
+  image_url : varchar
+  name : varchar
+  secondary_muscle_groups : varchar
+  video_url : varchar
+  assessment_metric_type : enum
+  difficulty : enum
+  muscle_group : enum
+}
+entity "foods" as foods {
+  calories : integer
+  fat_grams : float
+  is_active : boolean
+  protein_grams : float
+  weight_grams : float
+  id : bigint <<PK>>
+  image_url : varchar
+  name : varchar
+  suitable_goals : varchar
+  ingredients : clob
+  instructions : clob
+}
+entity "injury_area_options" as injury_area_options {
+  id : bigint <<PK>>
+  code : varchar
+  label : varchar
+}
+entity "invoices" as invoices {
+  price : float
+  regenerate_count : integer
+  cancelled_at : timestamp
+  created_at : timestamp
+  expires_at : timestamp
+  id : bigint <<PK>>
+  membership_id : bigint <<FK>>
+  paid_at : timestamp
+  user_id : bigint <<FK>>
+  qr_raw_payload : varchar
+  cosmetic_item_code : varchar
+  deeplink : varchar
+  momo_order_id : varchar <<UK>>
+  momo_request_id : varchar
+  pay_url : varchar
+  qr_code_url : varchar
+  result_message : varchar
+  transaction_id : varchar
+  transfer_code : varchar <<UK>>
+  invoice_type : enum
+  membership_type : enum
+  status : enum
+}
+entity "memberships" as memberships {
+  end_date : date
+  is_active : boolean
+  price : float
+  start_date : date
+  created_at : timestamp
+  id : bigint <<PK>>
+  paid_at : timestamp
+  user_id : bigint <<FK>>
+  notes : varchar
+  payment_method : varchar
+  transaction_id : varchar
+  membership_type : enum
+  payment_status : enum
+}
+entity "muscle_split_configs" as muscle_split_configs {
+  sessions_per_week : integer
+  id : bigint <<PK>>
+  day_groups : varchar
+  goal : enum
+}
+entity "notifications" as notifications {
+  is_read : boolean
+  created_at : timestamp
+  id : bigint <<PK>>
+  ref_id : bigint
+  scheduled_at : timestamp
+  sent_at : timestamp
+  user_id : bigint <<FK>>
+  message : varchar
+  ref_type : varchar
+  title : varchar
+  type : varchar
+}
+entity "pet_profiles" as pet_profiles {
+  current_streak : integer
+  missed_streak : integer
+  web_count : integer
+  last_calculated_at : timestamp
+  user_id : bigint <<PK>> <<FK>>
+  equipped_hair : varchar
+  equipped_pants : varchar
+  equipped_shirt : varchar
+  aura_tier : enum
+  stage : enum
+}
+entity "plan_muscle_group_weight" as plan_muscle_group_weight {
+  multiplier : float
+  id : bigint <<PK>>
+  workout_plan_id : bigint <<FK>>
+  muscle_group : enum
+}
+entity "product_attribute_values" as product_attribute_values {
+  attribute_id : bigint <<FK>>
+  id : bigint <<PK>>
+  value : varchar
+}
+entity "product_attributes" as product_attributes {
+  id : bigint <<PK>>
+  name : varchar <<UK>>
+}
+entity "product_reviews" as product_reviews {
+  rating : integer
+  created_at : timestamp
+  id : bigint <<PK>>
+  order_id : bigint <<FK>>
+  product_id : bigint <<FK>>
+  user_id : bigint <<FK>>
+  comment : varchar
+  images : varchar
+}
+entity "product_variants" as product_variants {
+  active : boolean
+  price_override : float
+  stock : integer
+  id : bigint <<PK>>
+  product_id : bigint <<FK>>
+  sku : varchar
+}
+entity "progress_tracking" as progress_tracking {
+  arm_cm : float
+  bmi : float
+  body_fat_percentage : float
+  chest_cm : float
+  height : float
+  hip_cm : float
+  muscle_mass_kg : float
+  recorded_date : date
+  thigh_cm : float
+  waist_cm : float
+  weight : float
+  id : bigint <<PK>>
+  recorded_at : timestamp
+  user_id : bigint <<FK>>
+  notes : varchar
+  source : enum
+}
+entity "recommended_schedule_configs" as recommended_schedule_configs {
+  sessions_per_week : integer
+  id : bigint <<PK>>
+  recommended_days : varchar
+}
+entity "roles" as roles {
+  id : bigint <<PK>>
+  role_name : varchar <<UK>>
+}
+entity "service_ratings" as service_ratings {
+  is_public : boolean
+  rating : integer
+  attachment_size : bigint
+  created_at : timestamp
+  id : bigint <<PK>>
+  replied_at : timestamp
+  reply_attachment_size : bigint
+  updated_at : timestamp
+  user_id : bigint <<FK>>
+  admin_reply : varchar
+  attachment_name : varchar
+  attachment_type : varchar
+  attachment_url : varchar
+  comment : varchar
+  reply_attachment_name : varchar
+  reply_attachment_type : varchar
+  reply_attachment_url : varchar
+  service_type : varchar
+  title : varchar
+}
+entity "session_exercise_logs" as session_exercise_logs {
+  completion_percent : integer
+  duration_seconds : integer
+  is_completed : boolean
+  reps_completed : integer
+  sets_completed : integer
+  weight_used_kg : float
+  exercise_id : bigint <<FK>>
+  id : bigint <<PK>>
+  logged_at : timestamp
+  session_id : bigint <<FK>>
+  notes : varchar
+}
+entity "shop_cart_items" as shop_cart_items {
+  quantity : integer
+  id : bigint <<PK>>
+  product_id : bigint <<FK>>
+  user_id : bigint <<FK>>
+  variant_id : bigint <<REF>>
+  variant_label : varchar
+}
+entity "shop_inventory_movements" as shop_inventory_movements {
+  after_stock : integer
+  before_stock : integer
+  created_at : timestamp
+  id : bigint <<PK>>
+  order_id : bigint <<REF>>
+  product_id : bigint <<REF>>
+  variant_id : bigint <<REF>>
+  reason : varchar
+  actor : varchar
+}
+entity "shop_order_events" as shop_order_events {
+  created_at : timestamp
+  id : bigint <<PK>>
+  order_id : bigint <<REF>>
+  note : varchar
+  actor : varchar
+  from_status : varchar
+  to_status : varchar
+}
+entity "shop_order_items" as shop_order_items {
+  line_total : float
+  quantity : integer
+  unit_price : float
+  id : bigint <<PK>>
+  order_id : bigint <<FK>>
+  product_id : bigint <<REF>>
+  variant_id : bigint <<REF>>
+  image_url : varchar
+  product_name : varchar
+  variant_label : varchar
+}
+entity "shop_orders" as shop_orders {
+  discount : float
+  shipping_fee : float
+  subtotal : float
+  total : float
+  voucher_discount : float
+  created_at : timestamp
+  created_by_staff_id : bigint <<REF>>
+  expires_at : timestamp
+  id : bigint <<PK>>
+  paid_at : timestamp
+  user_id : bigint <<FK>>
+  note : varchar
+  qr_raw_payload : varchar
+  shipping_address : varchar
+  payment_url : varchar
+  gateway_reference : varchar <<UK>>
+  payment_method : varchar
+  phone : varchar
+  qr_code_url : varchar
+  receiver_name : varchar
+  transaction_id : varchar
+  transfer_code : varchar <<UK>>
+  voucher_code : varchar <<REF>>
+  channel : enum
+  status : enum
+}
+entity "shop_products" as shop_products {
+  active : boolean
+  price : float
+  sale_price : float
+  stock : integer
+  created_at : timestamp
+  id : bigint <<PK>>
+  description : varchar
+  images : varchar
+  brand : varchar
+  image_url : varchar
+  name : varchar
+  required_equipment_code : varchar
+  suitable_goals : varchar
+  category : enum
+}
+entity "support_messages" as support_messages {
+  attachment_size : bigint
+  created_at : timestamp
+  id : bigint <<PK>>
+  session_id : bigint <<FK>>
+  content : varchar
+  attachment_name : varchar
+  attachment_type : varchar
+  attachment_url : varchar
+  sender_role : varchar
+}
+entity "support_sessions" as support_sessions {
+  user_rating : integer
+  accepted_at : timestamp
+  admin_id : bigint <<FK>>
+  closed_at : timestamp
+  created_at : timestamp
+  id : bigint <<PK>>
+  rated_at : timestamp
+  user_id : bigint <<FK>>
+  user_rating_comment : varchar
+  subject : varchar
+  status : enum
+}
+entity "system_configs" as system_configs {
+  config_value : float
+  category : varchar
+  config_key : varchar <<PK>>
+  description : clob
+}
+entity "user_cosmetic_ownership" as user_cosmetic_ownership {
+  id : bigint <<PK>>
+  purchased_at : timestamp
+  user_id : bigint <<REF>>
+  cosmetic_code : varchar
+}
+entity "user_profiles" as user_profiles {
+  age : integer
+  available_days_per_week : integer
+  bmi : float
+  body_fat_percentage : float
+  date_of_birth : date
+  height : float
+  initial_weight : float
+  preferred_session_duration : integer
+  training_experience_months : integer
+  weight : float
+  id : bigint <<PK>>
+  user_id : bigint <<FK>> <<UK>>
+  preferred_training_days : varchar
+  available_equipment : varchar
+  disliked_exercises : varchar
+  injury_areas : varchar
+  daily_activity_level : varchar
+  gender : varchar
+  medical_conditions : varchar
+  training_location : varchar
+  fitness_level : enum
+  goal : enum
+}
+entity "users" as users {
+  email_verified : boolean
+  password_reset_attempts : integer
+  status : boolean
+  created_at : timestamp
+  id : bigint <<PK>>
+  password_reset_blocked_until : timestamp
+  role_id : bigint <<FK>>
+  email : varchar <<UK>>
+  full_name : varchar
+  password : varchar
+  phone : varchar
+  verification_token : varchar
+}
+entity "variant_attribute_values" as variant_attribute_values {
+  value_id : bigint <<PK>> <<FK>>
+  variant_id : bigint <<PK>> <<FK>>
+}
+entity "voucher_scope_products" as voucher_scope_products {
+  product_id : bigint <<REF>>
+  voucher_id : bigint <<FK>>
+}
+entity "vouchers" as vouchers {
+  active : boolean
+  max_discount_amount : float
+  min_order_amount : float
+  usage_limit : integer
+  used_count : integer
+  value : float
+  created_at : timestamp
+  end_at : timestamp
+  id : bigint <<PK>>
+  start_at : timestamp
+  code : varchar <<UK>>
+  description : varchar
+  scope_category : enum
+  scope_type : enum
+  type : enum
+}
+entity "weekly_reviews" as weekly_reviews {
+  rating : integer
+  week_number : integer
+  created_at : timestamp
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+  workout_plan_id : bigint <<FK>>
+  comment : varchar
+}
+entity "work_shifts" as work_shifts {
+  cash_at_start : float
+  cash_counted : float
+  cash_difference : float
+  expected_cash : float
+  planned_end : time
+  planned_start : time
+  pos_bank_revenue : float
+  pos_cash_revenue : float
+  shift_date : date
+  check_in_at : timestamp
+  check_out_at : timestamp
+  created_at : timestamp
+  id : bigint <<PK>>
+  user_id : bigint <<FK>>
+  handover_note : varchar
+  status : enum
+}
+entity "workout_plan_days" as workout_plan_days {
+  day_of_week : integer
+  id : bigint <<PK>>
+  workout_plan_id : bigint <<FK>>
+  day_name : varchar
+}
+entity "workout_plan_exercises" as workout_plan_exercises {
+  base_weight_kg : float
+  current_recommended_weight_kg : float
+  current_weight_kg : float
+  duration_seconds : integer
+  is_assessment : boolean
+  order_index : integer
+  recommended_weight_kg : float
+  reps : integer
+  rest_seconds : integer
+  sets : integer
+  weight_updated_week : integer
+  exercise_id : bigint <<FK>>
+  id : bigint <<PK>>
+  last_low_adjustment_log_id : bigint <<REF>>
+  plan_day_id : bigint <<FK>>
+  notes : varchar
+}
+entity "workout_plans" as workout_plans {
+  current_mana : integer
+  current_week : integer
+  difficulty_adjustment : integer
+  duration_weeks : integer
+  estimated_weeks : integer
+  exercises_adjustment : integer
+  fitness_score : integer
+  is_active : boolean
+  is_ai_generated : boolean
+  is_completed : boolean
+  is_fitness_improvement : boolean
+  is_template : boolean
+  last_mana_regen_date : date
+  last_training_date : date
+  max_mana : integer
+  reps_adjustment : integer
+  required_max_session_mana_cost : integer
+  sessions_per_week : integer
+  sets_adjustment : integer
+  starting_bmi : float
+  starting_weight : float
+  target_achieved : boolean
+  target_baseline_value : float
+  target_current_value : float
+  target_goal_value : float
+  target_metric_type : tinyint
+  week_start_date : date
+  created_at : timestamp
+  id : bigint <<PK>>
+  original_plan_id : bigint <<REF>>
+  user_id : bigint <<FK>>
+  confirmed_schedule_dows : varchar
+  description : varchar
+  plan_name : varchar
+  weight_adjustment_note : varchar
+  body_type : enum
+  fitness_level : enum
+  goal : enum
+  target_level : enum
+}
+entity "workout_sessions" as workout_sessions {
+  checkout_body_fat : float
+  checkout_weight : float
+  completion_rate : integer
+  duration_minutes : integer
+  is_custom : boolean
+  is_last_session_of_week : boolean
+  scheduled_time : time
+  session_date : date
+  total_calories_burned : integer
+  week_number : integer
+  check_in_time : timestamp
+  check_out_time : timestamp
+  id : bigint <<PK>>
+  plan_day_id : bigint <<FK>>
+  user_id : bigint <<FK>>
+  workout_plan_id : bigint <<FK>>
+  custom_session_name : varchar
+  notes : varchar
+  status : enum
+}
+users |o--o{ chat_messages : "user_id"
+users ||--o| endurance_tests : "user_id"
+memberships |o--o{ invoices : "membership_id"
+users |o--o{ invoices : "user_id"
+users |o--o{ memberships : "user_id"
+users |o--o{ notifications : "user_id"
+users ||--o| pet_profiles : "user_id"
+workout_plans |o--o{ plan_muscle_group_weight : "workout_plan_id"
+product_attributes |o--o{ product_attribute_values : "attribute_id"
+shop_orders |o--o{ product_reviews : "order_id"
+shop_products |o--o{ product_reviews : "product_id"
+users |o--o{ product_reviews : "user_id"
+shop_products |o--o{ product_variants : "product_id"
+users |o--o{ progress_tracking : "user_id"
+users |o--o{ service_ratings : "user_id"
+exercises |o--o{ session_exercise_logs : "exercise_id"
+workout_sessions |o--o{ session_exercise_logs : "session_id"
+shop_products |o--o{ shop_cart_items : "product_id"
+users |o--o{ shop_cart_items : "user_id"
+shop_orders |o--o{ shop_order_items : "order_id"
+users |o--o{ shop_orders : "user_id"
+support_sessions |o--o{ support_messages : "session_id"
+users |o--o{ support_sessions : "admin_id"
+users |o--o{ support_sessions : "user_id"
+users |o--o| user_profiles : "user_id"
+roles |o--o{ users : "role_id"
+product_attribute_values ||--o{ variant_attribute_values : "value_id"
+product_variants ||--o{ variant_attribute_values : "variant_id"
+vouchers ||--o{ voucher_scope_products : "voucher_id"
+users |o--o{ weekly_reviews : "user_id"
+workout_plans |o--o{ weekly_reviews : "workout_plan_id"
+users |o--o{ work_shifts : "user_id"
+workout_plans |o--o{ workout_plan_days : "workout_plan_id"
+exercises |o--o{ workout_plan_exercises : "exercise_id"
+workout_plan_days |o--o{ workout_plan_exercises : "plan_day_id"
+users |o--o{ workout_plans : "user_id"
+workout_plan_days |o--o{ workout_sessions : "plan_day_id"
+users |o--o{ workout_sessions : "user_id"
+workout_plans |o--o{ workout_sessions : "workout_plan_id"
+' Dotted lines are logical references, not existing database FK constraints.
+users |o..o{ customer_addresses : "user_id -> id"
+users |o..o{ customer_product_states : "user_id -> id"
+shop_products |o..o{ customer_product_states : "product_id -> id"
+users ||..o{ user_cosmetic_ownership : "user_id -> id"
+shop_orders |o..o{ shop_order_events : "order_id -> id"
+shop_products |o..o{ shop_inventory_movements : "product_id -> id"
+product_variants |o..o{ shop_inventory_movements : "variant_id -> id"
+shop_orders |o..o{ shop_inventory_movements : "order_id -> id"
+product_variants |o..o{ shop_cart_items : "variant_id -> id"
+shop_products |o..o{ shop_order_items : "product_id -> id"
+product_variants |o..o{ shop_order_items : "variant_id -> id"
+users |o..o{ shop_orders : "created_by_staff_id -> id"
+vouchers |o..o{ shop_orders : "voucher_code -> code"
+shop_products |o..o{ voucher_scope_products : "product_id -> id"
+workout_plans |o..o{ workout_plans : "original_plan_id -> id"
+session_exercise_logs |o..o{ workout_plan_exercises : "last_low_adjustment_log_id -> id"
+legend bottom
+  Đường liền: 39 khóa ngoại trong schema gốc.
+  Đường nét đứt / REF: 16 liên kết logic bổ sung; chưa phải FK của ứng dụng.
+  PK: khóa chính. FK: khóa ngoại hiện có. UK: khóa duy nhất.
+  Năm bảng danh mục/cấu hình đứng riêng do chưa có cột tham chiếu phù hợp.
+  notifications.ref_id phụ thuộc ref_type, không có một bảng đích cố định.
+endlegend
+@enduml

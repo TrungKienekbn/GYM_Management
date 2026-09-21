@@ -1,0 +1,62 @@
+@startuml
+title 7.19 - Activity Diagram Phân công và thực hiện ca làm việc
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 16
+skinparam ArrowColor Black
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+  DiamondBackgroundColor White
+  DiamondBorderColor Black
+}
+skinparam swimlane {
+  BorderColor Black
+  TitleBackgroundColor WhiteSmoke
+}
+
+|Quản trị viên / Nhân viên|
+start
+if (Đã có ca được phân công?) then (Chưa)
+  repeat
+    :ADMIN chọn nhân viên, ngày\nvà giờ làm, lưu phân công;
+    |Hệ thống|
+    :Kiểm tra nhân viên và thời gian ca;
+    if (Thông tin hợp lệ?) then (Có)
+      :Lưu lịch làm việc;
+    else (Không)
+      :Hiển thị lỗi phân công;
+    endif
+    |Quản trị viên / Nhân viên|
+  repeat while (Cần sửa phân công?) is (Có) not (Không)
+else (Có)
+endif
+:Người được phân công / ADMIN\nchọn ca và nhập tiền đầu ca,\nYêu cầu vào ca;
+|Hệ thống|
+:Kiểm tra quyền với ca\nvà ca chưa được vào;
+if (Đủ điều kiện vào ca?) then (Không)
+  :Thông báo từ chối vào ca;
+  stop
+else (Có)
+  :Lưu thời điểm vào, tiền đầu ca,\nChuyển trạng thái đang làm;
+endif
+|Quản trị viên / Nhân viên|
+:Thực hiện công việc trong ca;
+:Nhập tiền mặt kiểm đếm\nvà ghi chú bàn giao,\nYêu cầu kết ca;
+|Hệ thống|
+:Kiểm tra quyền với ca,\nCa đã vào và chưa kết;
+if (Đủ điều kiện kết ca?) then (Không)
+  :Thông báo từ chối kết ca;
+  stop
+else (Có)
+endif
+:Tổng hợp doanh thu POS\ntheo nhân viên và thời gian ca;
+:Tiền dự kiến = tiền đầu ca\n+ doanh thu POS tiền mặt;
+:Chênh lệch = tiền kiểm đếm\n- tiền dự kiến;
+:Lưu giờ kết ca, doanh thu,\nchênh lệch và ghi chú bàn giao,\nChuyển trạng thái hoàn thành;
+|Quản trị viên / Nhân viên|
+:Xem kết quả đối soát;
+stop
+@enduml

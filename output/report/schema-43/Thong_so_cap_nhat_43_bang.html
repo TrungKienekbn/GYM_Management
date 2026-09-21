@@ -1,0 +1,881 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8"><title>Đặc tả đầy đủ 43 bảng</title>
+<style>body{font-family:Arial,sans-serif;color:#151515;max-width:1120px;margin:40px auto;padding:0 28px;line-height:1.5}h1{font-size:30px;line-height:1.2}h2{font-size:23px;margin-top:40px}h3{font-size:18px;margin-top:28px}table{border-collapse:collapse;width:100%;margin:16px 0 24px;table-layout:fixed}th,td{border:1px solid #ccc;padding:9px;text-align:left;vertical-align:top;overflow-wrap:anywhere;font-size:14px}th{background:#eee}thead{display:table-header-group}tr{break-inside:avoid}h2,h3{break-after:avoid}@media print{body{max-width:none;margin:0;font-size:10pt;padding:0}th,td{font-size:9pt;padding:5px}@page{size:A4;margin:16mm}}</style></head><body><h1 id="sec-0">Thông số cập nhật báo cáo: đủ 43 bảng</h1>
+<p>Đối chiếu mã nguồn GYM_Management và DDL Hibernate của kiểm thử H2 tạm. Ngày lập: 17/09/2026. Tài liệu dùng để thay/bổ sung báo cáo PDF SD-41_DATNSP26 (1).pdf; chưa sửa trực tiếp PDF hay database đang dùng.</p>
+<h2 id="sec-4">1. Số lượng và quy ước</h2>
+<p>Có 43 bảng vật lý = 41 lớp @Entity + 2 bảng nối/collection. Đợt nâng cấp cửa hàng tăng từ 39 lên 43, không phải từ 17 lên 43; số 17 là phần tài liệu cũ chưa đầy đủ. Bốn bảng thêm: customer_addresses, customer_product_states, shop_order_events, shop_inventory_movements.</p>
+<p>Kiểu dữ liệu trong phụ lục là DDL H2 thực tế của kiểm thử: Java Long thường là BIGINT; Double là FLOAT(53); ngày giờ là DATE/TIME(6)/TIMESTAMP(6). Không tự đổi thành DECIMAL/INT để làm đẹp tài liệu. NULL chỉ khả năng để trống tại database, không thay thế các kiểm tra đầu vào của dịch vụ. Giá trị khởi tạo trong Java không đồng nghĩa SQL DEFAULT.</p>
+<p>Có 39 ràng buộc FK vật lý. Các ID liên kết bằng dịch vụ được liệt kê riêng, không vẽ thành FK đã tồn tại. Hai bảng phụ: variant_attribute_values có PK ghép (value_id, variant_id); voucher_scope_products không có PK/UNIQUE trong DDL hiện tại. Không tự thêm ràng buộc trong báo cáo.</p>
+<h2 id="sec-12">2. Vị trí cần sửa trong PDF</h2>
+<h3 id="sec-14">Trang 14, kế hoạch</h3>
+<p>Đổi mốc “17 entity” thành 41 entity JPA, sinh 43 bảng vật lý gồm 2 bảng liên kết/collection.</p>
+<h3 id="sec-17">Trang 21–22, mục 2.3.1</h3>
+<p>Bổ sung đầy đủ thực thể hiện có. Hai bảng nối được mô tả rõ ở mô hình logic/vật lý; không coi là hai lớp @Entity riêng.</p>
+<h3 id="sec-20">Trang 22–29, mục 2.3.2</h3>
+<p>Thay/bổ sung các quan hệ theo danh sách FK và liên kết logic trong tài liệu này. User–Food không có bảng nối hay FK hiện tại; thao tác tham khảo không phải quan hệ N:N được lưu.</p>
+<h3 id="sec-23">Trang 27, ChatMessage</h3>
+<p>ChatMessage là hội thoại USER/BOT theo user_id. Hỗ trợ người dùng–quản trị dùng support_sessions và support_messages.</p>
+<h3 id="sec-26">Trang 29, EnduranceTest</h3>
+<p>user_id có UNIQUE và NOT NULL: một người dùng có tối đa một bản ghi kiểm tra hiện tại, không phải bảng lịch sử nhiều lần kiểm tra.</p>
+<h3 id="sec-29">Trang 30 và 33, mục 2.4/2.6</h3>
+<p>Vẽ lại ERD. Sơ đồ vật lý chứa đủ 43 bảng; dùng các sơ đồ nhóm để đọc được các cột. Chỉ các liên kết FK thật nằm trong ERD vật lý.</p>
+<h3 id="sec-32">Trang 31–32, mục 2.5</h3>
+<p>Bổ sung nhân viên, cửa hàng, ca làm, nhân vật, cấu hình, hỗ trợ. Mô tả vai trò theo ADMIN/STAFF/USER; không tự thêm vai trò huấn luyện viên nếu chưa triển khai.</p>
+<h3 id="sec-35">Trang 34–35, mục 3.1</h3>
+<p>Thay danh sách bảng và hình cơ sở dữ liệu bằng đủ 43 bảng, sử dụng tên snake_case đúng database.</p>
+<h3 id="sec-38">Trang 111–122, Phụ lục B</h3>
+<p>Thay toàn bộ đặc tả cũ bằng 43 đặc tả trong phần 4. Ví dụ roles dùng role_name, không có name/description; PK kiểu BIGINT thay cho INT ở các bảng đang dùng Long.</p>
+<h3 id="sec-41">Các phần yêu cầu, Use Case, UI, triển khai, kiểm thử, hướng dẫn</h3>
+<p>Cập nhật các chức năng cửa hàng đã làm, chọn phân loại ở cả /shop và /app/shop, quản lý ca nhân viên, địa chỉ, đơn COD, báo cáo. Không ghi ví điện tử đã kiểm thử giao dịch thực tế.</p>
+<h2 id="sec-44">3. Danh mục toàn bộ bảng</h2>
+<h3 id="sec-46">Tài khoản và hội viên</h3>
+<table><thead><tr><th>Bảng</th><th>Chức năng</th><th>Số cột</th></tr></thead><tbody>
+<tr><td>roles</td><td>Vai trò phân quyền</td><td>2</td></tr>
+<tr><td>users</td><td>Tài khoản người dùng</td><td>12</td></tr>
+<tr><td>user_profiles</td><td>Hồ sơ thể lực và điều kiện tập luyện</td><td>22</td></tr>
+<tr><td>memberships</td><td>Gói hội viên đã đăng ký</td><td>13</td></tr>
+<tr><td>invoices</td><td>Hóa đơn gói hội viên và vật phẩm trang trí</td><td>22</td></tr>
+</tbody></table>
+<h3 id="sec-56">Tập luyện và dinh dưỡng</h3>
+<table><thead><tr><th>Bảng</th><th>Chức năng</th><th>Số cột</th></tr></thead><tbody>
+<tr><td>exercises</td><td>Thư viện bài tập</td><td>24</td></tr>
+<tr><td>foods</td><td>Thư viện món ăn</td><td>11</td></tr>
+<tr><td>endurance_tests</td><td>Kết quả kiểm tra sức bền hiện tại của từng người dùng</td><td>6</td></tr>
+<tr><td>progress_tracking</td><td>Lịch sử chỉ số cơ thể</td><td>16</td></tr>
+<tr><td>workout_plans</td><td>Giáo án cá nhân và giáo án mẫu</td><td>39</td></tr>
+<tr><td>workout_plan_days</td><td>Ngày tập trong giáo án</td><td>4</td></tr>
+<tr><td>workout_plan_exercises</td><td>Bài tập và định mức trong ngày tập</td><td>16</td></tr>
+<tr><td>plan_muscle_group_weight</td><td>Hệ số ưu tiên nhóm cơ theo giáo án</td><td>4</td></tr>
+<tr><td>workout_sessions</td><td>Buổi tập thực tế</td><td>19</td></tr>
+<tr><td>session_exercise_logs</td><td>Kết quả từng bài tập trong buổi</td><td>11</td></tr>
+<tr><td>weekly_reviews</td><td>Đánh giá giáo án theo tuần</td><td>7</td></tr>
+</tbody></table>
+<h3 id="sec-72">Cấu hình</h3>
+<table><thead><tr><th>Bảng</th><th>Chức năng</th><th>Số cột</th></tr></thead><tbody>
+<tr><td>muscle_split_configs</td><td>Cấu hình chia nhóm cơ theo mục tiêu/số buổi</td><td>4</td></tr>
+<tr><td>recommended_schedule_configs</td><td>Cấu hình ngày tập đề xuất theo số buổi</td><td>3</td></tr>
+<tr><td>injury_area_options</td><td>Danh mục vùng chấn thương</td><td>3</td></tr>
+<tr><td>system_configs</td><td>Cấu hình số của hệ thống</td><td>4</td></tr>
+</tbody></table>
+<h3 id="sec-81">Tương tác và hỗ trợ</h3>
+<table><thead><tr><th>Bảng</th><th>Chức năng</th><th>Số cột</th></tr></thead><tbody>
+<tr><td>chat_messages</td><td>Lịch sử hội thoại người dùng với chatbot</td><td>9</td></tr>
+<tr><td>notifications</td><td>Thông báo người dùng</td><td>11</td></tr>
+<tr><td>service_ratings</td><td>Đánh giá dịch vụ và phản hồi quản trị</td><td>19</td></tr>
+<tr><td>support_sessions</td><td>Phiên hỗ trợ trực tiếp</td><td>11</td></tr>
+<tr><td>support_messages</td><td>Tin nhắn trong phiên hỗ trợ</td><td>9</td></tr>
+</tbody></table>
+<h3 id="sec-91">Nhân vật và nhân viên</h3>
+<table><thead><tr><th>Bảng</th><th>Chức năng</th><th>Số cột</th></tr></thead><tbody>
+<tr><td>pet_profiles</td><td>Trạng thái nhân vật đồng hành</td><td>10</td></tr>
+<tr><td>user_cosmetic_ownership</td><td>Vật phẩm trang trí người dùng sở hữu</td><td>4</td></tr>
+<tr><td>work_shifts</td><td>Ca làm và đối soát tiền của nhân viên</td><td>16</td></tr>
+</tbody></table>
+<h3 id="sec-99">Cửa hàng</h3>
+<table><thead><tr><th>Bảng</th><th>Chức năng</th><th>Số cột</th></tr></thead><tbody>
+<tr><td>shop_products</td><td>Sản phẩm cửa hàng</td><td>14</td></tr>
+<tr><td>product_attributes</td><td>Danh mục thuộc tính sản phẩm</td><td>2</td></tr>
+<tr><td>product_attribute_values</td><td>Giá trị của thuộc tính</td><td>3</td></tr>
+<tr><td>product_variants</td><td>Biến thể sản phẩm</td><td>6</td></tr>
+<tr><td>variant_attribute_values</td><td>Bảng nối biến thể với các giá trị thuộc tính</td><td>2</td></tr>
+<tr><td>shop_cart_items</td><td>Dòng giỏ hàng của tài khoản</td><td>6</td></tr>
+<tr><td>shop_orders</td><td>Đơn hàng online và tại quầy</td><td>25</td></tr>
+<tr><td>shop_order_items</td><td>Chi tiết hàng hóa được chốt trong đơn</td><td>10</td></tr>
+<tr><td>vouchers</td><td>Mã giảm giá và điều kiện áp dụng</td><td>15</td></tr>
+<tr><td>voucher_scope_products</td><td>Danh sách ID sản phẩm thuộc phạm vi voucher</td><td>2</td></tr>
+<tr><td>product_reviews</td><td>Đánh giá sản phẩm theo đơn mua</td><td>8</td></tr>
+<tr><td>customer_addresses</td><td>Sổ địa chỉ nhận hàng của khách</td><td>6</td></tr>
+<tr><td>customer_product_states</td><td>Yêu thích và lần xem gần nhất trên cùng một dòng</td><td>5</td></tr>
+<tr><td>shop_order_events</td><td>Lịch sử trạng thái và sự kiện đơn hàng</td><td>7</td></tr>
+<tr><td>shop_inventory_movements</td><td>Nhật ký thay đổi tồn kho</td><td>9</td></tr>
+</tbody></table>
+<h2 id="sec-119">4. Đặc tả toàn bộ 43 bảng</h2>
+<h3 id="sec-121">4.1. roles</h3>
+<p>Vai trò phân quyền.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/entity/Role.java.</p>
+<p>Ràng buộc duy nhất: (role_name).</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>role_name</td><td>VARCHAR(255)</td><td>Tên vai trò</td><td>NULL; UNIQUE</td></tr>
+</tbody></table>
+<h3 id="sec-132">4.2. users</h3>
+<p>Tài khoản người dùng.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/entity/User.java.</p>
+<p>Ràng buộc duy nhất: (email).</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>email_verified</td><td>BOOLEAN</td><td>Đã xác minh email</td><td>NULL</td></tr>
+<tr><td>password_reset_attempts</td><td>INTEGER</td><td>Số lần thử đặt lại mật khẩu</td><td>NULL</td></tr>
+<tr><td>status</td><td>BOOLEAN</td><td>Trạng thái xử lý</td><td>NULL</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP(6)</td><td>Thời điểm tạo</td><td>NOT NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>password_reset_blocked_until</td><td>TIMESTAMP(6)</td><td>Thời hạn chặn đặt lại mật khẩu</td><td>NULL</td></tr>
+<tr><td>role_id</td><td>BIGINT</td><td>Mã vai trò</td><td>NULL; FK → roles.id</td></tr>
+<tr><td>email</td><td>VARCHAR(255)</td><td>Địa chỉ email</td><td>NOT NULL; UNIQUE</td></tr>
+<tr><td>full_name</td><td>VARCHAR(255)</td><td>Họ và tên</td><td>NULL</td></tr>
+<tr><td>password</td><td>VARCHAR(255)</td><td>Mật khẩu đã mã hóa</td><td>NULL</td></tr>
+<tr><td>phone</td><td>VARCHAR(255)</td><td>Số điện thoại</td><td>NULL</td></tr>
+<tr><td>verification_token</td><td>VARCHAR(255)</td><td>Mã xác minh tài khoản</td><td>NULL</td></tr>
+</tbody></table>
+<h3 id="sec-153">4.3. user_profiles</h3>
+<p>Hồ sơ thể lực và điều kiện tập luyện.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/entity/UserProfile.java.</p>
+<p>Ràng buộc duy nhất: (user_id).</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>age</td><td>INTEGER</td><td>Tuổi</td><td>NULL</td></tr>
+<tr><td>available_days_per_week</td><td>INTEGER</td><td>Số ngày có thể tập mỗi tuần</td><td>NULL</td></tr>
+<tr><td>bmi</td><td>FLOAT(53)</td><td>Chỉ số BMI</td><td>NULL</td></tr>
+<tr><td>body_fat_percentage</td><td>FLOAT(53)</td><td>Tỷ lệ mỡ cơ thể</td><td>NULL</td></tr>
+<tr><td>date_of_birth</td><td>DATE</td><td>Ngày sinh</td><td>NULL</td></tr>
+<tr><td>height</td><td>FLOAT(53)</td><td>Chiều cao</td><td>NULL</td></tr>
+<tr><td>initial_weight</td><td>FLOAT(53)</td><td>Cân nặng ban đầu</td><td>NULL</td></tr>
+<tr><td>preferred_session_duration</td><td>INTEGER</td><td>Thời lượng buổi tập mong muốn</td><td>NULL</td></tr>
+<tr><td>training_experience_months</td><td>INTEGER</td><td>Kinh nghiệm tập (tháng)</td><td>NULL</td></tr>
+<tr><td>weight</td><td>FLOAT(53)</td><td>Cân nặng</td><td>NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>user_id</td><td>BIGINT</td><td>Mã người dùng</td><td>NULL; UNIQUE; FK → users.id</td></tr>
+<tr><td>preferred_training_days</td><td>VARCHAR(500)</td><td>Các ngày tập mong muốn</td><td>NULL</td></tr>
+<tr><td>available_equipment</td><td>VARCHAR(1000)</td><td>Danh sách thiết bị hiện có</td><td>NULL</td></tr>
+<tr><td>disliked_exercises</td><td>VARCHAR(1000)</td><td>Danh sách bài tập không thích</td><td>NULL</td></tr>
+<tr><td>injury_areas</td><td>VARCHAR(1000)</td><td>Các vùng chấn thương</td><td>NULL</td></tr>
+<tr><td>daily_activity_level</td><td>VARCHAR(255)</td><td>Mức vận động hằng ngày</td><td>NULL</td></tr>
+<tr><td>gender</td><td>VARCHAR(255)</td><td>Giới tính</td><td>NULL</td></tr>
+<tr><td>medical_conditions</td><td>VARCHAR(255)</td><td>Thông tin sức khỏe</td><td>NULL</td></tr>
+<tr><td>training_location</td><td>VARCHAR(255)</td><td>Địa điểm tập</td><td>NULL</td></tr>
+<tr><td>fitness_level</td><td>ENUM</td><td>Mức thể lực</td><td>NULL</td></tr>
+<tr><td>goal</td><td>ENUM</td><td>Mục tiêu tập luyện</td><td>NULL</td></tr>
+</tbody></table>
+<p>Miền giá trị fitness_level: ADVANCED, BEGINNER, INTERMEDIATE.</p>
+<p>Miền giá trị goal: ENDURANCE, MAINTENANCE, MUSCLE_GAIN, WEIGHT_LOSS.</p>
+<h3 id="sec-188">4.4. memberships</h3>
+<p>Gói hội viên đã đăng ký.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/entity/Membership.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>end_date</td><td>DATE</td><td>Ngày kết thúc</td><td>NULL</td></tr>
+<tr><td>is_active</td><td>BOOLEAN</td><td>Đang hoạt động</td><td>NULL</td></tr>
+<tr><td>price</td><td>FLOAT(53)</td><td>Giá tiền</td><td>NULL</td></tr>
+<tr><td>start_date</td><td>DATE</td><td>Ngày bắt đầu</td><td>NULL</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP(6)</td><td>Thời điểm tạo</td><td>NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>paid_at</td><td>TIMESTAMP(6)</td><td>Thời điểm xác nhận đã trả tiền</td><td>NULL</td></tr>
+<tr><td>user_id</td><td>BIGINT</td><td>Mã người dùng</td><td>NULL; FK → users.id</td></tr>
+<tr><td>notes</td><td>VARCHAR(255)</td><td>Ghi chú</td><td>NULL</td></tr>
+<tr><td>payment_method</td><td>VARCHAR(255)</td><td>Phương thức thanh toán</td><td>NULL</td></tr>
+<tr><td>transaction_id</td><td>VARCHAR(255)</td><td>Mã giao dịch</td><td>NULL</td></tr>
+<tr><td>membership_type</td><td>ENUM</td><td>Loại hội viên</td><td>NULL</td></tr>
+<tr><td>payment_status</td><td>ENUM</td><td>Trạng thái thanh toán</td><td>NULL</td></tr>
+</tbody></table>
+<p>Miền giá trị membership_type: FREE, VIP.</p>
+<p>Miền giá trị payment_status: CANCELLED, EXPIRED, FAILED, PAID, PENDING, REFUNDED.</p>
+<h3 id="sec-212">4.5. invoices</h3>
+<p>Hóa đơn gói hội viên và vật phẩm trang trí.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/entity/Invoice.java.</p>
+<p>Ràng buộc duy nhất: (momo_order_id); (transfer_code).</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>price</td><td>FLOAT(53)</td><td>Giá tiền</td><td>NULL</td></tr>
+<tr><td>regenerate_count</td><td>INTEGER</td><td>Số lần tạo lại thanh toán</td><td>NULL</td></tr>
+<tr><td>cancelled_at</td><td>TIMESTAMP(6)</td><td>Thời điểm hủy</td><td>NULL</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP(6)</td><td>Thời điểm tạo</td><td>NULL</td></tr>
+<tr><td>expires_at</td><td>TIMESTAMP(6)</td><td>Thời điểm hết hạn</td><td>NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>membership_id</td><td>BIGINT</td><td>Mã đăng ký hội viên</td><td>NULL; FK → memberships.id</td></tr>
+<tr><td>paid_at</td><td>TIMESTAMP(6)</td><td>Thời điểm xác nhận đã trả tiền</td><td>NULL</td></tr>
+<tr><td>user_id</td><td>BIGINT</td><td>Mã người dùng</td><td>NULL; FK → users.id</td></tr>
+<tr><td>qr_raw_payload</td><td>VARCHAR(1000)</td><td>Dữ liệu QR gốc</td><td>NULL</td></tr>
+<tr><td>cosmetic_item_code</td><td>VARCHAR(255)</td><td>Mã vật phẩm trang trí</td><td>NULL</td></tr>
+<tr><td>deeplink</td><td>VARCHAR(255)</td><td>Liên kết mở ứng dụng</td><td>NULL</td></tr>
+<tr><td>momo_order_id</td><td>VARCHAR(255)</td><td>Mã đơn MoMo</td><td>NULL; UNIQUE</td></tr>
+<tr><td>momo_request_id</td><td>VARCHAR(255)</td><td>Mã yêu cầu MoMo</td><td>NULL</td></tr>
+<tr><td>pay_url</td><td>VARCHAR(255)</td><td>URL thanh toán</td><td>NULL</td></tr>
+<tr><td>qr_code_url</td><td>VARCHAR(255)</td><td>URL ảnh QR</td><td>NULL</td></tr>
+<tr><td>result_message</td><td>VARCHAR(255)</td><td>Thông báo kết quả</td><td>NULL</td></tr>
+<tr><td>transaction_id</td><td>VARCHAR(255)</td><td>Mã giao dịch</td><td>NULL</td></tr>
+<tr><td>transfer_code</td><td>VARCHAR(255)</td><td>Mã nội dung chuyển khoản</td><td>NULL; UNIQUE</td></tr>
+<tr><td>invoice_type</td><td>ENUM</td><td>Loại hóa đơn</td><td>NULL</td></tr>
+<tr><td>membership_type</td><td>ENUM</td><td>Loại hội viên</td><td>NULL</td></tr>
+<tr><td>status</td><td>ENUM</td><td>Trạng thái xử lý</td><td>NULL</td></tr>
+</tbody></table>
+<p>Miền giá trị invoice_type: COSMETIC, MEMBERSHIP.</p>
+<p>Miền giá trị membership_type: FREE, VIP.</p>
+<p>Miền giá trị status: CANCELLED, EXPIRED, FAILED, PAID, PENDING, REFUNDED.</p>
+<h3 id="sec-249">4.6. exercises</h3>
+<p>Thư viện bài tập.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/entity/Exercise.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>calories_burned</td><td>INTEGER</td><td>Năng lượng tiêu hao của bài tập</td><td>NULL</td></tr>
+<tr><td>default_duration_seconds</td><td>INTEGER</td><td>Thời lượng (giây) mặc định</td><td>NULL</td></tr>
+<tr><td>default_reps</td><td>INTEGER</td><td>Số lần lặp mặc định</td><td>NULL</td></tr>
+<tr><td>default_sets</td><td>INTEGER</td><td>Số hiệp mặc định</td><td>NULL</td></tr>
+<tr><td>endurance_score</td><td>INTEGER</td><td>Điểm phù hợp mục tiêu sức bền</td><td>NULL</td></tr>
+<tr><td>flexibility_score</td><td>INTEGER</td><td>Điểm phù hợp mục tiêu độ linh hoạt</td><td>NULL</td></tr>
+<tr><td>is_active</td><td>BOOLEAN</td><td>Đang hoạt động</td><td>NULL</td></tr>
+<tr><td>is_assessment</td><td>BOOLEAN</td><td>Là bài kiểm tra</td><td>NULL</td></tr>
+<tr><td>maintenance_score</td><td>INTEGER</td><td>Điểm phù hợp mục tiêu duy trì</td><td>NULL</td></tr>
+<tr><td>muscle_gain_score</td><td>INTEGER</td><td>Điểm phù hợp mục tiêu tăng cơ</td><td>NULL</td></tr>
+<tr><td>rest_seconds</td><td>INTEGER</td><td>Thời gian nghỉ (giây)</td><td>NULL</td></tr>
+<tr><td>stamina_cost</td><td>INTEGER</td><td>Chi phí sức bền</td><td>NULL; DEFAULT 10</td></tr>
+<tr><td>uses_weight</td><td>BOOLEAN</td><td>Có sử dụng tạ</td><td>NULL</td></tr>
+<tr><td>weight_loss_score</td><td>INTEGER</td><td>Điểm phù hợp mục tiêu giảm cân</td><td>NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>contraindicated_injuries</td><td>VARCHAR(255)</td><td>Các chấn thương chống chỉ định</td><td>NULL</td></tr>
+<tr><td>description</td><td>VARCHAR(255)</td><td>Nội dung mô tả</td><td>NULL</td></tr>
+<tr><td>image_url</td><td>VARCHAR(255)</td><td>Đường dẫn ảnh đại diện</td><td>NULL</td></tr>
+<tr><td>name</td><td>VARCHAR(255)</td><td>Tên hiển thị</td><td>NULL</td></tr>
+<tr><td>secondary_muscle_groups</td><td>VARCHAR(255)</td><td>Nhóm cơ phụ</td><td>NULL</td></tr>
+<tr><td>video_url</td><td>VARCHAR(255)</td><td>URL video bài tập</td><td>NULL</td></tr>
+<tr><td>assessment_metric_type</td><td>ENUM</td><td>Chỉ tiêu kiểm tra</td><td>NULL</td></tr>
+<tr><td>difficulty</td><td>ENUM</td><td>Độ khó</td><td>NULL</td></tr>
+<tr><td>muscle_group</td><td>ENUM</td><td>Nhóm cơ</td><td>NULL</td></tr>
+</tbody></table>
+<p>Miền giá trị assessment_metric_type: PLANK_SECONDS, PUSHUP_REPS, SQUAT_REPS.</p>
+<p>Miền giá trị difficulty: EASY, HARD, MEDIUM.</p>
+<p>Miền giá trị muscle_group: ARMS, BACK, CARDIO, CHEST, CORE, FULL_BODY, LEGS, SHOULDERS.</p>
+<h3 id="sec-286">4.7. foods</h3>
+<p>Thư viện món ăn.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/entity/Food.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>calories</td><td>INTEGER</td><td>Năng lượng món ăn</td><td>NULL</td></tr>
+<tr><td>fat_grams</td><td>FLOAT(53)</td><td>Lượng chất béo (g)</td><td>NULL</td></tr>
+<tr><td>is_active</td><td>BOOLEAN</td><td>Đang hoạt động</td><td>NULL</td></tr>
+<tr><td>protein_grams</td><td>FLOAT(53)</td><td>Lượng protein (g)</td><td>NULL</td></tr>
+<tr><td>weight_grams</td><td>FLOAT(53)</td><td>Khối lượng khẩu phần (g)</td><td>NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>image_url</td><td>VARCHAR(255)</td><td>Đường dẫn ảnh đại diện</td><td>NULL</td></tr>
+<tr><td>name</td><td>VARCHAR(255)</td><td>Tên hiển thị</td><td>NULL</td></tr>
+<tr><td>suitable_goals</td><td>VARCHAR(255)</td><td>Các mục tiêu phù hợp</td><td>NULL</td></tr>
+<tr><td>ingredients</td><td>CLOB</td><td>Nguyên liệu</td><td>NULL</td></tr>
+<tr><td>instructions</td><td>CLOB</td><td>Hướng dẫn chế biến</td><td>NULL</td></tr>
+</tbody></table>
+<h3 id="sec-304">4.8. endurance_tests</h3>
+<p>Kết quả kiểm tra sức bền hiện tại của từng người dùng.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/entity/EnduranceTest.java.</p>
+<p>Ràng buộc duy nhất: (user_id).</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>plank_seconds</td><td>INTEGER</td><td>Thành tích plank (giây)</td><td>NULL</td></tr>
+<tr><td>pushup_reps</td><td>INTEGER</td><td>Số lần chống đẩy</td><td>NULL</td></tr>
+<tr><td>squat_reps</td><td>INTEGER</td><td>Số lần squat</td><td>NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>tested_at</td><td>TIMESTAMP(6)</td><td>Thời điểm kiểm tra</td><td>NULL</td></tr>
+<tr><td>user_id</td><td>BIGINT</td><td>Mã người dùng</td><td>NOT NULL; UNIQUE; FK → users.id</td></tr>
+</tbody></table>
+<h3 id="sec-319">4.9. progress_tracking</h3>
+<p>Lịch sử chỉ số cơ thể.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/entity/ProgressTracking.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>arm_cm</td><td>FLOAT(53)</td><td>Vòng tay (cm)</td><td>NULL</td></tr>
+<tr><td>bmi</td><td>FLOAT(53)</td><td>Chỉ số BMI</td><td>NULL</td></tr>
+<tr><td>body_fat_percentage</td><td>FLOAT(53)</td><td>Tỷ lệ mỡ cơ thể</td><td>NULL</td></tr>
+<tr><td>chest_cm</td><td>FLOAT(53)</td><td>Vòng ngực (cm)</td><td>NULL</td></tr>
+<tr><td>height</td><td>FLOAT(53)</td><td>Chiều cao</td><td>NULL</td></tr>
+<tr><td>hip_cm</td><td>FLOAT(53)</td><td>Vòng hông (cm)</td><td>NULL</td></tr>
+<tr><td>muscle_mass_kg</td><td>FLOAT(53)</td><td>Khối lượng cơ (kg)</td><td>NULL</td></tr>
+<tr><td>recorded_date</td><td>DATE</td><td>Ngày ghi nhận</td><td>NULL</td></tr>
+<tr><td>thigh_cm</td><td>FLOAT(53)</td><td>Vòng đùi (cm)</td><td>NULL</td></tr>
+<tr><td>waist_cm</td><td>FLOAT(53)</td><td>Vòng eo (cm)</td><td>NULL</td></tr>
+<tr><td>weight</td><td>FLOAT(53)</td><td>Cân nặng</td><td>NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>recorded_at</td><td>TIMESTAMP(6)</td><td>Thời điểm ghi nhận</td><td>NULL</td></tr>
+<tr><td>user_id</td><td>BIGINT</td><td>Mã người dùng</td><td>NULL; FK → users.id</td></tr>
+<tr><td>notes</td><td>VARCHAR(255)</td><td>Ghi chú</td><td>NULL</td></tr>
+<tr><td>source</td><td>ENUM</td><td>Nguồn ghi nhận</td><td>NULL</td></tr>
+</tbody></table>
+<p>Miền giá trị source: MANUAL, PROFILE, WEEKLY_CHECKOUT.</p>
+<h3 id="sec-344">4.10. workout_plans</h3>
+<p>Giáo án cá nhân và giáo án mẫu.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/entity/WorkoutPlan.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>current_mana</td><td>INTEGER</td><td>Sức bền hiện tại</td><td>NULL</td></tr>
+<tr><td>current_week</td><td>INTEGER</td><td>Tuần hiện tại</td><td>NULL</td></tr>
+<tr><td>difficulty_adjustment</td><td>INTEGER</td><td>Mức điều chỉnh độ khó</td><td>NULL</td></tr>
+<tr><td>duration_weeks</td><td>INTEGER</td><td>Thời lượng giáo án (tuần)</td><td>NULL</td></tr>
+<tr><td>estimated_weeks</td><td>INTEGER</td><td>Số tuần ước tính</td><td>NULL</td></tr>
+<tr><td>exercises_adjustment</td><td>INTEGER</td><td>Mức điều chỉnh số bài tập</td><td>NULL</td></tr>
+<tr><td>fitness_score</td><td>INTEGER</td><td>Điểm thể lực</td><td>NULL</td></tr>
+<tr><td>is_active</td><td>BOOLEAN</td><td>Đang hoạt động</td><td>NULL</td></tr>
+<tr><td>is_ai_generated</td><td>BOOLEAN</td><td>Cờ giáo án được sinh tự động</td><td>NULL</td></tr>
+<tr><td>is_completed</td><td>BOOLEAN</td><td>Đã hoàn thành</td><td>NULL</td></tr>
+<tr><td>is_fitness_improvement</td><td>BOOLEAN</td><td>Giáo án cải thiện thể lực</td><td>NULL</td></tr>
+<tr><td>is_template</td><td>BOOLEAN</td><td>Là giáo án mẫu</td><td>NULL</td></tr>
+<tr><td>last_mana_regen_date</td><td>DATE</td><td>Ngày hồi sức bền gần nhất</td><td>NULL</td></tr>
+<tr><td>last_training_date</td><td>DATE</td><td>Ngày tập gần nhất</td><td>NULL</td></tr>
+<tr><td>max_mana</td><td>INTEGER</td><td>Sức bền tối đa</td><td>NULL</td></tr>
+<tr><td>reps_adjustment</td><td>INTEGER</td><td>Mức điều chỉnh số lần lặp</td><td>NULL</td></tr>
+<tr><td>required_max_session_mana_cost</td><td>INTEGER</td><td>Chi phí sức bền lớn nhất cần cho một buổi</td><td>NULL</td></tr>
+<tr><td>sessions_per_week</td><td>INTEGER</td><td>Số buổi mỗi tuần</td><td>NULL</td></tr>
+<tr><td>sets_adjustment</td><td>INTEGER</td><td>Mức điều chỉnh số hiệp</td><td>NULL</td></tr>
+<tr><td>starting_bmi</td><td>FLOAT(53)</td><td>BMI khi bắt đầu</td><td>NULL</td></tr>
+<tr><td>starting_weight</td><td>FLOAT(53)</td><td>Cân nặng khi bắt đầu</td><td>NULL</td></tr>
+<tr><td>target_achieved</td><td>BOOLEAN</td><td>Đã đạt mục tiêu</td><td>NULL</td></tr>
+<tr><td>target_baseline_value</td><td>FLOAT(53)</td><td>Giá trị ban đầu của chỉ tiêu</td><td>NULL</td></tr>
+<tr><td>target_current_value</td><td>FLOAT(53)</td><td>Giá trị hiện tại của chỉ tiêu</td><td>NULL</td></tr>
+<tr><td>target_goal_value</td><td>FLOAT(53)</td><td>Giá trị mục tiêu</td><td>NULL</td></tr>
+<tr><td>target_metric_type</td><td>TINYINT</td><td>Chỉ tiêu mục tiêu dạng số: 0 chống đẩy, 1 plank, 2 squat</td><td>NULL; CHECK 0..2</td></tr>
+<tr><td>week_start_date</td><td>DATE</td><td>Ngày bắt đầu tuần</td><td>NULL</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP(6)</td><td>Thời điểm tạo</td><td>NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>original_plan_id</td><td>BIGINT</td><td>Mã giáo án nguồn</td><td>NULL; Logic → workout_plans (không FK)</td></tr>
+<tr><td>user_id</td><td>BIGINT</td><td>Mã người dùng</td><td>NULL; FK → users.id</td></tr>
+<tr><td>confirmed_schedule_dows</td><td>VARCHAR(255)</td><td>Các ngày trong tuần đã xác nhận</td><td>NULL</td></tr>
+<tr><td>description</td><td>VARCHAR(255)</td><td>Nội dung mô tả</td><td>NULL</td></tr>
+<tr><td>plan_name</td><td>VARCHAR(255)</td><td>Tên giáo án</td><td>NULL</td></tr>
+<tr><td>weight_adjustment_note</td><td>VARCHAR(255)</td><td>Ghi chú điều chỉnh tạ</td><td>NULL</td></tr>
+<tr><td>body_type</td><td>ENUM</td><td>Phân loại thể trạng</td><td>NULL</td></tr>
+<tr><td>fitness_level</td><td>ENUM</td><td>Mức thể lực</td><td>NULL</td></tr>
+<tr><td>goal</td><td>ENUM</td><td>Mục tiêu tập luyện</td><td>NULL</td></tr>
+<tr><td>target_level</td><td>ENUM</td><td>Trình độ mục tiêu</td><td>NULL</td></tr>
+</tbody></table>
+<p>Miền giá trị body_type: CAN_DOI, CAO_GAY, CO_BAP, GAY_CAN_DOI, THUA_CAN, VAN_DONG_VIEN.</p>
+<p>Miền giá trị fitness_level: AVERAGE, EXCELLENT, GOOD, WEAK.</p>
+<p>Miền giá trị goal: ENDURANCE, MAINTENANCE, MUSCLE_GAIN, WEIGHT_LOSS.</p>
+<p>Miền giá trị target_level: ADVANCED, BEGINNER, INTERMEDIATE.</p>
+<h3 id="sec-398">4.11. workout_plan_days</h3>
+<p>Ngày tập trong giáo án.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/entity/WorkoutPlanDay.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>day_of_week</td><td>INTEGER</td><td>Ngày trong tuần</td><td>NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>workout_plan_id</td><td>BIGINT</td><td>Mã giáo án</td><td>NULL; FK → workout_plans.id</td></tr>
+<tr><td>day_name</td><td>VARCHAR(255)</td><td>Tên ngày tập</td><td>NULL</td></tr>
+</tbody></table>
+<h3 id="sec-409">4.12. workout_plan_exercises</h3>
+<p>Bài tập và định mức trong ngày tập.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/entity/WorkoutPlanExercise.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>base_weight_kg</td><td>FLOAT(53)</td><td>Mức tạ gốc (kg)</td><td>NULL</td></tr>
+<tr><td>current_recommended_weight_kg</td><td>FLOAT(53)</td><td>Mức tạ đề xuất hiện tại (kg)</td><td>NULL</td></tr>
+<tr><td>current_weight_kg</td><td>FLOAT(53)</td><td>Mức tạ hiện tại (kg)</td><td>NULL</td></tr>
+<tr><td>duration_seconds</td><td>INTEGER</td><td>Thời lượng (giây)</td><td>NULL</td></tr>
+<tr><td>is_assessment</td><td>BOOLEAN</td><td>Là bài kiểm tra</td><td>NULL</td></tr>
+<tr><td>order_index</td><td>INTEGER</td><td>Thứ tự bài tập</td><td>NULL</td></tr>
+<tr><td>recommended_weight_kg</td><td>FLOAT(53)</td><td>Mức tạ đề xuất (kg)</td><td>NULL</td></tr>
+<tr><td>reps</td><td>INTEGER</td><td>Số lần lặp</td><td>NULL</td></tr>
+<tr><td>rest_seconds</td><td>INTEGER</td><td>Thời gian nghỉ (giây)</td><td>NULL</td></tr>
+<tr><td>sets</td><td>INTEGER</td><td>Số hiệp</td><td>NULL</td></tr>
+<tr><td>weight_updated_week</td><td>INTEGER</td><td>Tuần cập nhật tạ</td><td>NULL</td></tr>
+<tr><td>exercise_id</td><td>BIGINT</td><td>Mã bài tập</td><td>NULL; FK → exercises.id</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>last_low_adjustment_log_id</td><td>BIGINT</td><td>Mã log đã dùng cho lần điều chỉnh giảm</td><td>NULL; Logic → session_exercise_logs (không FK)</td></tr>
+<tr><td>plan_day_id</td><td>BIGINT</td><td>Mã ngày tập</td><td>NULL; FK → workout_plan_days.id</td></tr>
+<tr><td>notes</td><td>VARCHAR(255)</td><td>Ghi chú</td><td>NULL</td></tr>
+</tbody></table>
+<h3 id="sec-432">4.13. plan_muscle_group_weight</h3>
+<p>Hệ số ưu tiên nhóm cơ theo giáo án.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/entity/WorkoutPlanMuscleGroupWeight.java.</p>
+<p>Ràng buộc duy nhất: (workout_plan_id, muscle_group).</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>multiplier</td><td>FLOAT(53)</td><td>Hệ số ưu tiên</td><td>NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>workout_plan_id</td><td>BIGINT</td><td>Mã giáo án</td><td>NULL; FK → workout_plans.id</td></tr>
+<tr><td>muscle_group</td><td>ENUM</td><td>Nhóm cơ</td><td>NULL</td></tr>
+</tbody></table>
+<p>Miền giá trị muscle_group: ARMS, BACK, CARDIO, CHEST, CORE, FULL_BODY, LEGS, SHOULDERS.</p>
+<h3 id="sec-447">4.14. workout_sessions</h3>
+<p>Buổi tập thực tế.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/entity/WorkoutSession.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>checkout_body_fat</td><td>FLOAT(53)</td><td>Tỷ lệ mỡ lúc kết thúc</td><td>NULL</td></tr>
+<tr><td>checkout_weight</td><td>FLOAT(53)</td><td>Cân nặng lúc kết thúc</td><td>NULL</td></tr>
+<tr><td>completion_rate</td><td>INTEGER</td><td>Tỷ lệ hoàn thành buổi</td><td>NULL</td></tr>
+<tr><td>duration_minutes</td><td>INTEGER</td><td>Thời lượng (phút)</td><td>NULL</td></tr>
+<tr><td>is_custom</td><td>BOOLEAN</td><td>Buổi tự tạo</td><td>NULL</td></tr>
+<tr><td>is_last_session_of_week</td><td>BOOLEAN</td><td>Buổi cuối tuần</td><td>NULL</td></tr>
+<tr><td>scheduled_time</td><td>TIME(6)</td><td>Giờ tập dự kiến</td><td>NULL</td></tr>
+<tr><td>session_date</td><td>DATE</td><td>Ngày tập</td><td>NULL</td></tr>
+<tr><td>total_calories_burned</td><td>INTEGER</td><td>Tổng năng lượng tiêu hao</td><td>NULL</td></tr>
+<tr><td>week_number</td><td>INTEGER</td><td>Tuần thực hiện</td><td>NULL</td></tr>
+<tr><td>check_in_time</td><td>TIMESTAMP(6)</td><td>Thời điểm bắt đầu tập</td><td>NULL</td></tr>
+<tr><td>check_out_time</td><td>TIMESTAMP(6)</td><td>Thời điểm kết thúc tập</td><td>NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>plan_day_id</td><td>BIGINT</td><td>Mã ngày tập</td><td>NULL; FK → workout_plan_days.id</td></tr>
+<tr><td>user_id</td><td>BIGINT</td><td>Mã người dùng</td><td>NULL; FK → users.id</td></tr>
+<tr><td>workout_plan_id</td><td>BIGINT</td><td>Mã giáo án</td><td>NULL; FK → workout_plans.id</td></tr>
+<tr><td>custom_session_name</td><td>VARCHAR(255)</td><td>Tên buổi tự tạo</td><td>NULL</td></tr>
+<tr><td>notes</td><td>VARCHAR(255)</td><td>Ghi chú</td><td>NULL</td></tr>
+<tr><td>status</td><td>ENUM</td><td>Trạng thái xử lý</td><td>NULL</td></tr>
+</tbody></table>
+<p>Miền giá trị status: CHECKED_IN, COMPLETED, SCHEDULED, SKIPPED.</p>
+<h3 id="sec-475">4.15. session_exercise_logs</h3>
+<p>Kết quả từng bài tập trong buổi.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/entity/SessionExerciseLog.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>completion_percent</td><td>INTEGER</td><td>Tỷ lệ hoàn thành bài</td><td>NULL</td></tr>
+<tr><td>duration_seconds</td><td>INTEGER</td><td>Thời lượng (giây)</td><td>NULL</td></tr>
+<tr><td>is_completed</td><td>BOOLEAN</td><td>Đã hoàn thành</td><td>NULL</td></tr>
+<tr><td>reps_completed</td><td>INTEGER</td><td>Số lần lặp đã hoàn thành</td><td>NULL</td></tr>
+<tr><td>sets_completed</td><td>INTEGER</td><td>Số hiệp đã hoàn thành</td><td>NULL</td></tr>
+<tr><td>weight_used_kg</td><td>FLOAT(53)</td><td>Mức tạ đã sử dụng (kg)</td><td>NULL</td></tr>
+<tr><td>exercise_id</td><td>BIGINT</td><td>Mã bài tập</td><td>NULL; FK → exercises.id</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>logged_at</td><td>TIMESTAMP(6)</td><td>Thời điểm ghi log</td><td>NULL</td></tr>
+<tr><td>session_id</td><td>BIGINT</td><td>Mã buổi tập hoặc phiên hỗ trợ</td><td>NULL; FK → workout_sessions.id</td></tr>
+<tr><td>notes</td><td>VARCHAR(255)</td><td>Ghi chú</td><td>NULL</td></tr>
+</tbody></table>
+<h3 id="sec-493">4.16. weekly_reviews</h3>
+<p>Đánh giá giáo án theo tuần.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/entity/WeeklyReview.java.</p>
+<p>Ràng buộc duy nhất: (user_id, workout_plan_id, week_number).</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>rating</td><td>INTEGER</td><td>Điểm đánh giá</td><td>NULL</td></tr>
+<tr><td>week_number</td><td>INTEGER</td><td>Tuần thực hiện</td><td>NULL</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP(6)</td><td>Thời điểm tạo</td><td>NOT NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>user_id</td><td>BIGINT</td><td>Mã người dùng</td><td>NULL; FK → users.id</td></tr>
+<tr><td>workout_plan_id</td><td>BIGINT</td><td>Mã giáo án</td><td>NULL; FK → workout_plans.id</td></tr>
+<tr><td>comment</td><td>VARCHAR(255)</td><td>Nội dung đánh giá</td><td>NULL</td></tr>
+</tbody></table>
+<h3 id="sec-509">4.17. muscle_split_configs</h3>
+<p>Cấu hình chia nhóm cơ theo mục tiêu/số buổi.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/entity/MuscleSplitConfig.java.</p>
+<p>Ràng buộc duy nhất: (goal, sessions_per_week).</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>sessions_per_week</td><td>INTEGER</td><td>Số buổi mỗi tuần</td><td>NOT NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>day_groups</td><td>VARCHAR(1000)</td><td>Cấu hình nhóm cơ cho các ngày</td><td>NOT NULL</td></tr>
+<tr><td>goal</td><td>ENUM</td><td>Mục tiêu tập luyện</td><td>NOT NULL</td></tr>
+</tbody></table>
+<p>Miền giá trị goal: ENDURANCE, MAINTENANCE, MUSCLE_GAIN, WEIGHT_LOSS.</p>
+<h3 id="sec-524">4.18. recommended_schedule_configs</h3>
+<p>Cấu hình ngày tập đề xuất theo số buổi.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/entity/RecommendedScheduleConfig.java.</p>
+<p>Ràng buộc duy nhất: (sessions_per_week).</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>sessions_per_week</td><td>INTEGER</td><td>Số buổi mỗi tuần</td><td>NOT NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>recommended_days</td><td>VARCHAR(30)</td><td>Các ngày tập đề xuất</td><td>NOT NULL</td></tr>
+</tbody></table>
+<h3 id="sec-536">4.19. injury_area_options</h3>
+<p>Danh mục vùng chấn thương.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/entity/InjuryAreaOption.java.</p>
+<p>Ràng buộc duy nhất: (code); (label).</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>code</td><td>VARCHAR(100)</td><td>Mã nghiệp vụ</td><td>NOT NULL</td></tr>
+<tr><td>label</td><td>VARCHAR(100)</td><td>Nhãn hiển thị</td><td>NOT NULL</td></tr>
+</tbody></table>
+<h3 id="sec-548">4.20. system_configs</h3>
+<p>Cấu hình số của hệ thống.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/entity/SystemConfig.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>config_value</td><td>FLOAT(53)</td><td>Giá trị số cấu hình</td><td>NULL</td></tr>
+<tr><td>category</td><td>VARCHAR(255)</td><td>Nhóm phân loại</td><td>NULL</td></tr>
+<tr><td>config_key</td><td>VARCHAR(255)</td><td>Khóa cấu hình</td><td>PK; NOT NULL</td></tr>
+<tr><td>description</td><td>CLOB</td><td>Nội dung mô tả</td><td>NULL</td></tr>
+</tbody></table>
+<h3 id="sec-559">4.21. chat_messages</h3>
+<p>Lịch sử hội thoại người dùng với chatbot.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/entity/ChatMessage.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>attachment_size</td><td>BIGINT</td><td>Tệp đính kèm: kích thước</td><td>NULL</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP(6)</td><td>Thời điểm tạo</td><td>NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>user_id</td><td>BIGINT</td><td>Mã người dùng</td><td>NULL; FK → users.id</td></tr>
+<tr><td>content</td><td>VARCHAR(2000)</td><td>Nội dung tin nhắn</td><td>NULL</td></tr>
+<tr><td>attachment_name</td><td>VARCHAR(255)</td><td>Tệp đính kèm: tên</td><td>NULL</td></tr>
+<tr><td>attachment_type</td><td>VARCHAR(255)</td><td>Tệp đính kèm: loại</td><td>NULL</td></tr>
+<tr><td>attachment_url</td><td>VARCHAR(255)</td><td>Tệp đính kèm: đường dẫn</td><td>NULL</td></tr>
+<tr><td>sender</td><td>VARCHAR(255)</td><td>Nguồn gửi USER/BOT</td><td>NULL</td></tr>
+</tbody></table>
+<h3 id="sec-575">4.22. notifications</h3>
+<p>Thông báo người dùng.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/entity/Notification.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>is_read</td><td>BOOLEAN</td><td>Đã đọc</td><td>NULL</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP(6)</td><td>Thời điểm tạo</td><td>NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>ref_id</td><td>BIGINT</td><td>Mã đối tượng tham chiếu theo ref_type</td><td>NULL</td></tr>
+<tr><td>scheduled_at</td><td>TIMESTAMP(6)</td><td>Thời điểm dự kiến gửi</td><td>NULL</td></tr>
+<tr><td>sent_at</td><td>TIMESTAMP(6)</td><td>Thời điểm đã gửi</td><td>NULL</td></tr>
+<tr><td>user_id</td><td>BIGINT</td><td>Mã người dùng</td><td>NULL; FK → users.id</td></tr>
+<tr><td>message</td><td>VARCHAR(255)</td><td>Nội dung thông báo</td><td>NULL</td></tr>
+<tr><td>ref_type</td><td>VARCHAR(255)</td><td>Loại đối tượng tham chiếu</td><td>NULL</td></tr>
+<tr><td>title</td><td>VARCHAR(255)</td><td>Tiêu đề</td><td>NULL</td></tr>
+<tr><td>type</td><td>VARCHAR(255)</td><td>Loại nghiệp vụ</td><td>NULL</td></tr>
+</tbody></table>
+<h3 id="sec-593">4.23. service_ratings</h3>
+<p>Đánh giá dịch vụ và phản hồi quản trị.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/entity/ServiceRating.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>is_public</td><td>BOOLEAN</td><td>Cho phép hiển thị công khai</td><td>NULL</td></tr>
+<tr><td>rating</td><td>INTEGER</td><td>Điểm đánh giá</td><td>NULL</td></tr>
+<tr><td>attachment_size</td><td>BIGINT</td><td>Tệp đính kèm: kích thước</td><td>NULL</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP(6)</td><td>Thời điểm tạo</td><td>NOT NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>replied_at</td><td>TIMESTAMP(6)</td><td>Thời điểm phản hồi</td><td>NULL</td></tr>
+<tr><td>reply_attachment_size</td><td>BIGINT</td><td>Tệp đính kèm phản hồi: kích thước</td><td>NULL</td></tr>
+<tr><td>updated_at</td><td>TIMESTAMP(6)</td><td>Thời điểm cập nhật</td><td>NULL</td></tr>
+<tr><td>user_id</td><td>BIGINT</td><td>Mã người dùng</td><td>NULL; FK → users.id</td></tr>
+<tr><td>admin_reply</td><td>VARCHAR(255)</td><td>Nội dung phản hồi quản trị</td><td>NULL</td></tr>
+<tr><td>attachment_name</td><td>VARCHAR(255)</td><td>Tệp đính kèm: tên</td><td>NULL</td></tr>
+<tr><td>attachment_type</td><td>VARCHAR(255)</td><td>Tệp đính kèm: loại</td><td>NULL</td></tr>
+<tr><td>attachment_url</td><td>VARCHAR(255)</td><td>Tệp đính kèm: đường dẫn</td><td>NULL</td></tr>
+<tr><td>comment</td><td>VARCHAR(255)</td><td>Nội dung đánh giá</td><td>NULL</td></tr>
+<tr><td>reply_attachment_name</td><td>VARCHAR(255)</td><td>Tệp đính kèm phản hồi: tên</td><td>NULL</td></tr>
+<tr><td>reply_attachment_type</td><td>VARCHAR(255)</td><td>Tệp đính kèm phản hồi: loại</td><td>NULL</td></tr>
+<tr><td>reply_attachment_url</td><td>VARCHAR(255)</td><td>Tệp đính kèm phản hồi: đường dẫn</td><td>NULL</td></tr>
+<tr><td>service_type</td><td>VARCHAR(255)</td><td>Loại dịch vụ được đánh giá</td><td>NULL</td></tr>
+<tr><td>title</td><td>VARCHAR(255)</td><td>Tiêu đề</td><td>NULL</td></tr>
+</tbody></table>
+<h3 id="sec-619">4.24. support_sessions</h3>
+<p>Phiên hỗ trợ trực tiếp.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/entity/SupportSession.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>user_rating</td><td>INTEGER</td><td>Điểm khách đánh giá hỗ trợ</td><td>NULL</td></tr>
+<tr><td>accepted_at</td><td>TIMESTAMP(6)</td><td>Thời điểm tiếp nhận</td><td>NULL</td></tr>
+<tr><td>admin_id</td><td>BIGINT</td><td>Mã người hỗ trợ</td><td>NULL; FK → users.id</td></tr>
+<tr><td>closed_at</td><td>TIMESTAMP(6)</td><td>Thời điểm đóng</td><td>NULL</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP(6)</td><td>Thời điểm tạo</td><td>NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>rated_at</td><td>TIMESTAMP(6)</td><td>Thời điểm đánh giá</td><td>NULL</td></tr>
+<tr><td>user_id</td><td>BIGINT</td><td>Mã người dùng</td><td>NULL; FK → users.id</td></tr>
+<tr><td>user_rating_comment</td><td>VARCHAR(1000)</td><td>Nhận xét phiên hỗ trợ</td><td>NULL</td></tr>
+<tr><td>subject</td><td>VARCHAR(255)</td><td>Chủ đề hỗ trợ</td><td>NULL</td></tr>
+<tr><td>status</td><td>ENUM</td><td>Trạng thái xử lý</td><td>NULL</td></tr>
+</tbody></table>
+<p>Miền giá trị status: ACTIVE, CLOSED, PENDING, REJECTED.</p>
+<h3 id="sec-639">4.25. support_messages</h3>
+<p>Tin nhắn trong phiên hỗ trợ.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/entity/SupportMessage.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>attachment_size</td><td>BIGINT</td><td>Tệp đính kèm: kích thước</td><td>NULL</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP(6)</td><td>Thời điểm tạo</td><td>NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>session_id</td><td>BIGINT</td><td>Mã buổi tập hoặc phiên hỗ trợ</td><td>NULL; FK → support_sessions.id</td></tr>
+<tr><td>content</td><td>VARCHAR(2000)</td><td>Nội dung tin nhắn</td><td>NULL</td></tr>
+<tr><td>attachment_name</td><td>VARCHAR(255)</td><td>Tệp đính kèm: tên</td><td>NULL</td></tr>
+<tr><td>attachment_type</td><td>VARCHAR(255)</td><td>Tệp đính kèm: loại</td><td>NULL</td></tr>
+<tr><td>attachment_url</td><td>VARCHAR(255)</td><td>Tệp đính kèm: đường dẫn</td><td>NULL</td></tr>
+<tr><td>sender_role</td><td>VARCHAR(255)</td><td>Vai trò bên gửi</td><td>NULL</td></tr>
+</tbody></table>
+<h3 id="sec-655">4.26. pet_profiles</h3>
+<p>Trạng thái nhân vật đồng hành.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/pet/PetProfile.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>current_streak</td><td>INTEGER</td><td>Chuỗi duy trì hiện tại</td><td>NULL</td></tr>
+<tr><td>missed_streak</td><td>INTEGER</td><td>Chuỗi bỏ lỡ</td><td>NULL</td></tr>
+<tr><td>web_count</td><td>INTEGER</td><td>Số mạng nhện hiển thị</td><td>NULL</td></tr>
+<tr><td>last_calculated_at</td><td>TIMESTAMP(6)</td><td>Thời điểm tính trạng thái gần nhất</td><td>NULL</td></tr>
+<tr><td>user_id</td><td>BIGINT</td><td>Mã người dùng</td><td>PK; NOT NULL; FK → users.id</td></tr>
+<tr><td>equipped_hair</td><td>VARCHAR(255)</td><td>Tóc đang trang bị</td><td>NULL</td></tr>
+<tr><td>equipped_pants</td><td>VARCHAR(255)</td><td>Quần đang trang bị</td><td>NULL</td></tr>
+<tr><td>equipped_shirt</td><td>VARCHAR(255)</td><td>Áo đang trang bị</td><td>NULL</td></tr>
+<tr><td>aura_tier</td><td>ENUM</td><td>Cấp hiệu ứng hào quang</td><td>NULL</td></tr>
+<tr><td>stage</td><td>ENUM</td><td>Giai đoạn thể trạng nhân vật</td><td>NULL</td></tr>
+</tbody></table>
+<p>Miền giá trị aura_tier: BLACK, BLUE, GREEN, NONE, PURPLE, RED, YELLOW.</p>
+<p>Miền giá trị stage: AVERAGE, FIT, LEAN, OVERWEIGHT, SLIM.</p>
+<h3 id="sec-676">4.27. user_cosmetic_ownership</h3>
+<p>Vật phẩm trang trí người dùng sở hữu.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/pet/UserCosmeticOwnership.java.</p>
+<p>Ràng buộc duy nhất: (user_id, cosmetic_code).</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>purchased_at</td><td>TIMESTAMP(6)</td><td>Thời điểm mua</td><td>NULL</td></tr>
+<tr><td>user_id</td><td>BIGINT</td><td>Mã người dùng</td><td>NOT NULL; Logic → users (không FK)</td></tr>
+<tr><td>cosmetic_code</td><td>VARCHAR(255)</td><td>Mã vật phẩm sở hữu</td><td>NOT NULL</td></tr>
+</tbody></table>
+<h3 id="sec-689">4.28. work_shifts</h3>
+<p>Ca làm và đối soát tiền của nhân viên.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/shift/WorkShift.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>cash_at_start</td><td>FLOAT(53)</td><td>Tiền mặt đầu ca</td><td>NULL</td></tr>
+<tr><td>cash_counted</td><td>FLOAT(53)</td><td>Tiền mặt kiểm đếm</td><td>NULL</td></tr>
+<tr><td>cash_difference</td><td>FLOAT(53)</td><td>Chênh lệch tiền mặt</td><td>NULL</td></tr>
+<tr><td>expected_cash</td><td>FLOAT(53)</td><td>Tiền mặt dự kiến</td><td>NULL</td></tr>
+<tr><td>planned_end</td><td>TIME(6)</td><td>Giờ kết thúc dự kiến</td><td>NULL</td></tr>
+<tr><td>planned_start</td><td>TIME(6)</td><td>Giờ bắt đầu dự kiến</td><td>NULL</td></tr>
+<tr><td>pos_bank_revenue</td><td>FLOAT(53)</td><td>Doanh thu chuyển khoản tại quầy</td><td>NULL</td></tr>
+<tr><td>pos_cash_revenue</td><td>FLOAT(53)</td><td>Doanh thu tiền mặt tại quầy</td><td>NULL</td></tr>
+<tr><td>shift_date</td><td>DATE</td><td>Ngày làm việc</td><td>NULL</td></tr>
+<tr><td>check_in_at</td><td>TIMESTAMP(6)</td><td>Thời điểm vào ca</td><td>NULL</td></tr>
+<tr><td>check_out_at</td><td>TIMESTAMP(6)</td><td>Thời điểm kết ca</td><td>NULL</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP(6)</td><td>Thời điểm tạo</td><td>NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>user_id</td><td>BIGINT</td><td>Mã người dùng</td><td>NULL; FK → users.id</td></tr>
+<tr><td>handover_note</td><td>VARCHAR(2000)</td><td>Ghi chú bàn giao</td><td>NULL</td></tr>
+<tr><td>status</td><td>ENUM</td><td>Trạng thái xử lý</td><td>NULL</td></tr>
+</tbody></table>
+<p>Miền giá trị status: CHECKED_IN, COMPLETED, SCHEDULED.</p>
+<h3 id="sec-714">4.29. shop_products</h3>
+<p>Sản phẩm cửa hàng.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/shop/Product.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>active</td><td>BOOLEAN</td><td>Đang hoạt động</td><td>NULL</td></tr>
+<tr><td>price</td><td>FLOAT(53)</td><td>Giá tiền</td><td>NOT NULL</td></tr>
+<tr><td>sale_price</td><td>FLOAT(53)</td><td>Giá bán ưu đãi</td><td>NULL</td></tr>
+<tr><td>stock</td><td>INTEGER</td><td>Số lượng tồn</td><td>NOT NULL</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP(6)</td><td>Thời điểm tạo</td><td>NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>description</td><td>VARCHAR(2000)</td><td>Nội dung mô tả</td><td>NULL</td></tr>
+<tr><td>images</td><td>VARCHAR(20000)</td><td>Danh sách URL ảnh, JSON trong VARCHAR(20000)</td><td>NULL</td></tr>
+<tr><td>brand</td><td>VARCHAR(255)</td><td>Thương hiệu</td><td>NULL</td></tr>
+<tr><td>image_url</td><td>VARCHAR(255)</td><td>Đường dẫn ảnh đại diện</td><td>NULL</td></tr>
+<tr><td>name</td><td>VARCHAR(255)</td><td>Tên hiển thị</td><td>NOT NULL</td></tr>
+<tr><td>required_equipment_code</td><td>VARCHAR(255)</td><td>Mã thiết bị liên quan</td><td>NULL</td></tr>
+<tr><td>suitable_goals</td><td>VARCHAR(255)</td><td>Các mục tiêu phù hợp</td><td>NULL</td></tr>
+<tr><td>category</td><td>ENUM</td><td>Nhóm phân loại</td><td>NULL</td></tr>
+</tbody></table>
+<p>Miền giá trị category: EQUIPMENT, FOOD, SUPPLEMENT.</p>
+<h3 id="sec-737">4.30. product_attributes</h3>
+<p>Danh mục thuộc tính sản phẩm.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/shop/ProductAttribute.java.</p>
+<p>Ràng buộc duy nhất: (name).</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>name</td><td>VARCHAR(255)</td><td>Tên hiển thị</td><td>NOT NULL; UNIQUE</td></tr>
+</tbody></table>
+<h3 id="sec-748">4.31. product_attribute_values</h3>
+<p>Giá trị của thuộc tính.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/shop/ProductAttributeValue.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>attribute_id</td><td>BIGINT</td><td>Mã thuộc tính</td><td>NULL; FK → product_attributes.id</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>value</td><td>VARCHAR(255)</td><td>Giá trị thuộc tính hoặc mức giảm</td><td>NOT NULL</td></tr>
+</tbody></table>
+<h3 id="sec-758">4.32. product_variants</h3>
+<p>Biến thể sản phẩm.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/shop/ProductVariant.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>active</td><td>BOOLEAN</td><td>Đang hoạt động</td><td>NULL</td></tr>
+<tr><td>price_override</td><td>FLOAT(53)</td><td>Giá riêng của biến thể</td><td>NULL</td></tr>
+<tr><td>stock</td><td>INTEGER</td><td>Số lượng tồn</td><td>NOT NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>product_id</td><td>BIGINT</td><td>Mã sản phẩm</td><td>NULL; FK → shop_products.id</td></tr>
+<tr><td>sku</td><td>VARCHAR(255)</td><td>Mã SKU biến thể</td><td>NULL</td></tr>
+</tbody></table>
+<h3 id="sec-771">4.33. variant_attribute_values</h3>
+<p>Bảng nối biến thể với các giá trị thuộc tính.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/shop/ProductVariant.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>value_id</td><td>BIGINT</td><td>Mã giá trị thuộc tính</td><td>PK; NOT NULL; FK → product_attribute_values.id</td></tr>
+<tr><td>variant_id</td><td>BIGINT</td><td>Mã biến thể</td><td>PK; NOT NULL; FK → product_variants.id</td></tr>
+</tbody></table>
+<h3 id="sec-780">4.34. shop_cart_items</h3>
+<p>Dòng giỏ hàng của tài khoản.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/shop/CartItem.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>quantity</td><td>INTEGER</td><td>Số lượng</td><td>NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>product_id</td><td>BIGINT</td><td>Mã sản phẩm</td><td>NULL; FK → shop_products.id</td></tr>
+<tr><td>user_id</td><td>BIGINT</td><td>Mã người dùng</td><td>NULL; FK → users.id</td></tr>
+<tr><td>variant_id</td><td>BIGINT</td><td>Mã biến thể</td><td>NULL; Logic → product_variants (không FK)</td></tr>
+<tr><td>variant_label</td><td>VARCHAR(255)</td><td>Tên phân loại tại thời điểm mua/thêm giỏ</td><td>NULL</td></tr>
+</tbody></table>
+<h3 id="sec-793">4.35. shop_orders</h3>
+<p>Đơn hàng online và tại quầy.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/shop/StoreOrder.java.</p>
+<p>Ràng buộc duy nhất: (gateway_reference); (transfer_code).</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>discount</td><td>FLOAT(53)</td><td>Khoản giảm giá</td><td>NULL</td></tr>
+<tr><td>shipping_fee</td><td>FLOAT(53)</td><td>Phí vận chuyển</td><td>NULL</td></tr>
+<tr><td>subtotal</td><td>FLOAT(53)</td><td>Tổng tiền hàng</td><td>NULL</td></tr>
+<tr><td>total</td><td>FLOAT(53)</td><td>Tổng phải trả</td><td>NULL</td></tr>
+<tr><td>voucher_discount</td><td>FLOAT(53)</td><td>Số tiền được giảm bằng voucher</td><td>NULL</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP(6)</td><td>Thời điểm tạo</td><td>NULL</td></tr>
+<tr><td>created_by_staff_id</td><td>BIGINT</td><td>Mã nhân viên tạo đơn</td><td>NULL; Logic → users (không FK)</td></tr>
+<tr><td>expires_at</td><td>TIMESTAMP(6)</td><td>Thời điểm hết hạn</td><td>NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>paid_at</td><td>TIMESTAMP(6)</td><td>Thời điểm xác nhận đã trả tiền</td><td>NULL</td></tr>
+<tr><td>user_id</td><td>BIGINT</td><td>Mã người dùng</td><td>NULL; FK → users.id</td></tr>
+<tr><td>note</td><td>VARCHAR(1000)</td><td>Ghi chú</td><td>NULL</td></tr>
+<tr><td>qr_raw_payload</td><td>VARCHAR(1000)</td><td>Dữ liệu QR gốc</td><td>NULL</td></tr>
+<tr><td>shipping_address</td><td>VARCHAR(1000)</td><td>Địa chỉ giao chốt trên đơn</td><td>NULL</td></tr>
+<tr><td>payment_url</td><td>VARCHAR(2000)</td><td>URL thanh toán của cổng</td><td>NULL</td></tr>
+<tr><td>gateway_reference</td><td>VARCHAR(255)</td><td>Mã tham chiếu cổng thanh toán</td><td>NULL; UNIQUE</td></tr>
+<tr><td>payment_method</td><td>VARCHAR(255)</td><td>Phương thức thanh toán</td><td>NULL</td></tr>
+<tr><td>phone</td><td>VARCHAR(255)</td><td>Số điện thoại</td><td>NULL</td></tr>
+<tr><td>qr_code_url</td><td>VARCHAR(255)</td><td>URL ảnh QR</td><td>NULL</td></tr>
+<tr><td>receiver_name</td><td>VARCHAR(255)</td><td>Tên người nhận</td><td>NULL</td></tr>
+<tr><td>transaction_id</td><td>VARCHAR(255)</td><td>Mã giao dịch</td><td>NULL</td></tr>
+<tr><td>transfer_code</td><td>VARCHAR(255)</td><td>Mã nội dung chuyển khoản</td><td>NULL; UNIQUE</td></tr>
+<tr><td>voucher_code</td><td>VARCHAR(255)</td><td>Mã voucher chốt trên đơn</td><td>NULL</td></tr>
+<tr><td>channel</td><td>ENUM</td><td>Kênh bán</td><td>NULL</td></tr>
+<tr><td>status</td><td>ENUM</td><td>Trạng thái xử lý</td><td>NULL</td></tr>
+</tbody></table>
+<p>Miền giá trị channel: ONLINE, POS.</p>
+<p>Miền giá trị status: CANCELLED, COMPLETED, CONFIRMED, DELIVERED, EXPIRED, PAID, PENDING_PAYMENT, PREPARING, SHIPPING.</p>
+<h3 id="sec-831">4.36. shop_order_items</h3>
+<p>Chi tiết hàng hóa được chốt trong đơn.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/shop/OrderItem.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>line_total</td><td>FLOAT(53)</td><td>Thành tiền của dòng</td><td>NULL</td></tr>
+<tr><td>quantity</td><td>INTEGER</td><td>Số lượng</td><td>NULL</td></tr>
+<tr><td>unit_price</td><td>FLOAT(53)</td><td>Đơn giá tại thời điểm mua</td><td>NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>order_id</td><td>BIGINT</td><td>Mã đơn hàng</td><td>NULL; FK → shop_orders.id</td></tr>
+<tr><td>product_id</td><td>BIGINT</td><td>Mã sản phẩm</td><td>NULL; Logic → shop_products (không FK)</td></tr>
+<tr><td>variant_id</td><td>BIGINT</td><td>Mã biến thể</td><td>NULL; Logic → product_variants (không FK)</td></tr>
+<tr><td>image_url</td><td>VARCHAR(255)</td><td>Đường dẫn ảnh đại diện</td><td>NULL</td></tr>
+<tr><td>product_name</td><td>VARCHAR(255)</td><td>Tên sản phẩm tại thời điểm mua</td><td>NULL</td></tr>
+<tr><td>variant_label</td><td>VARCHAR(255)</td><td>Tên phân loại tại thời điểm mua/thêm giỏ</td><td>NULL</td></tr>
+</tbody></table>
+<h3 id="sec-848">4.37. vouchers</h3>
+<p>Mã giảm giá và điều kiện áp dụng.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/shop/Voucher.java.</p>
+<p>Ràng buộc duy nhất: (code).</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>active</td><td>BOOLEAN</td><td>Đang hoạt động</td><td>NULL</td></tr>
+<tr><td>max_discount_amount</td><td>FLOAT(53)</td><td>Mức giảm tối đa</td><td>NULL</td></tr>
+<tr><td>min_order_amount</td><td>FLOAT(53)</td><td>Giá trị đơn tối thiểu</td><td>NULL</td></tr>
+<tr><td>usage_limit</td><td>INTEGER</td><td>Giới hạn lượt sử dụng</td><td>NULL</td></tr>
+<tr><td>used_count</td><td>INTEGER</td><td>Số lượt đã dùng</td><td>NULL</td></tr>
+<tr><td>value</td><td>FLOAT(53)</td><td>Giá trị thuộc tính hoặc mức giảm</td><td>NULL</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP(6)</td><td>Thời điểm tạo</td><td>NULL</td></tr>
+<tr><td>end_at</td><td>TIMESTAMP(6)</td><td>Thời điểm kết thúc hiệu lực</td><td>NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>start_at</td><td>TIMESTAMP(6)</td><td>Thời điểm bắt đầu hiệu lực</td><td>NULL</td></tr>
+<tr><td>code</td><td>VARCHAR(255)</td><td>Mã nghiệp vụ</td><td>NULL; UNIQUE</td></tr>
+<tr><td>description</td><td>VARCHAR(255)</td><td>Nội dung mô tả</td><td>NULL</td></tr>
+<tr><td>scope_category</td><td>ENUM</td><td>Danh mục áp dụng</td><td>NULL</td></tr>
+<tr><td>scope_type</td><td>ENUM</td><td>Loại phạm vi áp dụng</td><td>NULL</td></tr>
+<tr><td>type</td><td>ENUM</td><td>Loại nghiệp vụ</td><td>NULL</td></tr>
+</tbody></table>
+<p>Miền giá trị scope_category: EQUIPMENT, FOOD, SUPPLEMENT.</p>
+<p>Miền giá trị scope_type: ALL, CATEGORY, PRODUCT.</p>
+<p>Miền giá trị type: AMOUNT, PERCENT.</p>
+<h3 id="sec-878">4.38. voucher_scope_products</h3>
+<p>Danh sách ID sản phẩm thuộc phạm vi voucher.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/shop/Voucher.java.</p>
+<p>Bảng này chưa có khóa chính trong DDL hiện tại.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>product_id</td><td>BIGINT</td><td>Mã sản phẩm</td><td>NULL; Logic → shop_products (không FK)</td></tr>
+<tr><td>voucher_id</td><td>BIGINT</td><td>Mã voucher</td><td>NOT NULL; FK → vouchers.id</td></tr>
+</tbody></table>
+<h3 id="sec-889">4.39. product_reviews</h3>
+<p>Đánh giá sản phẩm theo đơn mua.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/shop/ProductReview.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>rating</td><td>INTEGER</td><td>Điểm đánh giá</td><td>NULL</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP(6)</td><td>Thời điểm tạo</td><td>NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>order_id</td><td>BIGINT</td><td>Mã đơn hàng</td><td>NULL; FK → shop_orders.id</td></tr>
+<tr><td>product_id</td><td>BIGINT</td><td>Mã sản phẩm</td><td>NULL; FK → shop_products.id</td></tr>
+<tr><td>user_id</td><td>BIGINT</td><td>Mã người dùng</td><td>NULL; FK → users.id</td></tr>
+<tr><td>comment</td><td>VARCHAR(2000)</td><td>Nội dung đánh giá</td><td>NULL</td></tr>
+<tr><td>images</td><td>VARCHAR(20000)</td><td>Danh sách URL ảnh, JSON trong VARCHAR(20000)</td><td>NULL</td></tr>
+</tbody></table>
+<h3 id="sec-904">4.40. customer_addresses</h3>
+<p>Sổ địa chỉ nhận hàng của khách.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/shop/CustomerAddress.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>default_address</td><td>BOOLEAN</td><td>Địa chỉ mặc định</td><td>NOT NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>user_id</td><td>BIGINT</td><td>Mã người dùng</td><td>NULL; Logic → users (không FK)</td></tr>
+<tr><td>address</td><td>VARCHAR(1000)</td><td>Địa chỉ nhận hàng</td><td>NULL</td></tr>
+<tr><td>phone</td><td>VARCHAR(255)</td><td>Số điện thoại</td><td>NULL</td></tr>
+<tr><td>receiver_name</td><td>VARCHAR(255)</td><td>Tên người nhận</td><td>NULL</td></tr>
+</tbody></table>
+<h3 id="sec-917">4.41. customer_product_states</h3>
+<p>Yêu thích và lần xem gần nhất trên cùng một dòng.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/shop/CustomerProductState.java.</p>
+<p>Ràng buộc duy nhất: (user_id, product_id).</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>wishlisted</td><td>BOOLEAN</td><td>Được đánh dấu yêu thích</td><td>NOT NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>product_id</td><td>BIGINT</td><td>Mã sản phẩm</td><td>NULL; Logic → shop_products (không FK)</td></tr>
+<tr><td>user_id</td><td>BIGINT</td><td>Mã người dùng</td><td>NULL; Logic → users (không FK)</td></tr>
+<tr><td>viewed_at</td><td>TIMESTAMP(6)</td><td>Lần xem gần nhất</td><td>NULL</td></tr>
+</tbody></table>
+<h3 id="sec-931">4.42. shop_order_events</h3>
+<p>Lịch sử trạng thái và sự kiện đơn hàng.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/shop/ShopOrderEvent.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>created_at</td><td>TIMESTAMP(6)</td><td>Thời điểm tạo</td><td>NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>order_id</td><td>BIGINT</td><td>Mã đơn hàng</td><td>NULL; Logic → shop_orders (không FK)</td></tr>
+<tr><td>note</td><td>VARCHAR(1000)</td><td>Ghi chú</td><td>NULL</td></tr>
+<tr><td>actor</td><td>VARCHAR(255)</td><td>Người/nguồn thực hiện</td><td>NULL</td></tr>
+<tr><td>from_status</td><td>VARCHAR(255)</td><td>Trạng thái trước sự kiện</td><td>NULL</td></tr>
+<tr><td>to_status</td><td>VARCHAR(255)</td><td>Trạng thái sau sự kiện</td><td>NULL</td></tr>
+</tbody></table>
+<h3 id="sec-945">4.43. shop_inventory_movements</h3>
+<p>Nhật ký thay đổi tồn kho.</p>
+<p>Nguồn mã: gym-management/src/main/java/com/example/gymmanagement/shop/ShopInventoryMovement.java.</p>
+<table><thead><tr><th>Cột</th><th>Kiểu H2</th><th>Ý nghĩa</th><th>Ràng buộc</th></tr></thead><tbody>
+<tr><td>after_stock</td><td>INTEGER</td><td>Tồn sau thay đổi</td><td>NOT NULL</td></tr>
+<tr><td>before_stock</td><td>INTEGER</td><td>Tồn trước thay đổi</td><td>NOT NULL</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP(6)</td><td>Thời điểm tạo</td><td>NULL</td></tr>
+<tr><td>id</td><td>BIGINT</td><td>Mã định danh</td><td>PK; Tự tăng; NOT NULL; DEFAULT as</td></tr>
+<tr><td>order_id</td><td>BIGINT</td><td>Mã đơn hàng</td><td>NULL; Logic → shop_orders (không FK)</td></tr>
+<tr><td>product_id</td><td>BIGINT</td><td>Mã sản phẩm</td><td>NULL; Logic → shop_products (không FK)</td></tr>
+<tr><td>variant_id</td><td>BIGINT</td><td>Mã biến thể</td><td>NULL; Logic → product_variants (không FK)</td></tr>
+<tr><td>reason</td><td>VARCHAR(1000)</td><td>Lý do thay đổi</td><td>NULL</td></tr>
+<tr><td>actor</td><td>VARCHAR(255)</td><td>Người/nguồn thực hiện</td><td>NULL</td></tr>
+</tbody></table>
+<h2 id="sec-961">5. Thông số ERD</h2>
+<p>Trong quan hệ dưới đây, bảng cha có 0..N dòng con nếu cột FK không duy nhất; có 0..1 dòng con nếu FK đồng thời UNIQUE hoặc là toàn bộ PK. Mỗi dòng con tham chiếu 1 cha nếu FK NOT NULL, hoặc 0..1 cha nếu FK cho phép NULL. Đây là bội số của cấu trúc vật lý, không tự suy diễn bắt buộc theo nghiệp vụ.</p>
+<h3 id="sec-965">5.1. Các khóa ngoại thực tế</h3>
+<table><thead><tr><th>Bảng con.cột</th><th>Bảng cha.cột</th><th>Số cha trên mỗi con</th><th>Số con trên mỗi cha</th></tr></thead><tbody>
+<tr><td>chat_messages.user_id</td><td>users.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>endurance_tests.user_id</td><td>users.id</td><td>1</td><td>0..1</td></tr>
+<tr><td>invoices.membership_id</td><td>memberships.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>invoices.user_id</td><td>users.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>memberships.user_id</td><td>users.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>notifications.user_id</td><td>users.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>pet_profiles.user_id</td><td>users.id</td><td>1</td><td>0..1</td></tr>
+<tr><td>plan_muscle_group_weight.workout_plan_id</td><td>workout_plans.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>product_attribute_values.attribute_id</td><td>product_attributes.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>product_reviews.order_id</td><td>shop_orders.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>product_reviews.product_id</td><td>shop_products.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>product_reviews.user_id</td><td>users.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>product_variants.product_id</td><td>shop_products.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>progress_tracking.user_id</td><td>users.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>service_ratings.user_id</td><td>users.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>session_exercise_logs.exercise_id</td><td>exercises.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>session_exercise_logs.session_id</td><td>workout_sessions.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>shop_cart_items.product_id</td><td>shop_products.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>shop_cart_items.user_id</td><td>users.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>shop_order_items.order_id</td><td>shop_orders.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>shop_orders.user_id</td><td>users.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>support_messages.session_id</td><td>support_sessions.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>support_sessions.admin_id</td><td>users.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>support_sessions.user_id</td><td>users.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>user_profiles.user_id</td><td>users.id</td><td>0..1</td><td>0..1</td></tr>
+<tr><td>users.role_id</td><td>roles.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>variant_attribute_values.value_id</td><td>product_attribute_values.id</td><td>1</td><td>0..N</td></tr>
+<tr><td>variant_attribute_values.variant_id</td><td>product_variants.id</td><td>1</td><td>0..N</td></tr>
+<tr><td>voucher_scope_products.voucher_id</td><td>vouchers.id</td><td>1</td><td>0..N</td></tr>
+<tr><td>weekly_reviews.user_id</td><td>users.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>weekly_reviews.workout_plan_id</td><td>workout_plans.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>work_shifts.user_id</td><td>users.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>workout_plan_days.workout_plan_id</td><td>workout_plans.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>workout_plan_exercises.exercise_id</td><td>exercises.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>workout_plan_exercises.plan_day_id</td><td>workout_plan_days.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>workout_plans.user_id</td><td>users.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>workout_sessions.plan_day_id</td><td>workout_plan_days.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>workout_sessions.user_id</td><td>users.id</td><td>0..1</td><td>0..N</td></tr>
+<tr><td>workout_sessions.workout_plan_id</td><td>workout_plans.id</td><td>0..1</td><td>0..N</td></tr>
+</tbody></table>
+<h3 id="sec-1009">5.2. Liên kết bằng ID trong ứng dụng, chưa có FK</h3>
+<table><thead><tr><th>Bảng.cột</th><th>Đối tượng liên quan</th></tr></thead><tbody>
+<tr><td>customer_addresses.user_id</td><td>users</td></tr>
+<tr><td>customer_product_states.user_id</td><td>users</td></tr>
+<tr><td>customer_product_states.product_id</td><td>shop_products</td></tr>
+<tr><td>shop_order_events.order_id</td><td>shop_orders</td></tr>
+<tr><td>shop_inventory_movements.product_id</td><td>shop_products</td></tr>
+<tr><td>shop_inventory_movements.variant_id</td><td>product_variants</td></tr>
+<tr><td>shop_inventory_movements.order_id</td><td>shop_orders</td></tr>
+<tr><td>shop_cart_items.variant_id</td><td>product_variants</td></tr>
+<tr><td>shop_order_items.product_id</td><td>shop_products</td></tr>
+<tr><td>shop_order_items.variant_id</td><td>product_variants</td></tr>
+<tr><td>shop_orders.created_by_staff_id</td><td>users</td></tr>
+<tr><td>voucher_scope_products.product_id</td><td>shop_products</td></tr>
+<tr><td>user_cosmetic_ownership.user_id</td><td>users</td></tr>
+<tr><td>workout_plans.original_plan_id</td><td>workout_plans</td></tr>
+<tr><td>workout_plan_exercises.last_low_adjustment_log_id</td><td>session_exercise_logs</td></tr>
+</tbody></table>
+<p>notifications.ref_id là tham chiếu đa loại, phụ thuộc ref_type; không thể gán chung một FK. Các mã dạng chuỗi như voucher_code hoặc cosmetic_code cần chú thích theo nghiệp vụ, không tự vẽ quan hệ FK.</p>
+<p>ERD_43_bang.mmd chứa đủ 43 bảng và toàn bộ cột cùng 39 FK. schema_43_bang.sql là DDL tham chiếu từ H2 tạm, không phải migration để chạy lên dữ liệu đang dùng. Để bố trí bản in: giữ một hình tổng quan đủ bảng, sau đó phóng to theo 6 nhóm tại phần 3; các bảng tham chiếu chéo có thể lặp trên hình nhóm và ghi “tham chiếu”.</p>
+<h2 id="sec-1033">6. Thông số cập nhật các phần chức năng</h2>
+<h3 id="sec-1035">Yêu cầu và Use Case</h3>
+<p>Tác nhân: khách vãng lai, hội viên (USER), nhân viên (STAFF), quản trị (ADMIN); cổng thanh toán là hệ thống bên ngoài. Bổ sung các ca sử dụng: tìm/lọc sản phẩm; xem chi tiết/chọn biến thể; quản lý giỏ; yêu thích/đã xem/so sánh; quản lý địa chỉ; đặt đơn và chọn thanh toán; theo dõi/hủy đơn hợp lệ; đánh giá có ảnh; quản lý thuộc tính/biến thể; xử lý đơn; bán tại quầy; xem báo cáo và nhật ký kho. Các ca đang có được cập nhật, không tạo bản sao chỉ vì thay giao diện.</p>
+<h3 id="sec-1038">Giao diện và tuyến đường</h3>
+<p>/shop: danh mục công khai, giỏ khách vãng lai, phân loại. /shop/product/:id: chi tiết, bộ ảnh, biến thể, đánh giá và sản phẩm liên quan. /app/shop: cửa hàng hội viên, địa chỉ nhận, đặt đơn, lịch sử và đánh giá. /admin/shop: sản phẩm và xử lý đơn. /admin/product-attributes: thuộc tính, giá trị và biến thể. /admin/shop-reports: thống kê, tồn thấp và nhật ký. /staff/orders và /tra-cuu-don: thông tin đơn và phân loại.</p>
+<h3 id="sec-1041">Đơn hàng và thanh toán</h3>
+<p>COD: CONFIRMED → PREPARING → SHIPPING → DELIVERED → COMPLETED; ghi paid_at khi nhân viên xác nhận giao/thu tiền. Thanh toán chờ có PENDING_PAYMENT; QR hết hạn sau 15 phút. Khách chỉ hủy khi đơn thỏa điều kiện dịch vụ. Trừ tồn khi đặt đơn, hoàn tồn khi hủy/hết hạn đúng một lần. Nhật ký lưu thay đổi từ thời điểm triển khai, không có lịch sử giả cho đơn cũ.</p>
+<p>MoMo/ZaloPay cần cấu hình merchant và callback HTTPS. Callback kiểm tra chữ ký, thông tin thương nhân và số tiền; xử lý lặp có tính idempotent. Trang khách quay về không tự xác nhận đã trả tiền. Thanh toán đến sau hủy/hết hạn được ghi để đối soát, không tự hoàn tiền. Chưa kiểm thử giao dịch thực tế với merchant.</p>
+<h3 id="sec-1046">Tối ưu bảng và quy tắc lưu trữ</h3>
+<p>Một bảng customer_product_states dùng chung yêu thích và lần xem gần nhất; UNIQUE(user_id, product_id). Ảnh sản phẩm/đánh giá là JSON được converter lưu trong VARCHAR(20000), không có bảng ảnh hay kiểu JSON gốc. Đơn lưu ảnh chụp thông tin sản phẩm và biến thể để giữ lịch sử. Biến thể ngừng bán bằng cờ active. Báo cáo tính từ dữ liệu đơn, không thêm bảng tổng hợp.</p>
+<h3 id="sec-1049">Báo cáo doanh thu</h3>
+<p>Lọc ngày theo created_at của đơn. Chỉ cộng đơn có paid_at, loại CANCELLED/EXPIRED. Doanh thu gồm phí vận chuyển và đã trừ giảm giá; bảng sản phẩm bán chạy tính tiền dòng trước giảm giá/phí vận chuyển. Tồn thấp là ≤ 5. Chưa có tính lợi nhuận theo giá vốn.</p>
+<h3 id="sec-1052">Kiểm thử và phạm vi đã xác minh</h3>
+<p>Kết quả có sẵn của đợt nâng cấp: ShopUpgradeTest 9/9, ShopPaymentTest 4/4; frontend build thành công. Toàn bộ backend 32/33, còn một lỗi kiểm thử bộ sinh giáo án được ghi nhận trước đó; không viết “toàn bộ kiểm thử đều đạt”. Số 43 được kiểm chứng bằng schema H2 tạm; không có thao tác migration trên database dữ liệu thật trong lần lập tài liệu này.</p>
+<h3 id="sec-1055">Cách đưa vào báo cáo</h3>
+<p>Thay Phụ lục B bằng phần 4 đầy đủ; thay danh sách bảng mục 3.1.2 bằng phần 3; dựng lại các hình ERD từ phần 5 và tệp Mermaid. Sau khi chèn, cập nhật mục lục, số hình/bảng và các tham chiếu trang trong Word. Số trang ở phần 2 là số trang PDF gốc, sẽ thay đổi khi thêm phụ lục. Giữ nội dung thuật toán tập luyện trừ các mô tả tên trường/quan hệ sai với schema này.</p></body></html>

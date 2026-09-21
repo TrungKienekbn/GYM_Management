@@ -1,0 +1,17 @@
+@startuml
+left to right direction
+skinparam shadowing false
+skinparam defaultFontName Arial
+actor "STAFF" as A0
+actor "ADMIN" as A1
+rectangle "GYMIFY - Cửa hàng và nhân viên" {
+usecase "UC-53\nPhân công và xem lịch làm việc" as UC53
+usecase "UC-54\nVào ca làm việc" as UC54
+usecase "UC-55\nKết ca và đối soát tiền" as UC55
+}
+A1 -- UC53
+A0 -- UC54
+A1 -- UC54
+A0 -- UC55
+A1 -- UC55
+@enduml
